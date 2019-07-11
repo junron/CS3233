@@ -1,13 +1,8 @@
 plugins {
     id 'java'
-    id 'org.openjfx.javafxplugin' version '0.0.7'
     id 'application'
 }
 
-
-javafx {
-    modules = ["javafx.controls","javafx.fxml"]
-}
 
 group 'CS'
 version '1.0-SNAPSHOT'
