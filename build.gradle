@@ -9,7 +9,7 @@ javafx {
     modules = ["javafx.controls","javafx.fxml","javafx.swing","javafx.media"]
 }
 
-group 'CS'
+group 'CS-moduleproject'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.11
