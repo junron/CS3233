@@ -1,65 +1,78 @@
 package application;
 
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.components.ViewComponent;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
+
+import static java.lang.Math.toRadians;
 
 public class TankComponent extends UserMovable {
 
   private PhysicsComponent physics;
-  private ViewComponent view;
 
-  private Texture texture;
   private double speed;
+  private int angle = 0;
+  private double height, width;
 
   @Override
   public void onUpdate(double tpf) {
-    speed = tpf*60;
+    speed = tpf * 60;
   }
+
   @Override
-  public void onAdded(){
-    getEntity().getTransformComponent().setRotationOrigin(new Point2D(42, 42));
-
-    texture = FXGL.getAssetLoader().loadTexture("player.png");
-    view.setView(texture);
-  }
-  public void up() {
-    getEntity().setRotation(270);
-    getEntity().translateY(-5 * speed);
+  public void onAdded() {
+    this.height = getEntity().getHeight();
+    this.width = getEntity().getWidth();
+    getEntity().getTransformComponent().setRotationOrigin(new Point2D(width / 2, height / 2));
   }
 
-  public void down() {
-    getEntity().setRotation(90);
-    getEntity().translateY(5 * speed);
+  public void forward() {
+    Point2D rotation = angleToVector();
+    double x = rotation.getX();
+    double y = rotation.getY();
+    getEntity().translateY(5 * y);
+    getEntity().translateX(5 * x);
+  }
+
+  public void backward() {
+    Point2D rotation = angleToVector();
+    double x = rotation.getX();
+    double y = rotation.getY();
+    getEntity().translateY(-5 * y);
+    getEntity().translateX(-5 * x);
   }
 
   public void left() {
-    getEntity().setRotation(180);
-    getEntity().translateX(-5 * speed);
+    angle -= 2;
+//    Clockwise
+    getEntity().rotateBy(2);
   }
 
   public void right() {
-    getEntity().setRotation(0);
-    getEntity().translateX(5 * speed);
+    angle += 2;
+    //    Anti-Clockwise
+    getEntity().rotateBy(-2);
   }
 
-//  public void shoot() {
-//    FXGL.spawn("Bullet", new SpawnData(getEntity().getCenter()).put("direction", angleToVector()));
-//  }
+  public void shoot() {
+    System.out.println(getEntity().getTransformComponent());
+    Point2D bulletPoint = getEntity().getCenter().add(getFiringPoint());
+    System.out.println(bulletPoint);
+    FXGL.spawn("Bullet", new SpawnData(bulletPoint).put("angle", angleToVector()));
+  }
 
   private Point2D angleToVector() {
-    double angle = getEntity().getRotation();
-    if (angle == 0) {
-      return new Point2D(1, 0);
-    } else if (angle == 90) {
-      return new Point2D(0, 1);
-    } else if (angle == 180) {
-      return new Point2D(-1, 0);
-    } else {    // 270
-      return new Point2D(0, -1);
-    }
+    double angle = toRadians(getEntity().getRotation());
+    return new Point2D(Math.cos(angle), Math.sin(angle));
+  }
+
+  private Point2D getFiringPoint() {
+    double angle = toRadians(this.angle);
+//    Move point width/2 across
+    double x = (this.width / 2) * Math.cos(angle);
+    double y = (this.width / 2) * Math.sin(angle);
+    return new Point2D(x, -y);
   }
 
 }

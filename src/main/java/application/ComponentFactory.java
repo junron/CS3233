@@ -1,30 +1,30 @@
 package application;
 
+import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 
 public class ComponentFactory implements EntityFactory {
-//  @Spawns("Bullet")
-//  public Entity newBall(SpawnData data) {
-//    Entity ball = FXGL.entityBuilder()
-//                      .from(data)
-//                      .type(Types.BULLET)
-//                      .viewWithBBox(new Circle(3, Color.BLACK))
-//                      .build();
-//
-//    PhysicsComponent ballPhysics = new PhysicsComponent();
-//    ballPhysics.setBodyType(BodyType.DYNAMIC);
-//
-//    FixtureDef def = new FixtureDef().density(0.3f).restitution(1.0f);
-//
-//    ballPhysics.setFixtureDef(def);
-//    ballPhysics.setOnPhysicsInitialized(() -> ballPhysics.setLinearVelocity(5 * 60, 5 * 60));
-//
-//    ball.addComponent(ballPhysics);
-//    ball.addComponent(new CollidableComponent(true));
-//    ball.addComponent(new BulletComponent());
-//
-//    return ball;
-//  }
+
+  @Spawns("Bullet")
+  public Entity newBullet(SpawnData data){
+    return entityBuilder()
+            .from(data)
+            .type(Types.BULLET)
+            .with(new ProjectileComponent(data.get("angle"),600))
+            .with(new CollidableComponent(true))
+            .with(new OffscreenCleanComponent())
+            .viewWithBBox(new Circle(3, Color.BLACK))
+            .build();
+  }
 
 
 }

@@ -2,8 +2,15 @@ package application;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.texture.Texture;
+import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
@@ -18,24 +25,34 @@ public class Main extends GameApplication {
     settings.setTitle("Basic bouncing ball");
   }
   private void initScreenBounds() {
-    Entity walls = entityBuilder().buildScreenBounds(150);
+    Entity walls = entityBuilder()
+            .viewWithBBox(new Rectangle(10,10, Color.BLACK))
+            .with(new CollidableComponent(true))
+            .buildScreenBounds(150);
     walls.setType(Types.WALL);
-    walls.addComponent(new CollidableComponent(true));
 
     getGameWorld().addEntity(walls);
   }
   @Override
   protected void initGame() {
-//    getGameWorld().addEntityFactory(new ComponentFactory());
-    Entity tank = new Entity();
+    initScreenBounds();
+    getGameWorld().addEntityFactory(new ComponentFactory());
+    Entity tank = FXGL.entityBuilder()
+            .viewWithBBox(new Texture(AssetLoader.loadImage("player.png")))
+            .build();
     tank.addComponent(tankComponent);
 
     getGameWorld().addEntity(tank);
-    initScreenBounds();
   }
   @Override
   protected void initInput(){
-    InitInput.init(tankComponent,false);
+    Input i = InitInput.init(tankComponent,false);
+    i.addAction(new UserAction("fire") {
+      @Override
+      protected void onActionBegin() {
+        tankComponent.shoot();
+      }
+    }, KeyCode.SPACE);
   }
 
   public static void main(String[] args) {
