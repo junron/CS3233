@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'org.openjfx.javafxplugin' version '0.0.7'
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
     id 'application'
 }
 
@@ -26,3 +27,9 @@ dependencies {
 sourceSets {
     main.output.resourcesDir = "build/classes/java/main"
 }
+
+shadowJar {
+    baseName = 'moduleproj'
+}
+
+mainClassName = "application.Main"
