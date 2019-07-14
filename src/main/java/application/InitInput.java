@@ -7,35 +7,48 @@ import javafx.scene.input.KeyCode;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getInput;
 
 public class InitInput {
-  public static Input init(UserMovable c,boolean wasd){
+  static Input init(UserMovable c, boolean wasd) {
     Input i = getInput();
     i.addAction(new UserAction("left") {
       @Override
       protected void onAction() {
         c.left();
       }
-    },wasd? KeyCode.A:KeyCode.LEFT);
+    }, wasd ? KeyCode.A : KeyCode.LEFT);
+
     i.addAction(new UserAction("right") {
       @Override
       protected void onAction() {
         c.right();
       }
-    },wasd? KeyCode.D:KeyCode.RIGHT);
+    }, wasd ? KeyCode.D : KeyCode.RIGHT);
+
     i.addAction(new UserAction("forward") {
       @Override
-      protected void onAction() {
+      protected void onActionBegin() {
         c.forward();
       }
-    },wasd? KeyCode.W:KeyCode.UP);
+      @Override
+      protected void onActionEnd() {
+        c.stop();
+      }
+    }, wasd ? KeyCode.W : KeyCode.UP);
+
     i.addAction(new UserAction("backward") {
       @Override
-      protected void onAction() {
+      protected void onActionBegin() {
         c.backward();
       }
-    },wasd? KeyCode.S:KeyCode.DOWN);
+
+      @Override
+      protected void onActionEnd() {
+        c.stop();
+      }
+    }, wasd ? KeyCode.S : KeyCode.DOWN);
     return i;
   }
-  public static Input init(UserMovable c){
-    return init(c,false);
+
+  public static Input init(UserMovable c) {
+    return init(c, false);
   }
 }

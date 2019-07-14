@@ -3,76 +3,74 @@ package application;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameScene;
 import static java.lang.Math.toRadians;
 
 public class TankComponent extends UserMovable {
 
   private PhysicsComponent physics;
 
-  private double speed;
+  private double speed = 300;
   private int angle = 0;
   private double height, width;
-
-  @Override
-  public void onUpdate(double tpf) {
-    speed = tpf * 60;
-  }
+  private Rectangle2D bounds;
 
   @Override
   public void onAdded() {
     this.height = getEntity().getHeight();
     this.width = getEntity().getWidth();
+    this.bounds = getGameScene().getViewport().getVisibleArea();
     getEntity().getTransformComponent().setRotationOrigin(new Point2D(width / 2, height / 2));
+
+
+    physics.setBodyType(BodyType.DYNAMIC);
+    FixtureDef fd = new FixtureDef();
+    fd.setFriction(1f);
+    physics.setFixtureDef(fd);
+
+
   }
 
   public void forward() {
-    Point2D rotation = angleToVector();
-    double x = rotation.getX();
-    double y = rotation.getY();
-    getEntity().translateY(5 * y);
-    getEntity().translateX(5 * x);
+    Point2D movement = angleToVector().multiply(this.speed);
+    physics.setLinearVelocity(movement);
   }
 
   public void backward() {
-    Point2D rotation = angleToVector();
-    double x = rotation.getX();
-    double y = rotation.getY();
-    getEntity().translateY(-5 * y);
-    getEntity().translateX(-5 * x);
+    Point2D movement = angleToVector().multiply(-this.speed);
+    physics.setLinearVelocity(movement);
+  }
+
+  public void stop(){
+    physics.setLinearVelocity(new Point2D(0,0));
   }
 
   public void left() {
-    angle -= 2;
+    angle += 2;
 //    Clockwise
-    getEntity().rotateBy(2);
+    physics.overwriteAngle(angle);
   }
 
   public void right() {
-    angle += 2;
+    angle -= 2;
     //    Anti-Clockwise
-    getEntity().rotateBy(-2);
+    physics.overwriteAngle(angle);
   }
 
-  public void shoot() {
-    System.out.println(getEntity().getTransformComponent());
-    Point2D bulletPoint = getEntity().getCenter().add(getFiringPoint());
-    System.out.println(bulletPoint);
+  void shoot() {
+    Point2D bulletPoint = getEntity().getCenter().add(angleToVector().multiply(this.width/2+10));
     FXGL.spawn("Bullet", new SpawnData(bulletPoint).put("angle", angleToVector()));
   }
 
   private Point2D angleToVector() {
-    double angle = toRadians(getEntity().getRotation());
+    double angle = toRadians(this.angle);
     return new Point2D(Math.cos(angle), Math.sin(angle));
   }
 
-  private Point2D getFiringPoint() {
-    double angle = toRadians(this.angle);
-//    Move point width/2 across
-    double x = (this.width / 2) * Math.cos(angle);
-    double y = (this.width / 2) * Math.sin(angle);
-    return new Point2D(x, -y);
-  }
 
 }
