@@ -1,5 +1,6 @@
 package application;
 
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -22,6 +23,7 @@ public class TankComponent extends UserMovable {
 
   @Override
   public void onAdded() {
+    this.angle = FXGLMath.random(0, 360);
     this.height = getEntity().getHeight();
     this.width = getEntity().getWidth();
     this.bounds = getGameScene().getViewport().getVisibleArea();
@@ -32,8 +34,7 @@ public class TankComponent extends UserMovable {
     FixtureDef fd = new FixtureDef();
     fd.setFriction(1f);
     physics.setFixtureDef(fd);
-
-
+    physics.setOnPhysicsInitialized(() -> physics.overwriteAngle(angle));
   }
 
   public void forward() {
@@ -46,8 +47,8 @@ public class TankComponent extends UserMovable {
     physics.setLinearVelocity(movement);
   }
 
-  public void stop(){
-    physics.setLinearVelocity(new Point2D(0,0));
+  public void stop() {
+    physics.setLinearVelocity(new Point2D(0, 0));
   }
 
   public void left() {
@@ -62,8 +63,8 @@ public class TankComponent extends UserMovable {
     physics.overwriteAngle(angle);
   }
 
-  void shoot() {
-    Point2D bulletPoint = getEntity().getCenter().add(angleToVector().multiply(this.width/2+10));
+  public void shoot() {
+    Point2D bulletPoint = getEntity().getCenter().add(angleToVector().multiply(this.width / 2 + 10));
     FXGL.spawn("Bullet", new SpawnData(bulletPoint).put("angle", angleToVector()));
   }
 

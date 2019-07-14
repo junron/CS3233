@@ -8,4 +8,5 @@ public abstract class UserMovable extends Component {
   abstract public void forward();
   abstract public void backward();
   abstract public void stop();
+  abstract public void shoot();
 }
