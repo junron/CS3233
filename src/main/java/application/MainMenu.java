@@ -24,15 +24,22 @@ import translator.TranslatableText;
 
 import java.util.Map;
 
+import static java.util.Map.entry;
+
 public class MainMenu extends FXGLMenu {
 
-  private Map<String,String> languageIdMapping = Map.of(
-          "English","en",
-          "Chinese (Simplified)","zh",
-          "Chinese (Traditional)","zh-TW",
-          "Malay","ms",
-          "Tamil","ta",
-          "French","fr"
+  private Map<String, String> languageIdMapping = Map.ofEntries(
+          entry("English", "en"),
+          entry("Chinese (Simplified)", "zh"),
+          entry("Chinese (Traditional)", "zh-TW"),
+          entry("Malay", "ms"),
+          entry("Tamil", "ta"),
+          entry("French", "fr"),
+          entry("Hindi", "hi"),
+          entry("Tagalog", "tl"),
+          entry("Spanish", "es"),
+          entry("Korean", "ko"),
+          entry("Japanese", "ja")
   );
   private ObservableList<String> stuff = FXCollections.observableArrayList(
           languageIdMapping.keySet()
@@ -42,8 +49,8 @@ public class MainMenu extends FXGLMenu {
     super(type);
     Node menu = createMenuBodyMainMenu();
     Pane menuContent = getMenuContentRoot();
-    menu.setLayoutX((FXGL.getAppWidth()>>1)-150);
-    menu.setLayoutY(-50+FXGL.getAppHeight()>>1);
+    menu.setLayoutX((FXGL.getAppWidth() >> 1) - 150);
+    menu.setLayoutY(-50 + FXGL.getAppHeight() >> 1);
     menuContent.getStylesheets().add(AssetLoader.loadResource("styles/menu.css").toExternalForm());
     menuContent.getChildren().add(menu);
   }
@@ -96,7 +103,7 @@ public class MainMenu extends FXGLMenu {
   private GridPane createMenuBodyMainMenu() {
     Button playButton = new Button("menu.play");
     playButton.setText("Start game!");
-    playButton.setOnMouseClicked(e-> fireNewGame());
+    playButton.setOnMouseClicked(e -> fireNewGame());
 
     ComboBox<String> languageSelect = new ComboBox<>(stuff);
     TranslatableText label = new TranslatableText("Language:");
@@ -112,10 +119,10 @@ public class MainMenu extends FXGLMenu {
     grid.setHgap(10);
     grid.setPadding(new Insets(5, 5, 5, 5));
 
-    grid.add(playButton,0,0,2,1);
+    grid.add(playButton, 0, 0, 2, 1);
     GridPane.setHalignment(playButton, HPos.CENTER);
-    grid.add(label,0,1);
-    grid.add(languageSelect,1,1);
+    grid.add(label, 0, 1);
+    grid.add(languageSelect, 1, 1);
     return grid;
   }
 }
