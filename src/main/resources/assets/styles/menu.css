@@ -1,0 +1,19 @@
+.root *{
+  -fx-font-size: 20px;
+}
+
+/*
+.combo-box .combo-box-popup .list-view, .combo-box .combo-box-popup .list-cell {
+  -fx-font-size: 8px;
+}
+
+.combo-box-base
+{
+-fx-font-size: 8px;
+}
+
+.combo-box .list-cell
+{
+-fx-font-size: 8px;
+}
+*/

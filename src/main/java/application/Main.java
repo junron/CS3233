@@ -1,14 +1,18 @@
 package application;
 
+import com.almasb.fxgl.app.FXGLMenu;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.scene.MenuType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -24,6 +28,14 @@ public class Main extends GameApplication {
     settings.setHeight(600);
     settings.setTitle("Basic tank game");
     settings.setVersion("0.1");
+    settings.setMenuEnabled(true);
+    settings.setSceneFactory(new SceneFactory(){
+      @NotNull
+      @Override
+      public FXGLMenu newMainMenu() {
+        return new MainMenu(MenuType.MAIN_MENU);
+      }
+    });
   }
 
   private void initScreenBounds() {
