@@ -39,7 +39,9 @@ public class MainMenu extends FXGLMenu {
           entry("Tagalog", "tl"),
           entry("Spanish", "es"),
           entry("Korean", "ko"),
-          entry("Japanese", "ja")
+          entry("Japanese", "ja"),
+          entry("German","de"),
+          entry("Greek","el")
   );
   private ObservableList<String> stuff = FXCollections.observableArrayList(
           languageIdMapping.keySet()

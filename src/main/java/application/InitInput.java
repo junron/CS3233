@@ -15,7 +15,7 @@ public class InitInput {
       @Override
       protected void onAction() {
         if(c==null) return;
-        c.left();
+        c.right();
       }
     }, wasd ? KeyCode.A : KeyCode.LEFT);
 
@@ -23,7 +23,7 @@ public class InitInput {
       @Override
       protected void onAction() {
         if(c==null) return;
-        c.right();
+        c.left();
       }
     }, wasd ? KeyCode.D : KeyCode.RIGHT);
 
@@ -60,7 +60,7 @@ public class InitInput {
         if(c==null) return;
         c.shoot();
       }
-    }, wasd ? KeyCode.F : KeyCode.SPACE);
+    }, wasd ? KeyCode.F : KeyCode.M);
     return i;
   }
 
