@@ -32,7 +32,7 @@ public class MainController implements Initializable {
     Path intersection = (Path) Shape.intersect(generated,mirror);
     if(Intersection.hasIntersectionPoint(intersection)){
       Point2D point = Intersection.getIntersectionPoint(intersection,start);
-      System.out.println(Intersection.getIntersectingAngle(point,mirror));
+      System.out.println(Intersection.getIntersectionSide(point,mirror,parent));
       Circle c = new Circle(point.getX(),point.getY(),3, Color.RED);
       parent.getChildren().add(c);
     }
