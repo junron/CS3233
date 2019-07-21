@@ -1,14 +1,12 @@
 package math;
 
+import enums.Sides;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import utils.Geometry;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.function.Predicate;
 
 public class Intersection {
   public static void intersections(Shape intersection) {
@@ -23,39 +21,92 @@ public class Intersection {
     return iPoints.get(0);
   }
 
-  public static double getIntersectingAngle(Point2D iPoint, Rectangle intersector){
-    System.out.println(intersector.getRotate());
-    System.out.println(iPoint);
-    System.out.println(intersector.getBoundsInParent());
-    return 0;
+  public static double getIntersectingAngle(IntersectionSideData iData, Line line) {
+    Vectors vLine = new Vectors(Vectors.lineToVector(line).multiply(-1));
+    double lineAngle = vLine.getAngle();
+    double normalAngle = iData.normalVector.getAngle();
+    return lineAngle-normalAngle;
   }
 
-// Output:
-//       0
-//   +------+
-//   |      |
-//   |      |
-//  3|      |1
-//   |      |
-//   |      |
-//   +------+
-//       2
-  public static double getIntersectionSide(Point2D iPoint, Rectangle intersector, Pane parent){
-    ArrayList<Point2D> iPoints = convertToPoints(((Path)Shape.intersect(intersector,intersector)).getElements());
+  //  This is pure genius
+  public static IntersectionSideData getIntersectionSide(Point2D iPoint, Rectangle intersector) {
+    Circle pointIndicator = new Circle(iPoint.getX(), iPoint.getY(), 1);
+    ArrayList<Point2D> points = convertToPoints(((Path) Shape.intersect(intersector, intersector)).getElements());
+    ArrayList<Line> lines = generateLinesPoints(points);
+    Line l = lines.stream()
+                  .filter(line -> hasIntersectionPoint(Shape.intersect(line, pointIndicator)))
+                  .findFirst()
+                  .orElse(null);
+    Vectors v = Vectors.lineToVector(l);
+    IntersectionSideData result = new IntersectionSideData(
+            v,
+            new Point2D(l.getStartX(), l.getStartY()),
+            null,
+            null
+    );
+    Point2D sameAngle = Vectors.constructWithMagnitude(Math.toRadians(intersector.getRotate()), 2);
+    Point2D perpendicular = Vectors.constructWithMagnitude(Math.toRadians(intersector.getRotate() - 90), 2);
 
-    Line line1 = createLineFromPoints(iPoints.get(0),iPoints.get(1));
-    line1.setStroke(Color.ORANGE);
-    parent.getChildren().add(line1);
-    return 0;
+    if (!hasIntersectionPoint(iPoint.add(sameAngle), intersector)) {
+      result.normalVector = new Vectors(sameAngle);
+      result.side = Sides.RIGHT;
+    } else if (!hasIntersectionPoint(iPoint.subtract(sameAngle), intersector)) {
+      result.normalVector = new Vectors(sameAngle.multiply(-1));
+      result.side = Sides.LEFT;
+    } else if (!hasIntersectionPoint(iPoint.subtract(perpendicular), intersector)) {
+      result.normalVector = new Vectors(perpendicular.multiply(-1));
+      result.side = Sides.BOTTOM;
+    } else {
+      result.normalVector = new Vectors(perpendicular);
+      result.side = Sides.TOP;
+    }
+
+//    double measured = Geometry.modAngle(Math.round(Math.toDegrees(v.getAngle())));
+//    double expected = Geometry.modAngle(intersector.getRotate()+90);
+//    System.out.println(measured);
+//    System.out.println(expected);
+////    Angle may have been measured in opposite way
+//    if(measured==expected || Math.abs(measured-expected)==180){
+//      double rotation = Math.toRadians(intersector.getRotate()%180);
+////      Parallel
+//      Point2D parallel = Vectors.constructWithMagnitude(rotation,2);
+//      Circle c1 = Geometry.createCircleFromPoint(iPoint.add(parallel),1);
+//      FxDebug.indicatePoint(c1,parent);
+//      if(hasIntersectionPoint(Shape.intersect(c1,intersector))){
+//        result.side = Sides.LEFT;
+//      }else{
+//        result.side = Sides.RIGHT;
+//      }
+//  }else{
+//      double rotation = Math.toRadians((intersector.getRotate()-90)%180);
+//      //      Perpendicular
+//      Point2D perpendicular = Vectors.constructWithMagnitude(rotation,2);
+//      Circle c1 = Geometry.createCircleFromPoint(iPoint.add(perpendicular),1);
+//      FxDebug.indicatePoint(c1,parent);
+//      if(hasIntersectionPoint(Shape.intersect(c1,intersector))){
+//        result.side = Sides.BOTTOM;
+//      }else{
+//        result.side = Sides.TOP;
+//      }
+//    }
+
+    return result;
   }
 
-  private static Line createLineFromPoints(Point2D p1, Point2D p2){
-    return new Line(p1.getX(),p1.getY(),p2.getX(),p2.getY());
+
+  private static ArrayList<Line> generateLinesPoints(ArrayList<Point2D> points) {
+    ArrayList<Line> res = new ArrayList<>();
+    for (int i = 0; i < points.size(); i++) {
+      Point2D p1 = points.get(i);
+      Point2D p2 = i == points.size() - 1 ? points.get(0) : points.get(i + 1);
+      res.add(Geometry.createLineFromPoints(p1, p2));
+    }
+    return res;
   }
 
-  private static ArrayList<Point2D> convertToPoints(ObservableList<PathElement> elements){
+  private static ArrayList<Point2D> convertToPoints(ObservableList<PathElement> elements) {
     ArrayList<Point2D> results = new ArrayList<>();
-    for(PathElement elem: elements){
+    for (PathElement elem : elements) {
       if (elem instanceof MoveTo) {
         results.add(new Point2D(((MoveTo) elem).getX(), ((MoveTo) elem).getY()));
       } else if (elem instanceof LineTo) {
@@ -65,13 +116,15 @@ public class Intersection {
     return results;
   }
 
-  private static boolean pointIsOnLine(Point2D point,double lineX,double lineY){
-    double gradient = lineY/lineX;
-    double intercept = lineY - (gradient*lineX);
-    return point.getY() == ((gradient * point.getX()) + intercept);
-  }
-
   public static boolean hasIntersectionPoint(Path intersection) {
     return intersection.getElements().size() > 0;
+  }
+
+  public static boolean hasIntersectionPoint(Shape intersection) {
+    return hasIntersectionPoint((Path) intersection);
+  }
+
+  public static boolean hasIntersectionPoint(Point2D point, Shape shape) {
+    return hasIntersectionPoint(Shape.intersect(Geometry.createCircleFromPoint(point, 1), shape));
   }
 }

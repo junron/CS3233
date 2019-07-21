@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane fx:id="parent" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
-   <children>
-      <Rectangle fx:id="mirror" arcHeight="5.0" arcWidth="5.0" fill="#05d5ff48" height="200.0" layoutX="270.0" layoutY="106.0" rotate="30.0" stroke="BLACK" strokeType="INSIDE" width="9.0" />
-   </children>
-</AnchorPane>
+<AnchorPane fx:id="parent" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController" />

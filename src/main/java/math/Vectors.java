@@ -1,6 +1,7 @@
 package math;
 
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Line;
 
 public class Vectors extends Point2D {
   public Vectors(double x, double y) {
@@ -22,5 +23,11 @@ public class Vectors extends Point2D {
 
   public double getAngle(){
     return Math.atan2(this.getY(),this.getX());
+  }
+
+  public static Vectors lineToVector(Line l){
+    Point2D start = new Point2D(l.getStartX(),l.getStartY());
+    Point2D end = new Point2D(l.getEndX(),l.getEndY());
+    return new Vectors(end.subtract(start));
   }
 }
