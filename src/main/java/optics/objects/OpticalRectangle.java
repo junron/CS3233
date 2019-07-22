@@ -1,4 +1,4 @@
-package optics;
+package optics.objects;
 
 import javafx.scene.shape.Rectangle;
 

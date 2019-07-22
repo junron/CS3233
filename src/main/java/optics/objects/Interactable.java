@@ -1,4 +1,4 @@
-package optics;
+package optics.objects;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;

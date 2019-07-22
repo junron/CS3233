@@ -1,6 +1,8 @@
-package optics;
+package optics.objects;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import math.Intersection;
@@ -9,6 +11,8 @@ import math.Vectors;
 import utils.Geometry;
 
 public class Mirror extends OpticalRectangle {
+  private Point2D movementDelta;
+  private EventHandler<MouseEvent> onDrag;
 
   public Mirror(double x, double y, double width, double height, double rotation) {
     super(x, y, width, height);
@@ -18,6 +22,16 @@ public class Mirror extends OpticalRectangle {
     this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
     this.setStrokeWidth(1);
     this.setStroke(Color.BLACK);
+    this.setOnMousePressed(event-> movementDelta = new Point2D(this.getX()-event.getSceneX(),this.getY()-event.getSceneY()));
+    this.setOnMouseDragged(event -> {
+      this.setX(event.getSceneX()+movementDelta.getX());
+      this.setY(event.getSceneY()+movementDelta.getY());
+      if(onDrag==null) return;
+      onDrag.handle(event);
+    });
+  }
+  public void setOnDrag(EventHandler<MouseEvent> handler){
+    this.onDrag = handler;
   }
 
   @Override

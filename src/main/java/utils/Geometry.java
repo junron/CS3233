@@ -7,7 +7,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
-import optics.OpticalRectangle;
+import optics.objects.OpticalRectangle;
 
 public class Geometry {
   public static Line createLineFromPoints(Point2D p1, Point2D p2) {

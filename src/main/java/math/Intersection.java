@@ -9,9 +9,6 @@ import utils.Geometry;
 import java.util.ArrayList;
 
 public class Intersection {
-  public static void intersections(Shape intersection) {
-
-  }
 
   public static Point2D getIntersectionPoint(Path intersection, Vectors origin) {
     ArrayList<Point2D> iPoints = convertToPoints(intersection.getElements());
