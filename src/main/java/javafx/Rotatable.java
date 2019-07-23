@@ -37,6 +37,30 @@ public class Rotatable {
         onRotate.handle(event);
         return;
       }
+      if(event.isAltDown()){
+//        Move object instead of rotating it
+        switch(eventCode){
+          case("LEFT"):{
+            this.shape.setWidth(this.shape.getWidth()-1);
+            break;
+          }
+          case("RIGHT"):{
+            this.shape.setWidth(this.shape.getWidth()+1);
+            break;
+          }
+          case("UP"):{
+            this.shape.setHeight(this.shape.getHeight()+1);
+            break;
+          }
+          case("DOWN"):{
+            this.shape.setHeight(this.shape.getHeight()-1);
+            break;
+          }
+          default: return;
+        }
+        onRotate.handle(event);
+        return;
+      }
       double rotate = this.shape.getRotate();
       if(eventCode.equals("LEFT")){
 //        Rotate anticlock
