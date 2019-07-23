@@ -1,8 +1,11 @@
 package optics.objects;
 
+import javafx.Draggable;
+import javafx.Rotatable;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import math.Intersection;
@@ -10,11 +13,16 @@ import math.IntersectionSideData;
 import math.Vectors;
 import utils.Geometry;
 
-public class Mirror extends OpticalRectangle {
-  private Point2D movementDelta;
-  private EventHandler<MouseEvent> onDrag;
+import java.util.ArrayList;
+import java.util.function.Function;
 
-  public Mirror(double x, double y, double width, double height, double rotation) {
+public class Mirror extends OpticalRectangle {
+  private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
+  private Function<Event, Void> onDestroy;
+  private Draggable draggable;
+  private Rotatable rotatable;
+
+  public Mirror(double x, double y, double width, double height, Pane parent, double rotation) {
     super(x, y, width, height);
     this.setRotate(rotation);
     this.setArcHeight(0);
@@ -22,16 +30,22 @@ public class Mirror extends OpticalRectangle {
     this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
     this.setStrokeWidth(1);
     this.setStroke(Color.BLACK);
-    this.setOnMousePressed(event-> movementDelta = new Point2D(this.getX()-event.getSceneX(),this.getY()-event.getSceneY()));
-    this.setOnMouseDragged(event -> {
-      this.setX(event.getSceneX()+movementDelta.getX());
-      this.setY(event.getSceneY()+movementDelta.getY());
-      if(onDrag==null) return;
-      onDrag.handle(event);
-    });
+    this.draggable = new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
+    this.rotatable = new Rotatable(this, this::triggerStateChange);
   }
-  public void setOnDrag(EventHandler<MouseEvent> handler){
-    this.onDrag = handler;
+
+  public void addOnStateChange(EventHandler<Event> handler) {
+    this.onStateChange.add(handler);
+  }
+
+  private void triggerStateChange(Event e) {
+    for (EventHandler<Event> handler : this.onStateChange) {
+      handler.handle(e);
+    }
+  }
+
+  private void triggerDestroy(Event e) {
+    this.onDestroy.apply(e);
   }
 
   @Override
@@ -56,5 +70,9 @@ public class Mirror extends OpticalRectangle {
     Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(normalLength / 2)));
     l.getStrokeDashArray().addAll(4d);
     return l;
+  }
+
+  public void setOnDestroy(Function<Event, Void> onDestroy) {
+    this.onDestroy = onDestroy;
   }
 }

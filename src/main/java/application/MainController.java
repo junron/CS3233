@@ -3,6 +3,7 @@ package application;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -26,6 +27,9 @@ public class MainController implements Initializable {
   @FXML
   private AnchorPane parent;
 
+  @FXML
+  private Button newMirror;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     double angle = Math.toRadians(30);
@@ -34,16 +38,18 @@ public class MainController implements Initializable {
     Line l = Geometry.createLineFromPoints(origin, Vectors.constructWithMagnitude(angle, 1000));
     Ray r1 = new Ray(l, parent);
     rays.add(r1);
-    Mirror m = new Mirror(300, 100, 14, 200, 0);
-    Mirror m1 = new Mirror(200, 100, 14, 200, 90);
-    Mirror m2 = new Mirror(250, 100, 14, 200, 0);
-    Mirror m3 = new Mirror(300, 100, 14, 200, 90);
-    mirrors.addAll(m, m1, m2, m3);
-    for (OpticalRectangle rect : mirrors) {
-      if (!(rect instanceof Mirror)) continue;
-      ((Mirror) rect).setOnDrag(event -> r1.renderRays(mirrors));
-    }
-    parent.getChildren().addAll(mirrors);
+    newMirror.setOnMouseClicked(event -> {
+      Mirror m = new Mirror(300, 100, 14, 200, parent, 0);
+      this.mirrors.add(m);
+      m.addOnStateChange(event1 -> r1.renderRays(mirrors));
+      m.setOnDestroy(e -> {
+        mirrors.remove(m);
+        r1.renderRays(mirrors);
+        return null;
+      });
+      r1.renderRays(mirrors);
+      parent.getChildren().add(m);
+    });
     r1.renderRays(mirrors);
   }
 }
