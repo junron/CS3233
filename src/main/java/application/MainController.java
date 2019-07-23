@@ -51,6 +51,7 @@ public class MainController implements Initializable {
       parent.getChildren().add(m);
     });
     r1.renderRays(mirrors);
+    parent.getChildren().addAll(mirrors);
   }
 }
 

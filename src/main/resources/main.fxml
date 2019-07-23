@@ -14,7 +14,7 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </Rectangle>
-      <Button fx:id="newMirror" layoutX="22.0" layoutY="347.0" mnemonicParsing="false" text="Create mirror" />
+      <Button fx:id="newMirror" focusTraversable="false" layoutX="22.0" layoutY="347.0" mnemonicParsing="false" text="Create mirror" />
       <Label layoutX="546.0" layoutY="351.0" text="Trash" />
    </children>
 </AnchorPane>

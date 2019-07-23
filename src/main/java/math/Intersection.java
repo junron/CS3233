@@ -57,36 +57,6 @@ public class Intersection {
       result.normalVector = new Vectors(perpendicular);
       result.side = Sides.TOP;
     }
-
-//    double measured = Geometry.modAngle(Math.round(Math.toDegrees(v.getAngle())));
-//    double expected = Geometry.modAngle(intersector.getRotate()+90);
-//    System.out.println(measured);
-//    System.out.println(expected);
-////    Angle may have been measured in opposite way
-//    if(measured==expected || Math.abs(measured-expected)==180){
-//      double rotation = Math.toRadians(intersector.getRotate()%180);
-////      Parallel
-//      Point2D parallel = Vectors.constructWithMagnitude(rotation,2);
-//      Circle c1 = Geometry.createCircleFromPoint(iPoint.add(parallel),1);
-//      FxDebug.indicatePoint(c1,parent);
-//      if(hasIntersectionPoint(Shape.intersect(c1,intersector))){
-//        result.side = Sides.LEFT;
-//      }else{
-//        result.side = Sides.RIGHT;
-//      }
-//  }else{
-//      double rotation = Math.toRadians((intersector.getRotate()-90)%180);
-//      //      Perpendicular
-//      Point2D perpendicular = Vectors.constructWithMagnitude(rotation,2);
-//      Circle c1 = Geometry.createCircleFromPoint(iPoint.add(perpendicular),1);
-//      FxDebug.indicatePoint(c1,parent);
-//      if(hasIntersectionPoint(Shape.intersect(c1,intersector))){
-//        result.side = Sides.BOTTOM;
-//      }else{
-//        result.side = Sides.TOP;
-//      }
-//    }
-
     return result;
   }
 

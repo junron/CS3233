@@ -20,6 +20,7 @@ public class Ray implements Lightsource {
   private Line originalLine;
   private Line currentLine;
   private Point2D origin;
+  private Point2D originalOrigin;
   private Point2D endPoint;
   private Pane parent;
 
@@ -27,6 +28,7 @@ public class Ray implements Lightsource {
     this.currentLine = l;
     this.originalLine = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
     this.origin = new Point2D(l.getStartX(), l.getStartY());
+    this.originalOrigin = new Point2D(l.getStartX(), l.getStartY());
     this.endPoint = new Point2D(l.getEndX(), l.getEndY());
     this.parent = parent;
   }
@@ -40,7 +42,8 @@ public class Ray implements Lightsource {
     while (opticalObject != null) {
       if (refNum > this.maximumReflectionDepth) {
         System.out.println("Maximum reflection depth exceeded");
-        Alert alert = FxAlerts.showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth exceeded");
+        Alert alert = FxAlerts
+                .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth exceeded");
         alert.showAndWait();
         break;
       }
@@ -52,6 +55,7 @@ public class Ray implements Lightsource {
       lines.add(this.currentLine);
       lines.add(normal);
       this.currentLine = transform;
+      this.origin = iPoint;
       opticalObject = Geometry.getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
       refNum++;
     }
@@ -62,6 +66,7 @@ public class Ray implements Lightsource {
   private void resetCurrentLine() {
     this.originalLine.setEndX(endPoint.getX());
     this.originalLine.setEndY(endPoint.getY());
+    this.origin = this.originalOrigin;
     this.currentLine = this.originalLine;
   }
 
