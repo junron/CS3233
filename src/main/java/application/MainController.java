@@ -5,10 +5,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -21,6 +19,7 @@ public class MainController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     GridPane grid = new GridPane();
+    TextField[] topRow = new TextField[10];
     Random r = new Random();
     for(int i=0;i<10;i++){
       for(int j=0;j<10;j++){
@@ -28,12 +27,16 @@ public class MainController implements Initializable {
         TextField t = new TextField(Integer.toString(val));
         t.setPrefHeight(40);
         t.setPrefWidth(40);
-        grid.add(t,i,j);
+        if(i==0){
+          topRow[j] = t;
+        }else{
+          int diff = j-i;
+          if(diff>-1){
+            t.textProperty().bind(topRow[diff].textProperty());
+          }
+        }
+        grid.add(t,j,i);
       }
-    }
-
-    for(int i =0;i<10;i++){
-      TextField top = grid.getC
     }
 
     parent.getChildren().add(grid);
