@@ -1,33 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 
 <AnchorPane fx:id="parent" prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: dfdfdf;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
-      <Circle fill="WHITE" layoutX="200.0" layoutY="200.0" radius="150.0" stroke="BLACK" strokeType="INSIDE" />
-      <Text layoutX="191.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="12">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Text>
-      <Text layoutX="332.0" layoutY="206.0" strokeType="OUTSIDE" strokeWidth="0.0" text="3">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Text>
-      <Text layoutX="196.0" layoutY="343.0" strokeType="OUTSIDE" strokeWidth="0.0" text="6">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Text>
-      <Text layoutX="57.0" layoutY="206.0" strokeType="OUTSIDE" strokeWidth="0.0" text="9">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Text>
-      <Text fx:id="time" layoutX="181.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="hhd" />
+      <GridPane fx:id="grid" gridLinesVisible="true" layoutX="75.0" layoutY="121.0" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+      </GridPane>
    </children>
 </AnchorPane>
