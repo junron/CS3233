@@ -6,15 +6,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 
-
 <AnchorPane fx:id="parent" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#dfdfdf" height="82.0" layoutX="519.0" layoutY="319.0" stroke="TRANSPARENT" strokeType="INSIDE" width="82.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#dfdfdf" height="82.0" layoutX="519.0" layoutY="319.0" stroke="TRANSPARENT" strokeType="INSIDE" width="82.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </Rectangle>
-      <Button fx:id="newMirror" focusTraversable="false" layoutX="22.0" layoutY="347.0" mnemonicParsing="false" text="Create mirror" />
-      <Label layoutX="546.0" layoutY="351.0" text="Trash" />
+      <Button fx:id="newMirror" focusTraversable="false" layoutX="21.0" layoutY="347.0" mnemonicParsing="false" text="Create mirror" AnchorPane.bottomAnchor="28.799999999999976" AnchorPane.leftAnchor="21.0" />
+      <Label layoutX="546.0" layoutY="351.0" text="Trash" AnchorPane.bottomAnchor="31.4" AnchorPane.rightAnchor="26.599999999999977" />
+      <Button fx:id="saveBtn" focusTraversable="false" layoutX="152.0" layoutY="347.0" mnemonicParsing="false" text="Save" AnchorPane.bottomAnchor="27.399999999999977" AnchorPane.leftAnchor="152.0" />
+      <Button fx:id="load" focusTraversable="false" layoutX="245.0" layoutY="347.0" mnemonicParsing="false" text="Load" AnchorPane.bottomAnchor="27.399999999999977" AnchorPane.leftAnchor="245.0" />
    </children>
 </AnchorPane>

@@ -13,6 +13,7 @@ import math.IntersectionSideData;
 import math.Vectors;
 import utils.Geometry;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -74,5 +75,32 @@ public class Mirror extends OpticalRectangle {
 
   public void setOnDestroy(Function<Event, Void> onDestroy) {
     this.onDestroy = onDestroy;
+  }
+
+  @Override
+  public byte[] serialize() {
+//    x,y,width,height,rotation
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES*4+Integer.BYTES);
+    byteBuffer.putDouble(this.getX());
+    byteBuffer.putDouble(this.getY());
+    byteBuffer.putDouble(this.getWidth());
+    byteBuffer.putDouble(this.getHeight());
+    byteBuffer.putInt((int)this.getRotate());
+    return byteBuffer.array();
+  }
+
+  @Override
+  public void deserialize(byte[] serialized) {
+    ByteBuffer buffer = ByteBuffer.wrap(serialized);
+    double x = buffer.getDouble(0);
+    double y = buffer.getDouble(Double.BYTES);
+    double width = buffer.getDouble(Double.BYTES*2);
+    double height = buffer.getDouble(Double.BYTES*3);
+    double angle = buffer.getInt(Double.BYTES*4);
+    this.setX(x);
+    this.setY(y);
+    this.setWidth(width);
+    this.setHeight(height);
+    this.setRotate(angle);
   }
 }

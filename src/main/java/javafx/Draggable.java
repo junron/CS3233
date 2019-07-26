@@ -27,7 +27,7 @@ public class Draggable {
       this.onDrag.handle(event);
     });
     shape.setOnMouseReleased(e->{
-      if(e.getSceneY()>(400-82) && e.getSceneX()>(600-82)){
+      if(e.getSceneY()>(parent.getHeight()-82) && e.getSceneX()>(parent.getWidth()-82)){
         parent.getChildren().remove(this.shape);
         this.onDestroy.handle(e);
       }
