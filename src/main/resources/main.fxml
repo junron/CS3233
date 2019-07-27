@@ -19,5 +19,6 @@
       <Button fx:id="load" focusTraversable="false" layoutX="463.0" layoutY="339.0" mnemonicParsing="false" text="Load" AnchorPane.bottomAnchor="36.0" AnchorPane.rightAnchor="95.0" />
       <Button fx:id="newRay" focusTraversable="false" layoutX="21.0" layoutY="360.0" mnemonicParsing="false" text="Create ray" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" />
       <Button fx:id="clearAll" focusTraversable="false" layoutX="455.0" layoutY="373.0" mnemonicParsing="false" text="Clear all" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="86.0" />
+      <Button fx:id="newWall" focusTraversable="false" layoutX="203.0" layoutY="360.0" mnemonicParsing="false" text="Create wall" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="203.0" />
    </children>
 </AnchorPane>

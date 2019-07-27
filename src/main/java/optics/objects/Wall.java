@@ -8,33 +8,22 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import math.Intersection;
 import math.IntersectionSideData;
-import math.Vectors;
-import utils.Geometry;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class Mirror extends OpticalRectangle {
+public class Wall extends OpticalRectangle{
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
-
-  public Mirror(double x, double y, double width, double height, Pane parent, double rotation) {
+  public Wall(double x, double y, double width, double height, Pane parent,double rotation) {
     super(x, y, width, height);
     this.setRotate(rotation);
-    this.setArcHeight(0);
-    this.setArcWidth(0);
-    this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
-    this.setStrokeWidth(1);
+    this.setFill(Color.rgb(180,179,176));
     this.setStroke(Color.BLACK);
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
     new Rotatable(this, this::triggerStateChange);
-  }
-
-  public void addOnStateChange(EventHandler<Event> handler) {
-    this.onStateChange.add(handler);
   }
 
   private void triggerStateChange(Event e) {
@@ -47,40 +36,37 @@ public class Mirror extends OpticalRectangle {
     this.onDestroy.apply(e);
   }
 
+  @Override
+  public Line transform(Line l, Point2D iPoint) {
+    l.setEndX(iPoint.getX());
+    l.setEndY(iPoint.getY());
+    return null;
+  }
+
+  @Override
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint) {
+    return null;
+  }
+
+  @Override
+  public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
+    return null;
+  }
+
+  @Override
+  public void addOnStateChange(EventHandler<Event> handler) {
+    this.onStateChange.add(handler);
+  }
+
+  @Override
   public void setOnDestroy(Function<Event, Void> onDestroy) {
     this.onDestroy = onDestroy;
   }
 
   @Override
-  public Line transform(Line l, Point2D iPoint) {
-    l.setEndX(iPoint.getX());
-    l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint);
-    double normalAngle = iData.normalVector.getAngle();
-    double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
-    return Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
-  }
-
-  @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint) {
-    return Intersection.getIntersectionSide(iPoint, this);
-  }
-
-  @Override
-  public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
-    double normalLength = 50;
-    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(normalLength / 2)));
-    l.getStrokeDashArray().addAll(4d);
-    return l;
-  }
-
-
-  @Override
   public byte[] serialize() {
-//    x,y,width,height,rotation
     ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 4 + Integer.BYTES);
-    byteBuffer.putChar('m');
+    byteBuffer.putChar('w');
     byteBuffer.putDouble(this.getX());
     byteBuffer.putDouble(this.getY());
     byteBuffer.putDouble(this.getWidth());

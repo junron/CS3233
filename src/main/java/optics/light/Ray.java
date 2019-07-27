@@ -120,6 +120,10 @@ public class Ray implements Lightsource, Serializable {
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
       Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin));
       Line transform = opticalObject.transform(this.currentLine, iPoint);
+      if(transform==null){
+//        End of line
+        break;
+      }
       Line normal = opticalObject.drawNormal(opticalObject.getIntersectionSideData(iPoint), iPoint);
       parent.getChildren().addAll(this.currentLine, normal);
       lines.add(this.currentLine);

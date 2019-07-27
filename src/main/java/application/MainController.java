@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import optics.light.Ray;
 import optics.objects.Mirror;
 import optics.objects.OpticalRectangle;
+import optics.objects.Wall;
 import serialize.FileOps;
 import utils.OpticsList;
 
@@ -21,13 +22,15 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
   private ArrayList<Ray> rays = new ArrayList<>();
-  private OpticsList<OpticalRectangle> mirrors = new OpticsList<>();
+  private OpticsList<OpticalRectangle> opticalRectangles = new OpticsList<>();
 
   @FXML
   private AnchorPane parent;
 
   @FXML
   private Button newMirror;
+  @FXML
+  private Button newWall;
   @FXML
   private Button newRay;
 
@@ -42,8 +45,12 @@ public class MainController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     newMirror.setOnMouseClicked(event -> {
-      Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2, 14, 200, parent, 0);
+      Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2, 20, 200, parent, 0);
       addObject(m);
+    });
+    newWall.setOnMouseClicked(event -> {
+      Wall w = new Wall(parent.getWidth()/2, parent.getHeight()/2, 20, 50, parent, 0);
+      addObject(w);
     });
     newRay.setOnMouseClicked(event -> {
       Line l = new Line(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
@@ -53,12 +60,12 @@ public class MainController implements Initializable {
         rays.remove(r);
         return null;
       });
-      r.addOnStateChange(e-> r.renderRays(mirrors));
-      r.renderRays(mirrors);
+      r.addOnStateChange(e-> r.renderRays(opticalRectangles));
+      r.renderRays(opticalRectangles);
     });
     saveBtn.setOnMouseClicked(event -> {
       ArrayList<Object> allObjects = new ArrayList<Object>();
-      allObjects.addAll(mirrors);
+      allObjects.addAll(opticalRectangles);
       allObjects.addAll(rays);
       try {
         FileOps.save(allObjects,(Stage)parent.getScene().getWindow());
@@ -84,6 +91,12 @@ public class MainController implements Initializable {
             addObject(m);
             break;
           }
+          case 'w':{
+            Wall w = new Wall(0,0,0,0,parent,0);
+            w.deserialize(object);
+            addObject(w);
+            break;
+          }
           case 'r':{
             Ray r = new Ray(new Line(),parent);
             r.deserialize(object);
@@ -92,8 +105,8 @@ public class MainController implements Initializable {
               rays.remove(r);
               return null;
             });
-            r.addOnStateChange(ev-> r.renderRays(mirrors));
-            r.renderRays(mirrors);
+            r.addOnStateChange(ev-> r.renderRays(opticalRectangles));
+            r.renderRays(opticalRectangles);
             break;
           }
         }
@@ -101,24 +114,24 @@ public class MainController implements Initializable {
     });
 
     clearAll.setOnMouseClicked(event->{
-      parent.getChildren().removeAll(mirrors);
-      mirrors.clear();
+      parent.getChildren().removeAll(opticalRectangles);
+      opticalRectangles.clear();
       for(Ray r: rays){
         r.destroy();
       }
       rays.clear();
       rerenderAll();
     });
-    parent.getChildren().addAll(mirrors);
+    parent.getChildren().addAll(opticalRectangles);
   }
 
-  private void addObject(Mirror object){
-    this.mirrors.add(object);
+  private void addObject(OpticalRectangle object){
+    this.opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
       rerenderAll();
     });
     object.setOnDestroy(e -> {
-      mirrors.remove(object);
+      opticalRectangles.remove(object);
       rerenderAll();
       return null;
     });
@@ -128,7 +141,7 @@ public class MainController implements Initializable {
 
   private void rerenderAll(){
     for (Ray r : rays){
-      r.renderRays(mirrors);
+      r.renderRays(opticalRectangles);
     }
   }
 }
