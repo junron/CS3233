@@ -3,10 +3,14 @@ package serialize;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 public class FileOps {
   public static boolean save(Collection objects, Stage stage) throws IOException {
@@ -33,18 +37,18 @@ public class FileOps {
     );
     File file = fileChooser.showOpenDialog(stage);
     if(file==null) return null;
-    BufferedReader br;
-    try {
-      br = new BufferedReader(new FileReader(file));
-    } catch (FileNotFoundException ex) {
-      ex.printStackTrace();
-      return null;
-    }
-    Stream lines = br.lines();
+    byte[] data = Files.readAllBytes(Paths.get(file.getPath()));
     ArrayList<byte[]> res = new ArrayList<>();
-    lines.forEach(line->{
-      res.add(line.toString().getBytes());
-    });
+    int lastVal = 0;
+    int currIndex=0;
+    for(byte b :data){
+      if(b==10){
+        byte[] elem = Arrays.copyOfRange(data,lastVal,currIndex+1);
+        res.add(elem);
+        lastVal = currIndex+1;
+      }
+      currIndex++;
+    }
     return res;
   }
 }

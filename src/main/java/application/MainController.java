@@ -14,6 +14,7 @@ import utils.OpticsList;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -34,6 +35,8 @@ public class MainController implements Initializable {
   private Button saveBtn;
   @FXML
   private Button load;
+  @FXML
+  private Button clearAll;
 
 
   @Override
@@ -48,15 +51,17 @@ public class MainController implements Initializable {
       rays.add(r);
       r.setOnDestroy(e->{
         rays.remove(r);
-        parent.getChildren().remove(l);
         return null;
       });
       r.addOnStateChange(e-> r.renderRays(mirrors));
       r.renderRays(mirrors);
     });
     saveBtn.setOnMouseClicked(event -> {
+      ArrayList<Object> allObjects = new ArrayList<Object>();
+      allObjects.addAll(mirrors);
+      allObjects.addAll(rays);
       try {
-        FileOps.save(mirrors,(Stage)parent.getScene().getWindow());
+        FileOps.save(allObjects,(Stage)parent.getScene().getWindow());
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -71,10 +76,38 @@ public class MainController implements Initializable {
       }
       if(data==null) return;
       for(byte[] object:data){
-        Mirror m = new Mirror(0,0,0,0,parent,0);
-        m.deserialize(object);
-        addObject(m);
+        ByteBuffer buffer = ByteBuffer.wrap(object);
+        switch (buffer.getChar()){
+          case 'm':{
+            Mirror m = new Mirror(0,0,0,0,parent,0);
+            m.deserialize(object);
+            addObject(m);
+            break;
+          }
+          case 'r':{
+            Ray r = new Ray(new Line(),parent);
+            r.deserialize(object);
+            rays.add(r);
+            r.setOnDestroy(ev->{
+              rays.remove(r);
+              return null;
+            });
+            r.addOnStateChange(ev-> r.renderRays(mirrors));
+            r.renderRays(mirrors);
+            break;
+          }
+        }
       }
+    });
+
+    clearAll.setOnMouseClicked(event->{
+      parent.getChildren().removeAll(mirrors);
+      mirrors.clear();
+      for(Ray r: rays){
+        r.destroy();
+      }
+      rays.clear();
+      rerenderAll();
     });
     parent.getChildren().addAll(mirrors);
   }
@@ -82,21 +115,21 @@ public class MainController implements Initializable {
   private void addObject(Mirror object){
     this.mirrors.add(object);
     object.addOnStateChange(event1 -> {
-      for (Ray r : rays){
-        r.renderRays(mirrors);
-      }
+      rerenderAll();
     });
     object.setOnDestroy(e -> {
       mirrors.remove(object);
-      for (Ray r : rays){
-        r.renderRays(mirrors);
-      }
+      rerenderAll();
       return null;
     });
+    rerenderAll();
+    parent.getChildren().add(object);
+  }
+
+  private void rerenderAll(){
     for (Ray r : rays){
       r.renderRays(mirrors);
     }
-    parent.getChildren().add(object);
   }
 }
 

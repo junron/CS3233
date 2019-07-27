@@ -16,13 +16,15 @@ import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
 import optics.objects.OpticalRectangle;
+import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class Ray implements Lightsource {
+public class Ray implements Lightsource, Serializable {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
   private ArrayList<Line> lines = new ArrayList<>();
@@ -32,6 +34,8 @@ public class Ray implements Lightsource {
   private Point2D originalOrigin;
   private Point2D endPoint;
   private Pane parent;
+  private double angle;
+  private Circle circle;
 
   public Ray(Line l, Pane parent) {
     this.currentLine = l;
@@ -39,26 +43,29 @@ public class Ray implements Lightsource {
     this.origin = new Point2D(l.getStartX(), l.getStartY());
     this.originalOrigin = new Point2D(l.getStartX(), l.getStartY());
     this.endPoint = new Point2D(l.getEndX(), l.getEndY());
-    double angle = Math.toDegrees(Math.atan2(l.getEndY() - l.getStartY(), l.getEndX() - l.getStartX()));
-//    Circle at the end of the ray
-    Circle circle = new Circle(origin.getX(), origin.getY(), 6, Color.BLUE);
+    this.angle = Math.toDegrees(Math.atan2(l.getEndY() - l.getStartY(), l.getEndX() - l.getStartX()));
+    this.parent = parent;
+    addCircle();
+  }
+
+  private void addCircle(){
+    //    Circle at the start of the ray
+    this.circle = new Circle(origin.getX(), origin.getY(), 6, Color.BLUE);
     circle.setFill(Color.rgb(255, 0, 0, 0.25));
     circle.setStroke(Color.BLACK);
     circle.setRotate(angle);
-//    Account for difference between getLayoutX and getX
-    Point2D difference = new Point2D(circle.getLayoutX(), circle.getLayoutY()).subtract(origin);
-    Rotatable r = new Rotatable(circle, e -> {
-      updateLine(circle.getRotate(), new Point2D(circle.getLayoutX(), circle.getLayoutY()).subtract(difference));
+    new Rotatable(circle, e -> {
+      this.angle = circle.getRotate();
+      updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
       triggerStateChange(e);
     });
-    Draggable d = new Draggable(circle, e -> {
-      updateLine(circle.getRotate(), new Point2D(circle.getLayoutX(), circle.getLayoutY()).subtract(difference));
+    new Draggable(circle, e -> {
+      this.angle = circle.getRotate();
+      updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
       triggerStateChange(e);
     }, this::triggerDestroy, parent);
-    this.parent = parent;
     this.parent.getChildren().add(circle);
   }
-
   public void addOnStateChange(EventHandler<Event> handler) {
     this.onStateChange.add(handler);
   }
@@ -67,6 +74,11 @@ public class Ray implements Lightsource {
     for (EventHandler<Event> handler : this.onStateChange) {
       handler.handle(e);
     }
+  }
+
+  public void destroy(){
+    parent.getChildren().remove(circle);
+    this.removeAllLines();
   }
 
   public void setOnDestroy(Function<Event, Void> onDestroy) {
@@ -131,5 +143,26 @@ public class Ray implements Lightsource {
   @Override
   public void removeAllLines() {
     this.parent.getChildren().removeAll(lines);
+  }
+
+  @Override
+  public byte[] serialize() {
+    //    x,y,rotation
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 2 + Integer.BYTES + Character.BYTES);
+    byteBuffer.putChar('r');
+    byteBuffer.putDouble(this.originalOrigin.getX());
+    byteBuffer.putDouble(this.originalOrigin.getY());
+    byteBuffer.putInt((int) this.angle);
+    return byteBuffer.array();
+  }
+
+  @Override
+  public void deserialize(byte[] serialized) {
+    ByteBuffer buffer = ByteBuffer.wrap(serialized);
+    double x = buffer.getDouble(Character.BYTES);
+    double y = buffer.getDouble(Character.BYTES + Double.BYTES);
+    this.angle = buffer.getInt(Character.BYTES + Double.BYTES * 2);
+    updateLine(angle, new Point2D(x, y));
+    addCircle();
   }
 }

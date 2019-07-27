@@ -2,6 +2,7 @@ package javafx;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
@@ -18,19 +19,35 @@ public class Rotatable {
 //        Move object instead of rotating it
         switch(eventCode){
           case("LEFT"):{
-            this.shape.setLayoutX(this.shape.getLayoutX()-1);
+            if(this.shape instanceof Circle){
+              ((Circle) this.shape).setCenterX(((Circle) this.shape).getCenterX()-1);
+            }else if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setX(((Rectangle) this.shape).getX()-1);
+            }
             break;
           }
           case("RIGHT"):{
-            this.shape.setLayoutX(this.shape.getLayoutX()+1);
+            if(this.shape instanceof Circle){
+              ((Circle) this.shape).setCenterX(((Circle) this.shape).getCenterX()+1);
+            }else if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setX(((Rectangle) this.shape).getX()+1);
+            }
             break;
           }
           case("UP"):{
-            this.shape.setLayoutY(this.shape.getLayoutY()-1);
+            if(this.shape instanceof Circle){
+              ((Circle) this.shape).setCenterY(((Circle) this.shape).getCenterY()-1);
+            }else if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setY(((Rectangle) this.shape).getY()-1);
+            }
             break;
           }
           case("DOWN"):{
-            this.shape.setLayoutY(this.shape.getLayoutY()+1);
+            if(this.shape instanceof Circle){
+              ((Circle) this.shape).setCenterY(((Circle) this.shape).getCenterY()+1);
+            }else if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setY(((Rectangle) this.shape).getY()+1);
+            }
             break;
           }
           default: return;
