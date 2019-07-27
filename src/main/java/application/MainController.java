@@ -2,19 +2,14 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import math.Vectors;
 import optics.light.Ray;
 import optics.objects.Mirror;
 import optics.objects.OpticalRectangle;
 import serialize.FileOps;
-import utils.FxDebug;
-import utils.Geometry;
 import utils.OpticsList;
 
 import java.io.IOException;
@@ -32,6 +27,8 @@ public class MainController implements Initializable {
 
   @FXML
   private Button newMirror;
+  @FXML
+  private Button newRay;
 
   @FXML
   private Button saveBtn;
@@ -41,15 +38,21 @@ public class MainController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    double angle = Math.toRadians(30);
-    Point2D origin = new Point2D(200, 100);
-    FxDebug.indicatePoint(origin, Color.GREEN, parent);
-    Line l = Geometry.createLineFromPoints(origin, Vectors.constructWithMagnitude(angle, 1000));
-    Ray r1 = new Ray(l, parent);
-    rays.add(r1);
     newMirror.setOnMouseClicked(event -> {
-      Mirror m = new Mirror(300, 100, 14, 200, parent, 0);
-      addObject(m,r1);
+      Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2, 14, 200, parent, 0);
+      addObject(m);
+    });
+    newRay.setOnMouseClicked(event -> {
+      Line l = new Line(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
+      Ray r = new Ray(l,parent);
+      rays.add(r);
+      r.setOnDestroy(e->{
+        rays.remove(r);
+        parent.getChildren().remove(l);
+        return null;
+      });
+      r.addOnStateChange(e-> r.renderRays(mirrors));
+      r.renderRays(mirrors);
     });
     saveBtn.setOnMouseClicked(event -> {
       try {
@@ -70,22 +73,29 @@ public class MainController implements Initializable {
       for(byte[] object:data){
         Mirror m = new Mirror(0,0,0,0,parent,0);
         m.deserialize(object);
-        addObject(m,r1);
+        addObject(m);
       }
     });
-    r1.renderRays(mirrors);
     parent.getChildren().addAll(mirrors);
   }
 
-  private void addObject(Mirror object,Ray r){
+  private void addObject(Mirror object){
     this.mirrors.add(object);
-    object.addOnStateChange(event1 -> r.renderRays(mirrors));
+    object.addOnStateChange(event1 -> {
+      for (Ray r : rays){
+        r.renderRays(mirrors);
+      }
+    });
     object.setOnDestroy(e -> {
       mirrors.remove(object);
-      r.renderRays(mirrors);
+      for (Ray r : rays){
+        r.renderRays(mirrors);
+      }
       return null;
     });
-    r.renderRays(mirrors);
+    for (Ray r : rays){
+      r.renderRays(mirrors);
+    }
     parent.getChildren().add(object);
   }
 }

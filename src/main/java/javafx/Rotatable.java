@@ -3,12 +3,13 @@ package javafx;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 
 public class Rotatable {
-  private Rectangle shape;
+  private Shape shape;
 
-  public Rotatable(Rectangle shape, EventHandler<KeyEvent> onRotate) {
+  public Rotatable(Shape shape, EventHandler<KeyEvent> onRotate) {
     this.shape = shape;
     this.shape.setOnMouseClicked(event -> this.shape.requestFocus());
     this.shape.setOnKeyPressed(event -> {
@@ -17,19 +18,19 @@ public class Rotatable {
 //        Move object instead of rotating it
         switch(eventCode){
           case("LEFT"):{
-            this.shape.setX(this.shape.getX()-1);
+            this.shape.setLayoutX(this.shape.getLayoutX()-1);
             break;
           }
           case("RIGHT"):{
-            this.shape.setX(this.shape.getX()+1);
+            this.shape.setLayoutX(this.shape.getLayoutX()+1);
             break;
           }
           case("UP"):{
-            this.shape.setY(this.shape.getY()-1);
+            this.shape.setLayoutY(this.shape.getLayoutY()-1);
             break;
           }
           case("DOWN"):{
-            this.shape.setY(this.shape.getY()+1);
+            this.shape.setLayoutY(this.shape.getLayoutY()+1);
             break;
           }
           default: return;
@@ -41,19 +42,27 @@ public class Rotatable {
 //        Move object instead of rotating it
         switch(eventCode){
           case("LEFT"):{
-            this.shape.setWidth(this.shape.getWidth()-1);
+            if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setWidth(((Rectangle) this.shape).getWidth()-1);
+            }
             break;
           }
           case("RIGHT"):{
-            this.shape.setWidth(this.shape.getWidth()+1);
+            if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setWidth(((Rectangle) this.shape).getWidth()+1);
+            }
             break;
           }
           case("UP"):{
-            this.shape.setHeight(this.shape.getHeight()+1);
+            if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setHeight(((Rectangle) this.shape).getHeight()+1);
+            }
             break;
           }
           case("DOWN"):{
-            this.shape.setHeight(this.shape.getHeight()-1);
+            if(this.shape instanceof Rectangle){
+              ((Rectangle) this.shape).setHeight(((Rectangle) this.shape).getHeight()-1);
+            }
             break;
           }
           default: return;

@@ -49,6 +49,10 @@ public class Mirror extends OpticalRectangle {
     this.onDestroy.apply(e);
   }
 
+  public void setOnDestroy(Function<Event, Void> onDestroy) {
+    this.onDestroy = onDestroy;
+  }
+
   @Override
   public Line transform(Line l, Point2D iPoint) {
     l.setEndX(iPoint.getX());
@@ -57,7 +61,7 @@ public class Mirror extends OpticalRectangle {
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
     return Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 1000)));
+            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
   }
 
   @Override
@@ -73,19 +77,16 @@ public class Mirror extends OpticalRectangle {
     return l;
   }
 
-  public void setOnDestroy(Function<Event, Void> onDestroy) {
-    this.onDestroy = onDestroy;
-  }
 
   @Override
   public byte[] serialize() {
 //    x,y,width,height,rotation
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES*4+Integer.BYTES);
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 4 + Integer.BYTES);
     byteBuffer.putDouble(this.getX());
     byteBuffer.putDouble(this.getY());
     byteBuffer.putDouble(this.getWidth());
     byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putInt((int)this.getRotate());
+    byteBuffer.putInt((int) this.getRotate());
     return byteBuffer.array();
   }
 
@@ -94,9 +95,9 @@ public class Mirror extends OpticalRectangle {
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
     double x = buffer.getDouble(0);
     double y = buffer.getDouble(Double.BYTES);
-    double width = buffer.getDouble(Double.BYTES*2);
-    double height = buffer.getDouble(Double.BYTES*3);
-    double angle = buffer.getInt(Double.BYTES*4);
+    double width = buffer.getDouble(Double.BYTES * 2);
+    double height = buffer.getDouble(Double.BYTES * 3);
+    double angle = buffer.getInt(Double.BYTES * 4);
     this.setX(x);
     this.setY(y);
     this.setWidth(width);
