@@ -27,6 +27,7 @@ import java.util.function.Function;
 public class Ray implements Lightsource, Serializable {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
+  private Function<Boolean, Void> onFocusStateChanged;
   private ArrayList<Line> lines = new ArrayList<>();
   private Line originalLine;
   private Line currentLine;
@@ -36,6 +37,7 @@ public class Ray implements Lightsource, Serializable {
   private Pane parent;
   private double angle;
   private Circle circle;
+  private Color color;
 
   public Ray(Line l, Pane parent) {
     this.currentLine = l;
@@ -45,15 +47,40 @@ public class Ray implements Lightsource, Serializable {
     this.endPoint = new Point2D(l.getEndX(), l.getEndY());
     this.angle = Math.toDegrees(Math.atan2(l.getEndY() - l.getStartY(), l.getEndX() - l.getStartX()));
     this.parent = parent;
+    this.color = Color.BLACK;
     addCircle();
   }
 
-  private void addCircle(){
+  public double getAngle() {
+    return angle;
+  }
+
+  public void setAngle(double angle) {
+    updateLine(angle, this.originalOrigin);
+    circle.setRotate(angle);
+    this.angle = angle;
+  }
+
+  public Color getColor() {
+    return color;
+  }
+
+  public void setColor(Color color) {
+    this.color = color;
+  }
+
+
+  public void setOnFocusStateChanged(Function<Boolean, Void> onFocusStateChanged) {
+    this.onFocusStateChanged = onFocusStateChanged;
+  }
+
+  private void addCircle() {
     //    Circle at the start of the ray
     this.circle = new Circle(origin.getX(), origin.getY(), 6, Color.BLUE);
     circle.setFill(Color.rgb(255, 0, 0, 0.25));
     circle.setStroke(Color.BLACK);
     circle.setRotate(angle);
+    circle.focusedProperty().addListener((o, ol, state) -> onFocusStateChanged.apply(state));
     new Rotatable(circle, e -> {
       this.angle = circle.getRotate();
       updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
@@ -66,6 +93,7 @@ public class Ray implements Lightsource, Serializable {
     }, this::triggerDestroy, parent);
     this.parent.getChildren().add(circle);
   }
+
   public void addOnStateChange(EventHandler<Event> handler) {
     this.onStateChange.add(handler);
   }
@@ -76,7 +104,7 @@ public class Ray implements Lightsource, Serializable {
     }
   }
 
-  public void destroy(){
+  public void destroy() {
     parent.getChildren().remove(circle);
     this.removeAllLines();
   }
@@ -117,14 +145,16 @@ public class Ray implements Lightsource, Serializable {
         alert.showAndWait();
         break;
       }
+      this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
       Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin));
       Line transform = opticalObject.transform(this.currentLine, iPoint);
-      if(transform==null){
+      if (transform == null) {
 //        End of line
         break;
       }
       Line normal = opticalObject.drawNormal(opticalObject.getIntersectionSideData(iPoint), iPoint);
+
       parent.getChildren().addAll(this.currentLine, normal);
       lines.add(this.currentLine);
       lines.add(normal);
@@ -133,6 +163,7 @@ public class Ray implements Lightsource, Serializable {
       opticalObject = Geometry.getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
       refNum++;
     }
+    this.currentLine.setStroke(this.color);
     parent.getChildren().add(this.currentLine);
     lines.add(this.currentLine);
   }
@@ -147,16 +178,20 @@ public class Ray implements Lightsource, Serializable {
   @Override
   public void removeAllLines() {
     this.parent.getChildren().removeAll(lines);
+    lines.clear();
   }
 
   @Override
   public byte[] serialize() {
-    //    x,y,rotation
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 2 + Integer.BYTES + Character.BYTES);
+    //    x,y,rotation,r,g,b
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 2 + Integer.BYTES + Character.BYTES + Double.BYTES * 3);
     byteBuffer.putChar('r');
     byteBuffer.putDouble(this.originalOrigin.getX());
     byteBuffer.putDouble(this.originalOrigin.getY());
     byteBuffer.putInt((int) this.angle);
+    byteBuffer.putDouble(this.color.getRed());
+    byteBuffer.putDouble(this.color.getGreen());
+    byteBuffer.putDouble(this.color.getBlue());
     return byteBuffer.array();
   }
 
@@ -166,7 +201,11 @@ public class Ray implements Lightsource, Serializable {
     double x = buffer.getDouble(Character.BYTES);
     double y = buffer.getDouble(Character.BYTES + Double.BYTES);
     this.angle = buffer.getInt(Character.BYTES + Double.BYTES * 2);
+    double red = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 2);
+    double green = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 3);
+    double blue = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 4);
     updateLine(angle, new Point2D(x, y));
     addCircle();
+    this.setColor(Color.rgb((int)(red*255),(int)(green*255),(int)(blue*255)));
   }
 }
