@@ -26,9 +26,6 @@ public class FxDebug{
     parent.getChildren().add(l);
   }
 
-  public static void indicateLine(Point2D point1,Point2D point2, Pane parent){
-    indicateLine(point1,point2,parent);
-  }
   public static void indicateLine(Line l,Paint color, Pane parent){
     l.setStroke(color);
     parent.getChildren().add(l);

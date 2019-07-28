@@ -14,7 +14,6 @@ import static application.Storage.rays;
 
 public class RayTabController{
 
-  private Pane parent;
   @FXML
   private Button newRay;
   @FXML
@@ -27,7 +26,6 @@ public class RayTabController{
   private Color expectedColor;
 
   public void initialize(Pane parent) {
-    this.parent = parent;
     newRay.setOnMouseClicked(event -> {
       Line l = new Line(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
       Ray r = new Ray(l,parent);

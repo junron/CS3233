@@ -9,7 +9,7 @@ import serialize.Serializable;
 
 import java.util.function.Function;
 
-public interface Interactable extends Serializable {
+public interface Interactive extends Serializable {
   Line transform(Line l, Point2D iPoint);
   IntersectionSideData getIntersectionSideData(Point2D iPoint);
   Line drawNormal(IntersectionSideData iData, Point2D iPoint);

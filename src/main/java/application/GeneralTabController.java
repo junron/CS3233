@@ -79,7 +79,7 @@ public class GeneralTabController {
         r.destroy();
       }
       rays.clear();
-      rerenderAll();
+      reRenderAll();
     });
   }
 }

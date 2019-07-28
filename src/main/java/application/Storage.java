@@ -13,17 +13,17 @@ public class Storage {
   public static void addObject(OpticalRectangle object, Pane parent){
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
-      rerenderAll();
+      reRenderAll();
     });
     object.setOnDestroy(e -> {
       opticalRectangles.remove(object);
-      rerenderAll();
+      reRenderAll();
       return null;
     });
-    rerenderAll();
+    reRenderAll();
     parent.getChildren().add(object);
   }
-  public static void rerenderAll(){
+  public static void reRenderAll(){
     for (Ray r : rays){
       r.renderRays(opticalRectangles);
     }

@@ -16,11 +16,11 @@ public class Geometry {
   public static Circle createCircleFromPoint(Point2D p1,double radius){
     return new Circle(p1.getX(),p1.getY(),radius);
   }
-  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactables){
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects){
     Vectors origin = new Vectors(l.getStartX(),l.getStartY());
     OpticalRectangle result = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
-    for(OpticalRectangle i: interactables){
+    for(OpticalRectangle i: interactiveObjects){
       Path intersection = (Path) Shape.intersect(l,(Shape)i);
       if(Intersection.hasIntersectionPoint(intersection)){
         Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin);

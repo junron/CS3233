@@ -89,7 +89,7 @@ public class Rotatable {
       }
       double rotate = this.shape.getRotate();
       if(eventCode.equals("LEFT")){
-//        Rotate anticlock
+//        Rotate anticlockwise
         this.shape.setRotate(rotate-(event.isControlDown()?45:1));
       }else if(eventCode.equals("RIGHT")){
         this.shape.setRotate(rotate+(event.isControlDown()?45:1));

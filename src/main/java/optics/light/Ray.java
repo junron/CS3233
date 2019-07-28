@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class Ray implements Lightsource, Serializable {
+public class Ray implements LightSource, Serializable {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
   private Function<Boolean, Void> onFocusStateChanged;
@@ -154,7 +154,6 @@ public class Ray implements Lightsource, Serializable {
         break;
       }
       Line normal = opticalObject.drawNormal(opticalObject.getIntersectionSideData(iPoint), iPoint);
-
       parent.getChildren().addAll(this.currentLine, normal);
       lines.add(this.currentLine);
       lines.add(normal);

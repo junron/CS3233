@@ -13,13 +13,11 @@ public class Draggable {
   private Shape shape;
   private EventHandler<Event> onDrag;
   private EventHandler<Event> onDestroy;
-  private Pane parent;
 
   public Draggable(Shape s, EventHandler<Event> onDrag, EventHandler<Event> onDestroy, Pane parent) {
     this.shape = s;
     this.onDrag = onDrag;
     this.onDestroy = onDestroy;
-    this.parent = parent;
     if (this.shape instanceof Rectangle) {
       this.shape.setOnMousePressed(event -> movementDelta = new Point2D(((Rectangle) this.shape).getX() - event
               .getSceneX(),
