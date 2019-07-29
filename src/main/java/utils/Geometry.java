@@ -33,4 +33,9 @@ public class Geometry {
     }
     return result;
   }
+  public static String fixAngle(double angle){
+    angle %=360;
+    if(angle<0) angle+=360;
+    return String.valueOf(angle);
+  }
 }

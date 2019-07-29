@@ -21,7 +21,7 @@ public class GeneralTabController {
   @FXML
   private Button save,load,clearAll;
 
-  public void initialize(Pane parent) {
+  public void initialize(Pane parent,OpticsTabController optics) {
     save.setOnMouseClicked(event -> {
       ArrayList<Object> allObjects = new ArrayList<Object>();
       allObjects.addAll(opticalRectangles);
@@ -47,13 +47,13 @@ public class GeneralTabController {
           case 'm':{
             Mirror m = new Mirror(0,0,0,0,parent,0);
             m.deserialize(object);
-            addObject(m,parent);
+            optics.addObject(m,parent);
             break;
           }
           case 'w':{
             Wall w = new Wall(0,0,0,0,parent,0);
             w.deserialize(object);
-            addObject(w,parent);
+            optics.addObject(w,parent);
             break;
           }
           case 'r':{

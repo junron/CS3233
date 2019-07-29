@@ -15,14 +15,7 @@
             <fx:include fx:id="rayTab" source="raytab.fxml"/>
         </Tab>
         <Tab text="Optical objects">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                <Button fx:id="newMirror" focusTraversable="false" layoutX="20.0" layoutY="37.0"
-                        mnemonicParsing="false" text="Create mirror" AnchorPane.bottomAnchor="62.0"
-                        AnchorPane.leftAnchor="20.0"/>
-                <Button fx:id="newWall" focusTraversable="false" layoutX="20.0" layoutY="73.0"
-                        mnemonicParsing="false" text="Create wall" AnchorPane.bottomAnchor="26.0"
-                        AnchorPane.leftAnchor="20.0"/>
-            </AnchorPane>
+            <fx:include fx:id="opticsTab" source="opticstab.fxml"/>
         </Tab>
     </TabPane>
 </AnchorPane>
