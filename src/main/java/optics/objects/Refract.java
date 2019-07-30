@@ -18,12 +18,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class Mirror extends OpticalRectangle {
+public class Refract extends OpticalRectangle {
+  private double refractiveIndex;
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
 
-  public Mirror(double x, double y, double width, double height, Pane parent, double rotation) {
+  public Refract(double x, double y, double width, double height, Pane parent, double rotation, double refractiveIndex) {
     super(x, y, width, height);
+    this.refractiveIndex = refractiveIndex;
     this.setRotate(rotation);
     this.setArcHeight(0);
     this.setArcWidth(0);
@@ -60,8 +62,25 @@ public class Mirror extends OpticalRectangle {
     IntersectionSideData iData = getIntersectionSideData(iPoint);
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
+    double refAngle = Math.asin(Math.sin(intersectionAngle) / this.refractiveIndex);
+    if (Double.isNaN(refAngle)) {
+      r.setCurrentRefractiveIndex(this.refractiveIndex);
+//      Total internal reflection
+      return Geometry.createLineFromPoints(iPoint, iPoint
+              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+    }
+    if (this.refractiveIndex == r.getCurrentRefractiveIndex()) {
+//      System.out.println(r.getCurrentRefractiveIndex());
+      r.setCurrentRefractiveIndex(1);
+      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.toRadians(180)));
+      System.out.println(Math.toDegrees(refAngle));
+    } else {
+      r.setCurrentRefractiveIndex(this.refractiveIndex);
+    }
+    Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
+    System.out.println("Res"+Math.toDegrees(vect.getAngle()));
     return Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+            .add(vect));
   }
 
   @Override
@@ -80,14 +99,15 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public byte[] serialize() {
-//    x,y,width,height,rotation
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 4 + Integer.BYTES);
-    byteBuffer.putChar('m');
+//    x,y,width,height,rotation,ref index
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5 + Integer.BYTES);
+    byteBuffer.putChar('e');
     byteBuffer.putDouble(this.getX());
     byteBuffer.putDouble(this.getY());
     byteBuffer.putDouble(this.getWidth());
     byteBuffer.putDouble(this.getHeight());
     byteBuffer.putInt((int) this.getRotate());
+    byteBuffer.putDouble(this.refractiveIndex);
     return byteBuffer.array();
   }
 
@@ -99,10 +119,12 @@ public class Mirror extends OpticalRectangle {
     double width = buffer.getDouble(Character.BYTES + Double.BYTES * 2);
     double height = buffer.getDouble(Character.BYTES + Double.BYTES * 3);
     double angle = buffer.getInt(Character.BYTES + Double.BYTES * 4);
+    double refractiveIndex = buffer.getDouble(Character.BYTES + Double.BYTES * 4 + Integer.BYTES);
     this.setX(x);
     this.setY(y);
     this.setWidth(width);
     this.setHeight(height);
     this.setRotate(angle);
+    this.refractiveIndex = refractiveIndex;
   }
 }

@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import optics.objects.Mirror;
 import optics.objects.OpticalRectangle;
+import optics.objects.Refract;
 import optics.objects.Wall;
 
 import static application.Storage.*;
@@ -18,6 +19,8 @@ public class OpticsTabController{
   @FXML
   private Button newMirror;
   @FXML
+  private Button newRefractor;
+  @FXML
   private TextField rotation,width,height;
 
   private OpticalRectangle focusedObject;
@@ -25,14 +28,19 @@ public class OpticsTabController{
 
   void initialize(Pane parent) {
     newMirror.setOnMouseClicked(event -> {
-      Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2, 20, 200, parent, 0);
+      Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2-100, 20, 200, parent, 0);
       addObject(m,parent);
       setEventListeners(m);
     });
     newWall.setOnMouseClicked(event -> {
-      Wall w = new Wall(parent.getWidth()/2, parent.getHeight()/2, 20, 50, parent, 0);
+      Wall w = new Wall(parent.getWidth()/2, parent.getHeight()/2-25, 20, 50, parent, 0);
       addObject(w,parent);
       setEventListeners(w);
+    });
+    newRefractor.setOnMouseClicked(event -> {
+      Refract re = new Refract(parent.getWidth()/2, parent.getHeight()/2-50, 20, 100, parent, 0,1.33);
+      addObject(re,parent);
+      setEventListeners(re);
     });
 
     rotation.textProperty().addListener((o,ol,val)->{
@@ -87,6 +95,7 @@ public class OpticsTabController{
         height.setText(String.valueOf(obj.getHeight()));
       }
     });
+    obj.requestFocus();
   }
   void addObject(OpticalRectangle object, Pane parent){
     opticalRectangles.add(object);

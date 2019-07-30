@@ -16,6 +16,7 @@ import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
 import optics.objects.OpticalRectangle;
+import optics.objects.Refract;
 import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
@@ -38,6 +39,7 @@ public class Ray implements LightSource, Serializable {
   private double angle;
   private Circle circle;
   private Color color;
+  private double currentRefractiveIndex = 1;
 
   public Ray(Line l, Pane parent) {
     this.currentLine = l;
@@ -59,6 +61,18 @@ public class Ray implements LightSource, Serializable {
     updateLine(angle, this.originalOrigin);
     circle.setRotate(angle);
     this.angle = angle;
+  }
+
+  public Line getCurrentLine() {
+    return currentLine;
+  }
+
+  public double getCurrentRefractiveIndex() {
+    return currentRefractiveIndex;
+  }
+
+  public void setCurrentRefractiveIndex(double currentRefractiveIndex) {
+    this.currentRefractiveIndex = currentRefractiveIndex;
   }
 
   public Color getColor() {
@@ -131,10 +145,15 @@ public class Ray implements LightSource, Serializable {
     this.originalLine = l;
   }
 
+  public void requestFocus() {
+    this.circle.requestFocus();
+  }
+
   @Override
-  public void renderRays(OpticsList objects) {
+  public void renderRays(OpticsList<OpticalRectangle> objects) {
     this.resetCurrentLine();
     this.removeAllLines();
+    System.out.println(this.getCurrentRefractiveIndex());
     OpticalRectangle opticalObject = Geometry.getNearestIntersection(this.currentLine, objects);
     int refNum = 0;
     while (opticalObject != null) {
@@ -147,8 +166,9 @@ public class Ray implements LightSource, Serializable {
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
-      Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin));
-      Line transform = opticalObject.transform(this.currentLine, iPoint);
+      Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
+              .hasIntersectionPoint(this.origin, opticalObject));
+      Line transform = opticalObject.transform(this, iPoint);
       if (transform == null) {
 //        End of line
         break;
@@ -159,7 +179,9 @@ public class Ray implements LightSource, Serializable {
       lines.add(normal);
       this.currentLine = transform;
       this.origin = iPoint;
-      opticalObject = Geometry.getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
+      opticalObject = opticalObject instanceof Refract ?
+              Geometry.getNearestIntersection(this.currentLine, objects, opticalObject)
+              : Geometry.getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
       refNum++;
     }
     this.currentLine.setStroke(this.color);
@@ -205,6 +227,6 @@ public class Ray implements LightSource, Serializable {
     double blue = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 4);
     updateLine(angle, new Point2D(x, y));
     addCircle();
-    this.setColor(Color.rgb((int)(red*255),(int)(green*255),(int)(blue*255)));
+    this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
   }
 }

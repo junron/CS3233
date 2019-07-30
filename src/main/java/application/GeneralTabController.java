@@ -7,6 +7,7 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import optics.light.Ray;
 import optics.objects.Mirror;
+import optics.objects.Refract;
 import optics.objects.Wall;
 import serialize.FileOps;
 
@@ -54,6 +55,12 @@ public class GeneralTabController {
             Wall w = new Wall(0,0,0,0,parent,0);
             w.deserialize(object);
             optics.addObject(w,parent);
+            break;
+          }
+          case 'e':{
+            Refract re = new Refract(0,0,0,0,parent,0,1);
+            re.deserialize(object);
+            optics.addObject(re,parent);
             break;
           }
           case 'r':{

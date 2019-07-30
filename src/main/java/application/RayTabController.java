@@ -51,6 +51,8 @@ public class RayTabController{
       this.expectedText = fixAngle(r.getAngle());
       rayRotation.setText(expectedText);
       rayColor.valueProperty().setValue(Color.BLACK);
+      r.requestFocus();
+      this.focusedRay = r;
       this.expectedColor = Color.BLACK;
     });
     rayRotation.textProperty().addListener((o,ol,val)->{

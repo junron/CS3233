@@ -16,14 +16,15 @@ public class Geometry {
   public static Circle createCircleFromPoint(Point2D p1,double radius){
     return new Circle(p1.getX(),p1.getY(),radius);
   }
-  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects){
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects,OpticalRectangle currentObj){
     Vectors origin = new Vectors(l.getStartX(),l.getStartY());
     OpticalRectangle result = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
     for(OpticalRectangle i: interactiveObjects){
-      Path intersection = (Path) Shape.intersect(l,(Shape)i);
+      Path intersection = (Path) Shape.intersect(l, i);
       if(Intersection.hasIntersectionPoint(intersection)){
-        Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin);
+        Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin,i!=currentObj);
+        if(iPoint.equals(origin)) continue;
         double distance = Vectors.distanceBetween(iPoint,origin);
         if(distance<bestIntersectionDistance){
           bestIntersectionDistance = distance;
@@ -32,6 +33,9 @@ public class Geometry {
       }
     }
     return result;
+  }
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects){
+    return getNearestIntersection(l,interactiveObjects,null);
   }
   public static String fixAngle(double angle){
     angle %=360;

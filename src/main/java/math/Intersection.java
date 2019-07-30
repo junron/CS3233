@@ -10,12 +10,20 @@ import java.util.ArrayList;
 
 public class Intersection {
 
-  public static Point2D getIntersectionPoint(Path intersection, Vectors origin) {
+  public static Point2D getIntersectionPoint(Path intersection, Vectors origin,boolean nearest) {
     ArrayList<Point2D> iPoints = convertToPoints(intersection.getElements());
     //Inline extension of comparator iface
-    iPoints.sort((o1, o2) ->
-            (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
+    if(nearest){
+      iPoints.sort((o1, o2) ->
+              (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
+    }else{
+      iPoints.sort((o1, o2) ->
+              (int) (Vectors.distanceBetween(o2, origin) - Vectors.distanceBetween(o1, origin)));
+    }
     return iPoints.get(0);
+  }
+  public static Point2D getIntersectionPoint(Path intersection, Vectors origin){
+    return getIntersectionPoint(intersection,origin,true);
   }
 
   public static double getIntersectingAngle(IntersectionSideData iData, Line line) {

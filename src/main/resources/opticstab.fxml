@@ -6,12 +6,13 @@
 <?import javafx.scene.text.Text?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.OpticsTabController">
-    <Button fx:id="newMirror" focusTraversable="false" layoutX="20.0" layoutY="37.0" mnemonicParsing="false" text="Create mirror" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="20.0" />
-    <Button fx:id="newWall" focusTraversable="false" layoutX="20.0" layoutY="73.0" mnemonicParsing="false" text="Create wall" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="20.0" />
+    <Button fx:id="newMirror" focusTraversable="false" layoutX="20.0" layoutY="70.0" mnemonicParsing="false" text="Create mirror" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="20.0" />
+    <Button fx:id="newWall" focusTraversable="false" layoutX="20.0" layoutY="134.0" mnemonicParsing="false" text="Create wall" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="20.0" />
    <TextField fx:id="rotation" focusTraversable="false" layoutX="228.0" layoutY="72.0" prefHeight="25.0" prefWidth="75.0" AnchorPane.bottomAnchor="83.0" AnchorPane.leftAnchor="228.0" />
    <Text layoutX="167.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rotation (°)" AnchorPane.bottomAnchor="88.98828125" AnchorPane.leftAnchor="167.0" />
    <TextField fx:id="height" focusTraversable="false" layoutX="228.0" layoutY="103.0" prefHeight="25.0" prefWidth="75.0" AnchorPane.bottomAnchor="52.0" AnchorPane.leftAnchor="228.0" />
    <Text layoutX="167.0" layoutY="121.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Height" AnchorPane.bottomAnchor="55.98828125" AnchorPane.leftAnchor="167.0" />
    <TextField fx:id="width" focusTraversable="false" layoutX="228.0" layoutY="140.0" prefHeight="25.0" prefWidth="75.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="228.0" />
    <Text layoutX="168.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Width" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="168.0" />
+   <Button fx:id="newRefractor" focusTraversable="false" layoutX="20.0" layoutY="103.0" mnemonicParsing="false" text="Create refractor" AnchorPane.bottomAnchor="52.0" AnchorPane.leftAnchor="20.0" />
 </AnchorPane>
