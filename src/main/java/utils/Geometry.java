@@ -8,6 +8,7 @@ import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
 import optics.objects.OpticalRectangle;
+import optics.objects.Refract;
 
 public class Geometry {
   public static Line createLineFromPoints(Point2D p1, Point2D p2) {
@@ -21,9 +22,13 @@ public class Geometry {
     OpticalRectangle result = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
     for(OpticalRectangle i: interactiveObjects){
+      boolean isCurrObj = i.equals(currentObj);
+      System.out.println(isCurrObj);
+//      boolean useNearest =
+      if(isCurrObj && !(i instanceof Refract)) continue;
       Path intersection = (Path) Shape.intersect(l, i);
       if(Intersection.hasIntersectionPoint(intersection)){
-        Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin,i!=currentObj);
+        Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin,true);//!isCurrObj && !(i instanceof Refract));
         if(iPoint.equals(origin)) continue;
         double distance = Vectors.distanceBetween(iPoint,origin);
         if(distance<bestIntersectionDistance){
