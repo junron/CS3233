@@ -97,7 +97,7 @@ public class OpticsTabController{
     });
     obj.requestFocus();
   }
-  void addObject(OpticalRectangle object, Pane parent){
+  public void addObject(OpticalRectangle object, Pane parent){
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
       this.focusedObject = object;

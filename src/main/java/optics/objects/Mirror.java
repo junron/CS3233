@@ -30,6 +30,7 @@ public class Mirror extends OpticalRectangle {
     this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
     this.setStrokeWidth(1);
     this.setStroke(Color.BLACK);
+    this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
     new Rotatable(this, this::triggerStateChange);
   }
@@ -104,5 +105,10 @@ public class Mirror extends OpticalRectangle {
     this.setWidth(width);
     this.setHeight(height);
     this.setRotate(angle);
+  }
+
+  @Override
+  public OpticalRectangle clone(boolean shiftPositions) {
+    return new Mirror(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),parent,this.getRotate());
   }
 }

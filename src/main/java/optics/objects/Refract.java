@@ -32,6 +32,7 @@ public class Refract extends OpticalRectangle {
     this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
     this.setStrokeWidth(1);
     this.setStroke(Color.BLACK);
+    this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
     new Rotatable(this, this::triggerStateChange);
   }
@@ -73,7 +74,7 @@ public class Refract extends OpticalRectangle {
 //      System.out.println(r.getCurrentRefractiveIndex());
       r.setCurrentRefractiveIndex(1);
       refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.toRadians(180)));
-      System.out.println(Math.toDegrees(refAngle));
+//      System.out.println(Math.toDegrees(refAngle));
     } else {
       r.setCurrentRefractiveIndex(this.refractiveIndex);
     }
@@ -126,5 +127,10 @@ public class Refract extends OpticalRectangle {
     this.setHeight(height);
     this.setRotate(angle);
     this.refractiveIndex = refractiveIndex;
+  }
+
+  @Override
+  public OpticalRectangle clone(boolean shiftPositions) {
+    return new Refract(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),this.parent,this.getRotate(),this.refractiveIndex);
   }
 }

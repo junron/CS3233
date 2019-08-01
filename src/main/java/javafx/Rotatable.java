@@ -1,10 +1,12 @@
 package javafx;
 
+import application.Storage;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import optics.objects.OpticalRectangle;
 
 
 public class Rotatable {
@@ -15,6 +17,14 @@ public class Rotatable {
     this.shape.setOnMouseClicked(event -> this.shape.requestFocus());
     this.shape.setOnKeyPressed(event -> {
       String eventCode = event.getCode().toString();
+      if(event.isControlDown()){
+        if(eventCode.equals("D")){
+          if(shape instanceof OpticalRectangle){
+            OpticalRectangle newRectangle = ((OpticalRectangle) shape).clone(true);
+            Storage.opticsTabController.addObject(newRectangle, ((OpticalRectangle) shape).getRealParent());
+          }
+        }
+      }
       if(event.isShiftDown()){
 //        Move object instead of rotating it
         switch(eventCode){

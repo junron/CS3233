@@ -6,7 +6,7 @@ import utils.OpticsList;
 
 import java.util.ArrayList;
 
-class Storage {
+public class Storage {
   static final ArrayList<Ray> rays = new ArrayList<>();
   static final OpticsList<OpticalRectangle> opticalRectangles = new OpticsList<>();
   static void reRenderAll(){
@@ -14,4 +14,5 @@ class Storage {
       r.renderRays(opticalRectangles);
     }
   }
+  public static OpticsTabController opticsTabController;
 }

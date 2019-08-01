@@ -18,11 +18,13 @@ import java.util.function.Function;
 public class Wall extends OpticalRectangle{
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
+
   public Wall(double x, double y, double width, double height, Pane parent,double rotation) {
     super(x, y, width, height);
     this.setRotate(rotation);
     this.setFill(Color.rgb(180,179,176));
     this.setStroke(Color.BLACK);
+    this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
     new Rotatable(this, this::triggerStateChange);
   }
@@ -90,5 +92,9 @@ public class Wall extends OpticalRectangle{
     this.setWidth(width);
     this.setHeight(height);
     this.setRotate(angle);
+  }
+  @Override
+  public OpticalRectangle clone(boolean shiftPositions) {
+    return new Wall(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),parent,this.getRotate());
   }
 }
