@@ -18,19 +18,20 @@ public class Geometry {
     return new Circle(p1.getX(),p1.getY(),radius);
   }
   public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects,OpticalRectangle currentObj){
+//    Intersection pint must be at least 2 (4**0.5) px away from origin
+    boolean hasObj = currentObj!=null;
+    double threshold = 4;
     Vectors origin = new Vectors(l.getStartX(),l.getStartY());
     OpticalRectangle result = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
     for(OpticalRectangle i: interactiveObjects){
-      boolean isCurrObj = i.equals(currentObj);
-      System.out.println(isCurrObj);
-//      boolean useNearest =
+      boolean isCurrObj = hasObj && i.equals(currentObj);
       if(isCurrObj && !(i instanceof Refract)) continue;
       Path intersection = (Path) Shape.intersect(l, i);
       if(Intersection.hasIntersectionPoint(intersection)){
         Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin,true);//!isCurrObj && !(i instanceof Refract));
-        if(iPoint.equals(origin)) continue;
-        double distance = Vectors.distanceBetween(iPoint,origin);
+        double distance = Vectors.distanceSquared(iPoint,origin);
+        if(distance<threshold) continue;
         if(distance<bestIntersectionDistance){
           bestIntersectionDistance = distance;
           result = i;

@@ -153,7 +153,7 @@ public class Ray implements LightSource, Serializable {
   public void renderRays(OpticsList<OpticalRectangle> objects) {
     this.resetCurrentLine();
     this.removeAllLines();
-    System.out.println(this.getCurrentRefractiveIndex());
+//    System.out.println(this.getCurrentRefractiveIndex());
     OpticalRectangle opticalObject = Geometry.getNearestIntersection(this.currentLine, objects);
     int refNum = 0;
     while (opticalObject != null) {

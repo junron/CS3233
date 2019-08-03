@@ -22,9 +22,9 @@ public class GeneralTabController {
   @FXML
   private Button save,load,clearAll;
 
-  public void initialize(Pane parent,OpticsTabController optics) {
+  public void initialize(Pane parent,OpticsTabController optics,RayTabController rayController) {
     save.setOnMouseClicked(event -> {
-      ArrayList<Object> allObjects = new ArrayList<Object>();
+      ArrayList<Object> allObjects = new ArrayList<>();
       allObjects.addAll(opticalRectangles);
       allObjects.addAll(rays);
       try {
@@ -66,13 +66,7 @@ public class GeneralTabController {
           case 'r':{
             Ray r = new Ray(new Line(),parent);
             r.deserialize(object);
-            rays.add(r);
-            r.setOnDestroy(ev->{
-              rays.remove(r);
-              return null;
-            });
-            r.addOnStateChange(ev-> r.renderRays(opticalRectangles));
-            r.renderRays(opticalRectangles);
+            rayController.createRay(r);
             break;
           }
         }

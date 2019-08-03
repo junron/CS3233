@@ -25,7 +25,7 @@ public class MainController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     rayTabController.initialize(parent);
-    generalTabController.initialize(parent,opticsTabController);
+    generalTabController.initialize(parent,opticsTabController,rayTabController);
     opticsTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
     parent.getChildren().addAll(opticalRectangles);

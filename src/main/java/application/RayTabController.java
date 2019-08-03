@@ -24,36 +24,14 @@ public class RayTabController{
   private Ray focusedRay;
   private String expectedText;
   private Color expectedColor;
+  private Pane parent;
 
   public void initialize(Pane parent) {
-    newRay.setOnMouseClicked(event -> {
+    this.parent = parent;
+    newRay.setOnMouseClicked(e->{
       Line l = new Line(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
       Ray r = new Ray(l,parent);
-      rays.add(r);
-      r.setOnDestroy(e->{
-        rays.remove(r);
-        return null;
-      });
-      r.addOnStateChange(e-> {
-        r.renderRays(opticalRectangles);
-        this.expectedText = fixAngle(r.getAngle());
-        rayRotation.setText(expectedText);
-      });
-      r.setOnFocusStateChanged(state -> {
-        if(state){
-          this.focusedRay = r;
-          this.expectedText = fixAngle(r.getAngle());
-          rayRotation.setText(expectedText);
-        }
-        return null;
-      });
-      r.renderRays(opticalRectangles);
-      this.expectedText = fixAngle(r.getAngle());
-      rayRotation.setText(expectedText);
-      rayColor.valueProperty().setValue(Color.BLACK);
-      r.requestFocus();
-      this.focusedRay = r;
-      this.expectedColor = Color.BLACK;
+      this.createRay(r);
     });
     rayRotation.textProperty().addListener((o,ol,val)->{
       if(val.equals(expectedText)) return;
@@ -79,6 +57,37 @@ public class RayTabController{
       this.focusedRay.setColor(color);
       this.focusedRay.renderRays(opticalRectangles);
     });
+  }
+  void createRay(Ray r){
+    rays.add(r);
+    r.setOnDestroy(e->{
+      rays.remove(r);
+      return null;
+    });
+    r.addOnStateChange(e-> {
+      r.renderRays(opticalRectangles);
+      this.expectedText = fixAngle(r.getAngle());
+      this.expectedColor = this.focusedRay.getColor();
+      rayColor.setValue(this.focusedRay.getColor());
+      rayRotation.setText(expectedText);
+    });
+    r.setOnFocusStateChanged(state -> {
+      if(state){
+        this.focusedRay = r;
+        this.expectedText = fixAngle(r.getAngle());
+        this.expectedColor = this.focusedRay.getColor();
+        rayColor.setValue(this.focusedRay.getColor());
+        rayRotation.setText(expectedText);
+      }
+      return null;
+    });
+    r.renderRays(opticalRectangles);
+    this.expectedText = fixAngle(r.getAngle());
+    rayRotation.setText(expectedText);
+    rayColor.valueProperty().setValue(Color.BLACK);
+    r.requestFocus();
+    this.focusedRay = r;
+    this.expectedColor = Color.BLACK;
   }
   private String fixAngle(double angle){
     angle %=360;
