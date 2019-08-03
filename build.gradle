@@ -2,12 +2,11 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.7'
     id 'net.robyf.jarinjar' version '1.0.9'
-    id 'org.beryx.jlink' version '2.14.0'
 }
 
 javafx {
     version = "11"
-    modules = ["javafx.controls", "javafx.fxml","javafx.web"]
+    modules = ["javafx.controls", "javafx.fxml", "javafx.web"]
 }
 
 group = "1"
@@ -24,12 +23,12 @@ configurations {
 // Enter your javafx library path here
 // The directory should contain jars
 String javafxLibsPath = System.getenv('JAVAFX_LIB_PATH')
-if(javafxLibsPath==null){
+if (javafxLibsPath == null) {
     javafxLibsPath = "C:\\Users\\bobo9\\javafx\\javafx-sdk-11.0.2\\lib"
 //    javafxLibsPath = "C:\\Users\\bobo9\\javafxmods\\javafx-jmods-11.0.2"
 }
 String javafxMods = "C:\\Users\\bobo9\\javafxmods\\javafx-jmods-11.0.2"
-println "Javafx Path:"+javafxLibsPath
+println "Javafx Path:" + javafxLibsPath
 println compileJava.classpath.asPath
 
 ConfigurableFileTree javafxLibs = fileTree(dir: javafxLibsPath)
@@ -50,15 +49,9 @@ jar {
     duplicatesStrategy 'exclude'
 }
 
-mainClassName = "main/application.Main"
+mainClassName = "main/application.AddressBook"
 
 executableJar {
-    mainClass 'application.Main'
+    mainClass 'application.AddressBook'
     configuration = configurations.extraLibs
-}
-
-jlink {
-    launcher {
-        name = 'hello'
-    }
 }

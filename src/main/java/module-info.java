@@ -6,4 +6,5 @@ module main {
   requires javafx.controls;
   requires javafx.graphics;
   requires javafx.web;
+  requires javafx.fxml;
 }
