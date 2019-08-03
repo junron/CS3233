@@ -2,3 +2,8 @@ build
 .idea
 .gradle
 
+/src/main/.classpath
+/src/main/.gitignore
+/src/main/.project
+/src/main/3232.main.eml
+/3232.userlibraries

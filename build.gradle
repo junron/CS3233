@@ -1,25 +1,64 @@
 plugins {
-    id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.7'
+    id 'net.robyf.jarinjar' version '1.0.9'
+    id 'org.beryx.jlink' version '2.14.0'
 }
 
-
-group 'CS'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.11
 javafx {
-    modules = ["javafx.controls","javafx.fxml"]
+    version = "11"
+    modules = ["javafx.controls", "javafx.fxml","javafx.web"]
 }
 
+group = "1"
+version = "1.4"
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+configurations {
+    extraLibs
 }
 
-mainClassName = "application.Main"
+// Enter your javafx library path here
+// The directory should contain jars
+String javafxLibsPath = System.getenv('JAVAFX_LIB_PATH')
+if(javafxLibsPath==null){
+    javafxLibsPath = "C:\\Users\\bobo9\\javafx\\javafx-sdk-11.0.2\\lib"
+//    javafxLibsPath = "C:\\Users\\bobo9\\javafxmods\\javafx-jmods-11.0.2"
+}
+String javafxMods = "C:\\Users\\bobo9\\javafxmods\\javafx-jmods-11.0.2"
+println "Javafx Path:"+javafxLibsPath
+println compileJava.classpath.asPath
+
+ConfigurableFileTree javafxLibs = fileTree(dir: javafxLibsPath)
+javafxLibs.exclude '*.zip'
+
+ConfigurableFileTree mods = fileTree(dir: javafxMods)
+dependencies {
+    extraLibs javafxLibs, mods
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+
+sourceSets {
+    main.output.resourcesDir = "build/classes/java/main"
+}
+
+jar {
+    duplicatesStrategy 'exclude'
+}
+
+mainClassName = "main/application.Main"
+
+executableJar {
+    mainClass 'application.Main'
+    configuration = configurations.extraLibs
+}
+
+jlink {
+    launcher {
+        name = 'hello'
+    }
+}
