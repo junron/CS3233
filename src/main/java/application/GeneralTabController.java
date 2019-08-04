@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import optics.PreciseLine;
 import optics.light.Ray;
 import optics.objects.Mirror;
 import optics.objects.Refract;
@@ -64,7 +65,7 @@ public class GeneralTabController {
             break;
           }
           case 'r':{
-            Ray r = new Ray(new Line(),parent);
+            Ray r = new Ray(new PreciseLine(new Line()),parent);
             r.deserialize(object);
             rayController.createRay(r);
             break;

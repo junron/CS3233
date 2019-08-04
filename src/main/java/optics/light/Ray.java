@@ -15,6 +15,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
+import optics.PreciseLine;
 import optics.objects.OpticalRectangle;
 import optics.objects.Refract;
 import serialize.Serializable;
@@ -30,8 +31,8 @@ public class Ray implements LightSource, Serializable {
   private Function<Event, Void> onDestroy;
   private Function<Boolean, Void> onFocusStateChanged;
   private ArrayList<Line> lines = new ArrayList<>();
-  private Line originalLine;
-  private Line currentLine;
+  private PreciseLine originalLine;
+  private PreciseLine currentLine;
   private Point2D origin;
   private Point2D originalOrigin;
   private Point2D endPoint;
@@ -41,13 +42,14 @@ public class Ray implements LightSource, Serializable {
   private Color color;
   private double currentRefractiveIndex = 1;
 
-  public Ray(Line l, Pane parent) {
+  public Ray(PreciseLine l, Pane parent) {
     this.currentLine = l;
-    this.originalLine = new Line(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
+    this.originalLine = new PreciseLine(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
+    this.originalLine.setPreciseAngle(l.getPreciseAngle());
     this.origin = new Point2D(l.getStartX(), l.getStartY());
     this.originalOrigin = new Point2D(l.getStartX(), l.getStartY());
     this.endPoint = new Point2D(l.getEndX(), l.getEndY());
-    this.angle = Math.toDegrees(Math.atan2(l.getEndY() - l.getStartY(), l.getEndX() - l.getStartX()));
+    this.angle = Math.toDegrees(l.getPreciseAngle());
     this.parent = parent;
     this.color = Color.BLACK;
     addCircle();
@@ -63,7 +65,7 @@ public class Ray implements LightSource, Serializable {
     this.angle = angle;
   }
 
-  public Line getCurrentLine() {
+  public PreciseLine getCurrentLine() {
     return currentLine;
   }
 
@@ -132,8 +134,9 @@ public class Ray implements LightSource, Serializable {
   private void updateLine(double rotation, Point2D startPoint) {
     this.origin = startPoint;
     this.originalOrigin = startPoint;
-    Line l = new Line(startPoint.getX(), startPoint.getY(), 0, 0);
-    Vectors lineVec = Vectors.constructWithMagnitude(Math.toRadians(rotation), 2500);
+    PreciseLine l = new PreciseLine(startPoint.getX(), startPoint.getY(), 0, 0);
+    l.setPreciseAngle(Math.toRadians(rotation));
+    Vectors lineVec = Vectors.constructWithMagnitude(l.getPreciseAngle(), 2500);
     Point2D endpoint = startPoint.add(lineVec);
     l.setEndX(endpoint.getX());
     l.setEndY(endpoint.getY());
@@ -165,7 +168,7 @@ public class Ray implements LightSource, Serializable {
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
       Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
               .hasIntersectionPoint(this.origin, opticalObject));
-      Line transform = opticalObject.transform(this, iPoint);
+      PreciseLine transform = opticalObject.transform(this, iPoint);
       if (transform == null) {
 //        End of line
         break;
@@ -230,7 +233,8 @@ public class Ray implements LightSource, Serializable {
 
   public Ray clone(boolean move){
     Point2D add = move ? new Point2D(10,10) : new Point2D(0,0);
-    Line l = Geometry.createLineFromPoints(this.originalOrigin.add(add),new Point2D(this.originalLine.getEndX(),this.originalLine.getEndY()).add(add));
+    PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add),new Point2D(this.originalLine.getEndX(),this.originalLine.getEndY()).add(add)));
+    l.setPreciseAngle(this.originalLine.getPreciseAngle());
     Ray res = new Ray(l,parent);
     res.setColor(this.color);
     return res;

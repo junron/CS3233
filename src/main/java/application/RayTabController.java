@@ -6,7 +6,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
+import optics.PreciseLine;
 import optics.light.Ray;
 
 import static application.Storage.opticalRectangles;
@@ -29,7 +29,8 @@ public class RayTabController{
   public void initialize(Pane parent) {
     this.parent = parent;
     newRay.setOnMouseClicked(e->{
-      Line l = new Line(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
+      PreciseLine l = new PreciseLine(parent.getWidth()/2, parent.getHeight()/2,parent.getWidth()/2+2500, parent.getHeight()/2);
+      l.setPreciseAngle(0);
       Ray r = new Ray(l,parent);
       this.createRay(r);
     });

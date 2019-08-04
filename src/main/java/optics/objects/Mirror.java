@@ -11,6 +11,7 @@ import javafx.scene.shape.Line;
 import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
+import optics.PreciseLine;
 import optics.light.Ray;
 import utils.Geometry;
 
@@ -54,15 +55,18 @@ public class Mirror extends OpticalRectangle {
   }
 
   @Override
-  public Line transform(Ray r, Point2D iPoint) {
-    Line l = r.getCurrentLine();
+  public PreciseLine transform(Ray r, Point2D iPoint) {
+    PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint);
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
-    return Geometry.createLineFromPoints(iPoint, iPoint
+    Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+    PreciseLine preciseLine = new PreciseLine(newLine);
+    preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
+    return preciseLine;
   }
 
   @Override
@@ -110,6 +114,7 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public OpticalRectangle clone(boolean shiftPositions) {
-    return new Mirror(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),parent,this.getRotate());
+    return new Mirror(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
+            .getWidth(), this.getHeight(), parent, this.getRotate());
   }
 }

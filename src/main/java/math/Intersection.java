@@ -4,6 +4,7 @@ import enums.Sides;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.*;
+import optics.PreciseLine;
 import utils.Geometry;
 
 import java.util.ArrayList;
@@ -26,12 +27,9 @@ public class Intersection {
     return getIntersectionPoint(intersection,origin,true);
   }
 
-  public static double getIntersectingAngle(IntersectionSideData iData, Line line) {
-    Vectors vLine = new Vectors(Vectors.lineToVector(line).multiply(-1));
-    double lineAngle = vLine.getAngle();
-    System.out.println("Line angle:"+Math.toDegrees(lineAngle));
+  public static double getIntersectingAngle(IntersectionSideData iData, PreciseLine line) {
+    double lineAngle = line.getPreciseAngle()-Math.toRadians(180);
     double normalAngle = iData.normalVector.getAngle();
-    System.out.println("Normal angle:"+Math.toDegrees(normalAngle));
     return lineAngle-normalAngle;
   }
 

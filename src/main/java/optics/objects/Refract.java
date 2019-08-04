@@ -11,6 +11,7 @@ import javafx.scene.shape.Line;
 import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
+import optics.PreciseLine;
 import optics.light.Ray;
 import utils.Geometry;
 
@@ -56,8 +57,8 @@ public class Refract extends OpticalRectangle {
   }
 
   @Override
-  public Line transform(Ray r, Point2D iPoint) {
-    Line l = r.getCurrentLine();
+  public PreciseLine transform(Ray r, Point2D iPoint) {
+    PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint);
@@ -67,8 +68,8 @@ public class Refract extends OpticalRectangle {
     if (Double.isNaN(refAngle)) {
       r.setCurrentRefractiveIndex(this.refractiveIndex);
 //      Total internal reflection
-      return Geometry.createLineFromPoints(iPoint, iPoint
-              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+      return new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
     }
     if (this.refractiveIndex == r.getCurrentRefractiveIndex()) {
 //      System.out.println(r.getCurrentRefractiveIndex());
@@ -80,8 +81,8 @@ public class Refract extends OpticalRectangle {
     }
     Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
     System.out.println("Res"+Math.toDegrees(vect.getAngle()));
-    return Geometry.createLineFromPoints(iPoint, iPoint
-            .add(vect));
+    return new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+            .add(vect)));
   }
 
   @Override
