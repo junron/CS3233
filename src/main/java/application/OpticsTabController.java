@@ -30,17 +30,14 @@ public class OpticsTabController{
     newMirror.setOnMouseClicked(event -> {
       Mirror m = new Mirror(parent.getWidth()/2, parent.getHeight()/2-100, 20, 200, parent, 0);
       addObject(m,parent);
-      setEventListeners(m);
     });
     newWall.setOnMouseClicked(event -> {
       Wall w = new Wall(parent.getWidth()/2, parent.getHeight()/2-25, 20, 50, parent, 0);
       addObject(w,parent);
-      setEventListeners(w);
     });
     newRefractor.setOnMouseClicked(event -> {
       Refract re = new Refract(parent.getWidth()/2, parent.getHeight()/2-50, 20, 100, parent, 0,1.33);
       addObject(re,parent);
-      setEventListeners(re);
     });
 
     rotation.textProperty().addListener((o,ol,val)->{
@@ -85,18 +82,6 @@ public class OpticsTabController{
       reRenderAll();
     });
   }
-  private void setEventListeners(OpticalRectangle obj){
-    obj.focusedProperty().addListener((o,ol,state)->{
-      if(state){
-        this.focusedObject = obj;
-        this.expectedText = fixAngle(obj.getRotate())+" "+obj.getWidth()+" "+obj.getHeight();
-        rotation.setText(fixAngle(obj.getRotate()));
-        width.setText(String.valueOf(obj.getWidth()));
-        height.setText(String.valueOf(obj.getHeight()));
-      }
-    });
-    obj.requestFocus();
-  }
   public void addObject(OpticalRectangle object, Pane parent){
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
@@ -117,6 +102,16 @@ public class OpticsTabController{
       reRenderAll();
       return null;
     });
+    object.focusedProperty().addListener((o,ol,state)->{
+      if(state){
+        this.focusedObject = object;
+        this.expectedText = fixAngle(object.getRotate())+" "+object.getWidth()+" "+object.getHeight();
+        rotation.setText(fixAngle(object.getRotate()));
+        width.setText(String.valueOf(object.getWidth()));
+        height.setText(String.valueOf(object.getHeight()));
+      }
+    });
+    object.requestFocus();
     reRenderAll();
     parent.getChildren().add(object);
   }

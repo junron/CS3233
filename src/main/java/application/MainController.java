@@ -28,6 +28,7 @@ public class MainController implements Initializable {
     generalTabController.initialize(parent,opticsTabController,rayTabController);
     opticsTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
+    Storage.rayTabController = rayTabController;
     parent.getChildren().addAll(opticalRectangles);
   }
 }

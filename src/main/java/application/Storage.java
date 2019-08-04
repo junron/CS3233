@@ -15,4 +15,5 @@ public class Storage {
     }
   }
   public static OpticsTabController opticsTabController;
+  public static RayTabController rayTabController;
 }

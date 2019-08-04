@@ -90,10 +90,7 @@ public class Ray implements LightSource, Serializable {
 
   private void addCircle() {
     //    Circle at the start of the ray
-    this.circle = new Circle(origin.getX(), origin.getY(), 6, Color.BLUE);
-    circle.setFill(Color.rgb(255, 0, 0, 0.25));
-    circle.setStroke(Color.BLACK);
-    circle.setRotate(angle);
+    this.circle = new RayCircle(this.origin.getX(),this.origin.getY(),this.angle,this);
     circle.focusedProperty().addListener((o, ol, state) -> onFocusStateChanged.apply(state));
     new Rotatable(circle, e -> {
       this.angle = circle.getRotate();
@@ -205,11 +202,11 @@ public class Ray implements LightSource, Serializable {
   @Override
   public byte[] serialize() {
     //    x,y,rotation,r,g,b
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 2 + Integer.BYTES + Character.BYTES + Double.BYTES * 3);
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 3 + Character.BYTES + Double.BYTES * 3);
     byteBuffer.putChar('r');
     byteBuffer.putDouble(this.originalOrigin.getX());
     byteBuffer.putDouble(this.originalOrigin.getY());
-    byteBuffer.putInt((int) this.angle);
+    byteBuffer.putDouble(this.angle);
     byteBuffer.putDouble(this.color.getRed());
     byteBuffer.putDouble(this.color.getGreen());
     byteBuffer.putDouble(this.color.getBlue());
@@ -219,14 +216,23 @@ public class Ray implements LightSource, Serializable {
   @Override
   public void deserialize(byte[] serialized) {
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    double x = buffer.getDouble(Character.BYTES);
-    double y = buffer.getDouble(Character.BYTES + Double.BYTES);
-    this.angle = buffer.getInt(Character.BYTES + Double.BYTES * 2);
-    double red = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 2);
-    double green = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 3);
-    double blue = buffer.getDouble(Character.BYTES + Integer.BYTES + Double.BYTES * 4);
+    buffer.getChar();
+    double x = buffer.getDouble();
+    double y = buffer.getDouble();
+    this.angle = buffer.getDouble();
+    double red = buffer.getDouble();
+    double green = buffer.getDouble();
+    double blue = buffer.getDouble();
     updateLine(angle, new Point2D(x, y));
     addCircle();
     this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
+  }
+
+  public Ray clone(boolean move){
+    Point2D add = move ? new Point2D(10,10) : new Point2D(0,0);
+    Line l = Geometry.createLineFromPoints(this.originalOrigin.add(add),new Point2D(this.originalLine.getEndX(),this.originalLine.getEndY()).add(add));
+    Ray res = new Ray(l,parent);
+    res.setColor(this.color);
+    return res;
   }
 }

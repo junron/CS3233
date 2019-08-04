@@ -29,7 +29,9 @@ public class Intersection {
   public static double getIntersectingAngle(IntersectionSideData iData, Line line) {
     Vectors vLine = new Vectors(Vectors.lineToVector(line).multiply(-1));
     double lineAngle = vLine.getAngle();
+    System.out.println("Line angle:"+Math.toDegrees(lineAngle));
     double normalAngle = iData.normalVector.getAngle();
+    System.out.println("Normal angle:"+Math.toDegrees(normalAngle));
     return lineAngle-normalAngle;
   }
 

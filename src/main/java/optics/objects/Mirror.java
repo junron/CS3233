@@ -82,24 +82,25 @@ public class Mirror extends OpticalRectangle {
   @Override
   public byte[] serialize() {
 //    x,y,width,height,rotation
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 4 + Integer.BYTES);
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5);
     byteBuffer.putChar('m');
     byteBuffer.putDouble(this.getX());
     byteBuffer.putDouble(this.getY());
     byteBuffer.putDouble(this.getWidth());
     byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putInt((int) this.getRotate());
+    byteBuffer.putDouble(this.getRotate());
     return byteBuffer.array();
   }
 
   @Override
   public void deserialize(byte[] serialized) {
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    double x = buffer.getDouble(Character.BYTES);
-    double y = buffer.getDouble(Character.BYTES + Double.BYTES);
-    double width = buffer.getDouble(Character.BYTES + Double.BYTES * 2);
-    double height = buffer.getDouble(Character.BYTES + Double.BYTES * 3);
-    double angle = buffer.getInt(Character.BYTES + Double.BYTES * 4);
+    buffer.getChar();
+    double x = buffer.getDouble();
+    double y = buffer.getDouble();
+    double width = buffer.getDouble();
+    double height = buffer.getDouble();
+    double angle = buffer.getDouble();
     this.setX(x);
     this.setY(y);
     this.setWidth(width);

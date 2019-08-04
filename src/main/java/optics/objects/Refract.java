@@ -101,13 +101,13 @@ public class Refract extends OpticalRectangle {
   @Override
   public byte[] serialize() {
 //    x,y,width,height,rotation,ref index
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5 + Integer.BYTES);
+    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 6);
     byteBuffer.putChar('e');
     byteBuffer.putDouble(this.getX());
     byteBuffer.putDouble(this.getY());
     byteBuffer.putDouble(this.getWidth());
     byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putInt((int) this.getRotate());
+    byteBuffer.putDouble(this.getRotate());
     byteBuffer.putDouble(this.refractiveIndex);
     return byteBuffer.array();
   }
@@ -115,12 +115,13 @@ public class Refract extends OpticalRectangle {
   @Override
   public void deserialize(byte[] serialized) {
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    double x = buffer.getDouble(Character.BYTES);
-    double y = buffer.getDouble(Character.BYTES + Double.BYTES);
-    double width = buffer.getDouble(Character.BYTES + Double.BYTES * 2);
-    double height = buffer.getDouble(Character.BYTES + Double.BYTES * 3);
-    double angle = buffer.getInt(Character.BYTES + Double.BYTES * 4);
-    double refractiveIndex = buffer.getDouble(Character.BYTES + Double.BYTES * 4 + Integer.BYTES);
+    buffer.getChar();
+    double x = buffer.getDouble();
+    double y = buffer.getDouble();
+    double width = buffer.getDouble();
+    double height = buffer.getDouble();
+    double angle = buffer.getDouble();
+    double refractiveIndex = buffer.getDouble();
     this.setX(x);
     this.setY(y);
     this.setWidth(width);
