@@ -5,14 +5,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 import math.IntersectionSideData;
-import optics.PreciseLine;
+import optics.TransformData;
 import optics.light.Ray;
 import serialize.Serializable;
 
 import java.util.function.Function;
 
 public interface Interactive extends Serializable {
-  PreciseLine transform(Ray r, Point2D iPoint);
+  TransformData transform(Ray r, Point2D iPoint);
   IntersectionSideData getIntersectionSideData(Point2D iPoint);
   Line drawNormal(IntersectionSideData iData, Point2D iPoint);
   void addOnStateChange(EventHandler<Event> handler);

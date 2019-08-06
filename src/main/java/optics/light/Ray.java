@@ -1,11 +1,13 @@
 package optics.light;
 
 import application.FxAlerts;
+import javafx.AngleDisplay;
 import javafx.Draggable;
 import javafx.Rotatable;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -16,6 +18,7 @@ import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.Vectors;
 import optics.PreciseLine;
+import optics.TransformData;
 import optics.objects.OpticalRectangle;
 import optics.objects.Refract;
 import serialize.Serializable;
@@ -30,7 +33,7 @@ public class Ray implements LightSource, Serializable {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
   private Function<Boolean, Void> onFocusStateChanged;
-  private ArrayList<Line> lines = new ArrayList<>();
+  private ArrayList<Node> lines = new ArrayList<>();
   private PreciseLine originalLine;
   private PreciseLine currentLine;
   private Point2D origin;
@@ -40,7 +43,7 @@ public class Ray implements LightSource, Serializable {
   private double angle;
   private Circle circle;
   private Color color;
-  private double currentRefractiveIndex = 1;
+  private boolean inRefractiveMaterial;
 
   public Ray(PreciseLine l, Pane parent) {
     this.currentLine = l;
@@ -69,12 +72,12 @@ public class Ray implements LightSource, Serializable {
     return currentLine;
   }
 
-  public double getCurrentRefractiveIndex() {
-    return currentRefractiveIndex;
+  public boolean isInRefractiveMaterial() {
+    return inRefractiveMaterial;
   }
 
-  public void setCurrentRefractiveIndex(double currentRefractiveIndex) {
-    this.currentRefractiveIndex = currentRefractiveIndex;
+  public void setInRefractiveMaterial(boolean inRefractiveMaterial) {
+    this.inRefractiveMaterial = inRefractiveMaterial;
   }
 
   public Color getColor() {
@@ -92,7 +95,7 @@ public class Ray implements LightSource, Serializable {
 
   private void addCircle() {
     //    Circle at the start of the ray
-    this.circle = new RayCircle(this.origin.getX(),this.origin.getY(),this.angle,this);
+    this.circle = new RayCircle(this.origin.getX(), this.origin.getY(), this.angle, this);
     circle.focusedProperty().addListener((o, ol, state) -> onFocusStateChanged.apply(state));
     new Rotatable(circle, e -> {
       this.angle = circle.getRotate();
@@ -168,16 +171,31 @@ public class Ray implements LightSource, Serializable {
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
       Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
               .hasIntersectionPoint(this.origin, opticalObject));
-      PreciseLine transform = opticalObject.transform(this, iPoint);
+      TransformData transform = opticalObject.transform(this, iPoint);
       if (transform == null) {
 //        End of line
         break;
       }
-      Line normal = opticalObject.drawNormal(opticalObject.getIntersectionSideData(iPoint), iPoint);
-      parent.getChildren().addAll(this.currentLine, normal);
+      Line normal = opticalObject.drawNormal(transform.getIntersectionSideData(), iPoint);
+      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20,Color.color(0,0,0,0));
+      AngleDisplay angleDisplay = transform.getAngleDisplay();
+      angleDisplay.setVisible(false);
+      activeArea.setOnMouseEntered(event -> {
+        angleDisplay.setLayoutX(event.getSceneX() + 7);
+        angleDisplay.setLayoutY(event.getSceneY() + 7);
+        angleDisplay.setVisible(true);
+      });
+      activeArea.setOnMouseMoved(event -> {
+        angleDisplay.setLayoutX(event.getSceneX() + 7);
+        angleDisplay.setLayoutY(event.getSceneY() + 7);
+      });
+      activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
+      parent.getChildren().addAll(this.currentLine, normal, angleDisplay, activeArea);
       lines.add(this.currentLine);
       lines.add(normal);
-      this.currentLine = transform;
+      lines.add(angleDisplay);
+      lines.add(activeArea);
+      this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
       opticalObject = opticalObject instanceof Refract ?
               Geometry.getNearestIntersection(this.currentLine, objects, opticalObject)
@@ -231,11 +249,12 @@ public class Ray implements LightSource, Serializable {
     this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
   }
 
-  public Ray clone(boolean move){
-    Point2D add = move ? new Point2D(10,10) : new Point2D(0,0);
-    PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add),new Point2D(this.originalLine.getEndX(),this.originalLine.getEndY()).add(add)));
+  public Ray clone(boolean move) {
+    Point2D add = move ? new Point2D(10, 10) : new Point2D(0, 0);
+    PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add), Vectors
+            .constructWithMagnitude(this.originalLine.getPreciseAngle(), 2500).add(this.originalOrigin).add(add)));
     l.setPreciseAngle(this.originalLine.getPreciseAngle());
-    Ray res = new Ray(l,parent);
+    Ray res = new Ray(l, parent);
     res.setColor(this.color);
     return res;
   }

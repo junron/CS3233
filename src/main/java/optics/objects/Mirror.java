@@ -1,5 +1,6 @@
 package optics.objects;
 
+import javafx.AngleDisplay;
 import javafx.Draggable;
 import javafx.Rotatable;
 import javafx.event.Event;
@@ -12,11 +13,13 @@ import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
 import optics.PreciseLine;
+import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Function;
 
 public class Mirror extends OpticalRectangle {
@@ -55,7 +58,7 @@ public class Mirror extends OpticalRectangle {
   }
 
   @Override
-  public PreciseLine transform(Ray r, Point2D iPoint) {
+  public TransformData transform(Ray r, Point2D iPoint) {
     PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
@@ -66,7 +69,11 @@ public class Mirror extends OpticalRectangle {
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
     PreciseLine preciseLine = new PreciseLine(newLine);
     preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
-    return preciseLine;
+    HashMap<String,String> data = new HashMap<>();
+    data.put("Reflection: ",Geometry.fixAngle(Math.toDegrees(normalAngle - intersectionAngle)));
+    data.put("Incidence: ",Geometry.fixAngle(Math.toDegrees(intersectionAngle)));
+    AngleDisplay angleDisplay = new AngleDisplay(data);
+    return new TransformData(preciseLine,angleDisplay,iData);
   }
 
   @Override

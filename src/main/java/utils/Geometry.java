@@ -14,25 +14,29 @@ public class Geometry {
   public static Line createLineFromPoints(Point2D p1, Point2D p2) {
     return new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
   }
-  public static Circle createCircleFromPoint(Point2D p1,double radius){
-    return new Circle(p1.getX(),p1.getY(),radius);
+
+  public static Circle createCircleFromPoint(Point2D p1, double radius) {
+    return new Circle(p1.getX(), p1.getY(), radius);
   }
-  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects,OpticalRectangle currentObj){
+
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects, OpticalRectangle currentObj) {
 //    Intersection pint must be at least 2 (4**0.5) px away from origin
-    boolean hasObj = currentObj!=null;
+    boolean hasObj = currentObj != null;
     double threshold = 4;
-    Vectors origin = new Vectors(l.getStartX(),l.getStartY());
+    Vectors origin = new Vectors(l.getStartX(), l.getStartY());
     OpticalRectangle result = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
-    for(OpticalRectangle i: interactiveObjects){
+    for (OpticalRectangle i : interactiveObjects) {
       boolean isCurrObj = hasObj && i.equals(currentObj);
-      if(isCurrObj && !(i instanceof Refract)) continue;
+      if (isCurrObj && !(i instanceof Refract)) continue;
       Path intersection = (Path) Shape.intersect(l, i);
-      if(Intersection.hasIntersectionPoint(intersection)){
-        Point2D iPoint = Intersection.getIntersectionPoint(intersection,origin,true);//!isCurrObj && !(i instanceof Refract));
-        double distance = Vectors.distanceSquared(iPoint,origin);
-        if(distance<threshold) continue;
-        if(distance<bestIntersectionDistance){
+      if (Intersection.hasIntersectionPoint(intersection)) {
+        Point2D iPoint = Intersection
+                .getIntersectionPoint(intersection, origin, !isCurrObj);
+        double distance = Vectors.distanceSquared(iPoint, origin);
+//        Reject intersections too close to origin
+        if (distance < threshold) continue;
+        if (distance < bestIntersectionDistance) {
           bestIntersectionDistance = distance;
           result = i;
         }
@@ -40,12 +44,18 @@ public class Geometry {
     }
     return result;
   }
-  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects){
-    return getNearestIntersection(l,interactiveObjects,null);
+
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects) {
+    return getNearestIntersection(l, interactiveObjects, null);
   }
-  public static String fixAngle(double angle){
-    angle %=360;
-    if(angle<0) angle+=360;
-    return String.valueOf(angle);
+
+  public static String fixAngle(double angle, int decimalPlaces) {
+    angle %= 360;
+    if (angle < 0) angle += 360;
+    return String.format("%."+decimalPlaces+"f",angle);
+  }
+
+  public static String fixAngle(double angle) {
+    return fixAngle(angle, 1);
   }
 }

@@ -36,7 +36,7 @@ public class OpticsTabController{
       addObject(w,parent);
     });
     newRefractor.setOnMouseClicked(event -> {
-      Refract re = new Refract(parent.getWidth()/2, parent.getHeight()/2-50, 20, 100, parent, 0,1.33);
+      Refract re = new Refract(parent.getWidth()/2, parent.getHeight()/2-50, 20, 100, parent, 0,1.42);
       addObject(re,parent);
     });
 

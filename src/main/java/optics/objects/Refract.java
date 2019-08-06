@@ -12,6 +12,7 @@ import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
 import optics.PreciseLine;
+import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
 
@@ -57,32 +58,39 @@ public class Refract extends OpticalRectangle {
   }
 
   @Override
-  public PreciseLine transform(Ray r, Point2D iPoint) {
+  public TransformData transform(Ray r, Point2D iPoint) {
     PreciseLine l = r.getCurrentLine();
+//    System.out.println(Math.toDegrees(l.getPreciseAngle()));
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint);
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
     double refAngle = Math.asin(Math.sin(intersectionAngle) / this.refractiveIndex);
+    if(r.isInRefractiveMaterial()) {
+      System.out.println("Ref ang"+Math.toDegrees(refAngle));
+      System.out.println("Inci ang"+Math.toDegrees(intersectionAngle));
+    }
     if (Double.isNaN(refAngle)) {
-      r.setCurrentRefractiveIndex(this.refractiveIndex);
+      System.out.println("TIR");
+//      r.setCurrentRefractiveIndex(this.refractiveIndex);
 //      Total internal reflection
-      return new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+      PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
               .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
+      pLine.setPreciseAngle(normalAngle - intersectionAngle);
+      return new TransformData(pLine,null,iData);
     }
-    if (this.refractiveIndex == r.getCurrentRefractiveIndex()) {
-//      System.out.println(r.getCurrentRefractiveIndex());
-      r.setCurrentRefractiveIndex(1);
-      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.toRadians(180)));
-//      System.out.println(Math.toDegrees(refAngle));
-    } else {
-      r.setCurrentRefractiveIndex(this.refractiveIndex);
-    }
+//    if (this.refractiveIndex == r.getCurrentRefractiveIndex()) {
+//      r.setCurrentRefractiveIndex(1);
+//      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.toRadians(180)));
+//    } else {
+//      r.setCurrentRefractiveIndex(this.refractiveIndex);
+//    }
     Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
-    System.out.println("Res"+Math.toDegrees(vect.getAngle()));
-    return new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(vect)));
+    pLine.setPreciseAngle(refAngle);
+    return new TransformData(pLine,null,iData);
   }
 
   @Override
