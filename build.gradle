@@ -1,8 +1,9 @@
 plugins {
     id 'java'
     id 'org.openjfx.javafxplugin' version '0.0.7'
-    id 'net.robyf.jarinjar' version '1.0.9'
+//    id 'net.robyf.jarinjar' version '1.0.9'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
 repositories {
@@ -12,22 +13,6 @@ repositories {
 javafx {
     modules = ["javafx.controls","javafx.fxml"]
 }
-configurations {
-    extraLibs
-}
-
-// Enter your javafx library path here
-// The directory should contain jars
-String javafxLibsPath = System.getenv('JAVAFX_LIB_PATH')
-if(javafxLibsPath==null){
-    javafxLibsPath = "C:\\Users\\bobo9\\javafx\\javafx-sdk-11.0.2\\lib"
-}
-
-println "Javafx Path:"+javafxLibsPath
-println compileJava.classpath.asPath
-
-ConfigurableFileTree javafxLibs = fileTree(dir: javafxLibsPath)
-javafxLibs.exclude '*.zip'
 
 
 group 'CS'
@@ -38,18 +23,10 @@ sourceCompatibility = 1.11
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    extraLibs javafxLibs
 }
-
-jar {
-    duplicatesStrategy 'exclude'
-}
-
-
-executableJar {
-    mainClass 'application.Main'
-    configuration = configurations.extraLibs
+shadowJar {
+    baseName = 'lightproj'
 }
 
 
-mainClassName = "application.Main"
+mainClassName = "application.MainMain"
