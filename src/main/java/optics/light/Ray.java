@@ -178,9 +178,7 @@ public class Ray implements LightSource, Serializable {
         break;
       }
       Line normal = opticalObject.drawNormal(transform.getIntersectionSideData(), iPoint);
-      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20);
-      activeArea.setVisible(false);
-//      activeArea.setPickOnBounds(false);
+      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20,Color.color(0,0,0,0));
       AngleDisplay angleDisplay = transform.getAngleDisplay();
       angleDisplay.setVisible(false);
       activeArea.setOnMouseEntered(event -> {
@@ -248,6 +246,7 @@ public class Ray implements LightSource, Serializable {
     double green = buffer.getDouble();
     double blue = buffer.getDouble();
     updateLine(angle, new Point2D(x, y));
+    parent.getChildren().removeAll(this.circle);
     addCircle();
     this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
   }
