@@ -2,6 +2,7 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
@@ -22,6 +23,8 @@ public class GeneralTabController {
 
   @FXML
   private Button save,load,clearAll;
+  @FXML
+  private TextField maxInteract;
 
   public void initialize(Pane parent,OpticsTabController optics,RayTabController rayController) {
     save.setOnMouseClicked(event -> {
@@ -73,7 +76,6 @@ public class GeneralTabController {
         }
       }
     });
-
     clearAll.setOnMouseClicked(event->{
       parent.getChildren().removeAll(opticalRectangles);
       opticalRectangles.clear();
@@ -81,6 +83,19 @@ public class GeneralTabController {
         r.destroy();
       }
       rays.clear();
+      reRenderAll();
+    });
+
+    maxInteract.setOnKeyPressed(event -> {
+      int maxInts;
+      try{
+        maxInts = Integer.parseInt(maxInteract.getText());
+        if(maxInts<10) throw new NumberFormatException();
+      } catch (NumberFormatException e) {
+        maxInteract.setText(String.valueOf(maximumReflectionDepth));
+        return;
+      }
+      maximumReflectionDepth = maxInts;
       reRenderAll();
     });
   }

@@ -73,29 +73,28 @@ public class Rotatable {
       }
       if (event.isAltDown()) {
 //        Move object instead of rotating it
+        OpticalRectangle optShape = null;
+        if (this.shape instanceof OpticalRectangle) {
+          optShape = (OpticalRectangle) this.shape;
+        } else {
+          onRotate.handle(event);
+          return;
+        }
         switch (eventCode) {
           case ("LEFT"): {
-            if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setWidth(((Rectangle) this.shape).getWidth() - 1);
-            }
+            optShape.setWidthChecked(optShape.getWidth() - 1);
             break;
           }
           case ("RIGHT"): {
-            if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setWidth(((Rectangle) this.shape).getWidth() + 1);
-            }
+            optShape.setWidthChecked(optShape.getWidth() + 1);
             break;
           }
           case ("UP"): {
-            if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setHeight(((Rectangle) this.shape).getHeight() + 1);
-            }
+            optShape.setHeightChecked(optShape.getHeight() + 1);
             break;
           }
           case ("DOWN"): {
-            if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setHeight(((Rectangle) this.shape).getHeight() - 1);
-            }
+            optShape.setHeightChecked(optShape.getHeight() - 1);
             break;
           }
           default:

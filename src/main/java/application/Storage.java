@@ -16,4 +16,5 @@ public class Storage {
   }
   public static OpticsTabController opticsTabController;
   public static RayTabController rayTabController;
+  public static int maximumReflectionDepth = 1000;
 }

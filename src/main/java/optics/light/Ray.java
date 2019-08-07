@@ -1,6 +1,7 @@
 package optics.light;
 
 import application.FxAlerts;
+import application.Storage;
 import javafx.AngleDisplay;
 import javafx.Draggable;
 import javafx.Rotatable;
@@ -156,16 +157,16 @@ public class Ray implements LightSource, Serializable {
   public void renderRays(OpticsList<OpticalRectangle> objects) {
     this.resetCurrentLine();
     this.removeAllLines();
-//    System.out.println(this.getCurrentRefractiveIndex());
     OpticalRectangle opticalObject = Geometry.getNearestIntersection(this.currentLine, objects);
     int refNum = 0;
     while (opticalObject != null) {
-      if (refNum > this.maximumReflectionDepth) {
+      if (refNum > Storage.maximumReflectionDepth) {
         System.out.println("Maximum reflection depth exceeded");
+        this.currentLine.setStroke(this.color);
         Alert alert = FxAlerts
                 .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth exceeded");
         alert.showAndWait();
-        break;
+        return;
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
@@ -177,7 +178,9 @@ public class Ray implements LightSource, Serializable {
         break;
       }
       Line normal = opticalObject.drawNormal(transform.getIntersectionSideData(), iPoint);
-      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20,Color.color(0,0,0,0));
+      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20);
+      activeArea.setVisible(false);
+//      activeArea.setPickOnBounds(false);
       AngleDisplay angleDisplay = transform.getAngleDisplay();
       angleDisplay.setVisible(false);
       activeArea.setOnMouseEntered(event -> {

@@ -58,13 +58,13 @@ public class OpticsTabController{
       if(val.equals(expectedText.split(" ")[1])) return;
       if(this.focusedObject==null) return;
       if(val.length()==0){
-        this.focusedObject.setWidth(1);
+        this.focusedObject.setWidth(5);
         reRenderAll();
         return;
       }
       Double value = validate(val,true);
       if(value==null) return;
-      this.focusedObject.setWidth(value);
+      this.focusedObject.setWidthChecked(value);
       reRenderAll();
     });
 
@@ -72,13 +72,13 @@ public class OpticsTabController{
       if(val.equals(expectedText.split(" ")[2])) return;
       if(this.focusedObject==null) return;
       if(val.length()==0){
-        this.focusedObject.setHeight(1);
+        this.focusedObject.setHeight(5);
         reRenderAll();
         return;
       }
       Double value = validate(val,true);
       if(value==null) return;
-      this.focusedObject.setHeight(value);
+      this.focusedObject.setHeightChecked(value);
       reRenderAll();
     });
   }
