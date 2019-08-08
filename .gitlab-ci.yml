@@ -16,14 +16,14 @@ build:
     - sed -i 's/application.Main/application.MainMain/g' build.gradle
     - ./gradlew clean
     - ./gradlew shadowJar
+    - mv build/libs/*.jar build/libs/release-$(git rev-parse --verify HEAD --short=20).jar
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
       - build
       - .gradle
-      - lib
   artifacts:
     paths:
-      - build/libs
+      - build/libs/*.jar
     expire_in: 1 week
