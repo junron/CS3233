@@ -106,9 +106,13 @@ public class Rotatable {
       double rotate = this.shape.getRotate();
       if (eventCode.equals("LEFT")) {
 //        Rotate anticlockwise
-        this.shape.setRotate(rotate - (event.isControlDown() ? 45 : 1));
+        this.shape.setRotate((rotate - (event.isControlDown() ? 45 : 1)) % 360);
       } else if (eventCode.equals("RIGHT")) {
-        this.shape.setRotate(rotate + (event.isControlDown() ? 45 : 1));
+        this.shape.setRotate((rotate + (event.isControlDown() ? 45 : 1)) % 360);
+      } else if (eventCode.equals("UP") && event.isControlDown()) {
+        this.shape.setRotate((360 - rotate) % 360);
+      } else if (eventCode.equals("DOWN") && event.isControlDown()) {
+        this.shape.setRotate((rotate - 180) % 360);
       } else {
         return;
       }

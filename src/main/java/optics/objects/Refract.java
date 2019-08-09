@@ -1,5 +1,6 @@
 package optics.objects;
 
+import javafx.AngleDisplay;
 import javafx.Draggable;
 import javafx.Rotatable;
 import javafx.event.Event;
@@ -18,6 +19,7 @@ import utils.Geometry;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Function;
 
 public class Refract extends OpticalRectangle {
@@ -72,25 +74,32 @@ public class Refract extends OpticalRectangle {
       System.out.println("Inci ang"+Math.toDegrees(intersectionAngle));
     }
     if (Double.isNaN(refAngle)) {
-      System.out.println("TIR");
-//      r.setCurrentRefractiveIndex(this.refractiveIndex);
-//      Total internal reflection
-      PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
-              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
-      pLine.setPreciseAngle(normalAngle - intersectionAngle);
-      return new TransformData(pLine,null,iData);
+      return null;
+//      System.out.println("TIR");
+////      r.setCurrentRefractiveIndex(this.refractiveIndex);
+////      Total internal reflection
+//      PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+//              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
+//      pLine.setPreciseAngle(normalAngle - intersectionAngle);
+//      return new TransformData(pLine,null,iData);
     }
-//    if (this.refractiveIndex == r.getCurrentRefractiveIndex()) {
-//      r.setCurrentRefractiveIndex(1);
-//      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.toRadians(180)));
-//    } else {
-//      r.setCurrentRefractiveIndex(this.refractiveIndex);
-//    }
+    if (r.isInRefractiveMaterial()) {
+      r.setInRefractiveMaterial(false);
+      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.PI));
+    } else {
+      r.setInRefractiveMaterial(true);
+    }
     Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(vect)));
     pLine.setPreciseAngle(refAngle);
-    return new TransformData(pLine,null,iData);
+    HashMap<String,String> data = new HashMap<>();
+    String angle = String.format("%.1f",Math.toDegrees(refAngle));
+    String iAngle = String.format("%.1f",Math.toDegrees(intersectionAngle));
+    data.put("Refraction: ",angle);
+    data.put("Incidence: ",iAngle);
+    AngleDisplay angleDisplay = new AngleDisplay(data);
+    return new TransformData(pLine,angleDisplay,iData);
   }
 
   @Override

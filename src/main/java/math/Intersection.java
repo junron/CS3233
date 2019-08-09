@@ -11,26 +11,32 @@ import java.util.ArrayList;
 
 public class Intersection {
 
-  public static Point2D getIntersectionPoint(Path intersection, Vectors origin,boolean nearest) {
+  public static Point2D getIntersectionPoint(Path intersection, Vectors origin, boolean nearest) {
     ArrayList<Point2D> iPoints = convertToPoints(intersection.getElements());
     //Inline extension of comparator iface
-    if(nearest){
+    if (nearest) {
       iPoints.sort((o1, o2) ->
               (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
-    }else{
+    } else {
       iPoints.sort((o1, o2) ->
               (int) (Vectors.distanceBetween(o2, origin) - Vectors.distanceBetween(o1, origin)));
     }
     return iPoints.get(0);
   }
-  public static Point2D getIntersectionPoint(Path intersection, Vectors origin){
-    return getIntersectionPoint(intersection,origin,true);
+
+  public static Point2D getIntersectionPoint(Path intersection, Vectors origin) {
+    return getIntersectionPoint(intersection, origin, true);
   }
 
   public static double getIntersectingAngle(IntersectionSideData iData, PreciseLine line) {
-    double lineAngle = line.getPreciseAngle()-Math.toRadians(180);
+//    Make angle in range [-180,180]
+    double lineAngle = line.getPreciseAngle()-Math.PI;
     double normalAngle = iData.normalVector.getAngle();
-    return lineAngle-normalAngle;
+    double angle = lineAngle - normalAngle;
+    if(angle>Math.PI){
+      angle = angle-Math.PI*2;
+    }
+    return angle;
   }
 
   //  This is pure genius
