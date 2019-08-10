@@ -20,11 +20,12 @@ public class Geometry {
   }
 
   public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects, OpticalRectangle currentObj) {
-//    Intersection point must be at least 1.41 px away from origin
+//    Intersection point must be at least 1 px away from origin
     boolean hasObj = currentObj != null;
-    double threshold = 2;
+    double threshold = 1;
     Vectors origin = new Vectors(l.getStartX(), l.getStartY());
     OpticalRectangle result = null;
+    OpticalRectangle reserve = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
     for (OpticalRectangle i : interactiveObjects) {
       boolean isCurrObj = hasObj && i.equals(currentObj);
@@ -34,12 +35,21 @@ public class Geometry {
         Point2D iPoint = Intersection
                 .getIntersectionPoint(intersection, origin, !isCurrObj);
         double distance = Vectors.distanceSquared(iPoint, origin);
-        if(distance<threshold) continue;
+        if(distance<threshold){
+          if(distance<bestIntersectionDistance){
+            reserve = i;
+            bestIntersectionDistance = distance;
+          }
+          continue;
+        }
         if (distance < bestIntersectionDistance) {
           bestIntersectionDistance = distance;
           result = i;
         }
       }
+    }
+    if(result==null && reserve!=null){
+      return reserve;
     }
     return result;
   }
