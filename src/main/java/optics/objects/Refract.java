@@ -65,13 +65,13 @@ public class Refract extends OpticalRectangle {
 //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint);
+    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
     double refAngle = Math.asin(Math.sin(intersectionAngle) / this.refractiveIndex);
-    if(r.isInRefractiveMaterial()) {
-      System.out.println("Ref ang"+Math.toDegrees(refAngle));
-      System.out.println("Inci ang"+Math.toDegrees(intersectionAngle));
+    if (r.isInRefractiveMaterial()) {
+      System.out.println("Ref ang" + Math.toDegrees(refAngle));
+      System.out.println("Inci ang" + Math.toDegrees(intersectionAngle));
     }
     if (Double.isNaN(refAngle)) {
       return null;
@@ -85,7 +85,7 @@ public class Refract extends OpticalRectangle {
     }
     if (r.isInRefractiveMaterial()) {
       r.setInRefractiveMaterial(false);
-      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle+Math.PI));
+      refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle + Math.PI));
     } else {
       r.setInRefractiveMaterial(true);
     }
@@ -93,24 +93,24 @@ public class Refract extends OpticalRectangle {
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(vect)));
     pLine.setPreciseAngle(refAngle);
-    HashMap<String,String> data = new HashMap<>();
-    String angle = String.format("%.1f",Math.toDegrees(refAngle));
-    String iAngle = String.format("%.1f",Math.toDegrees(intersectionAngle));
-    data.put("Refraction: ",angle);
-    data.put("Incidence: ",iAngle);
+    HashMap<String, String> data = new HashMap<>();
+    String angle = String.format("%.1f", Math.toDegrees(refAngle));
+    String iAngle = String.format("%.1f", Math.toDegrees(intersectionAngle));
+    data.put("Refraction: ", angle);
+    data.put("Incidence: ", iAngle);
     AngleDisplay angleDisplay = new AngleDisplay(data);
-    return new TransformData(pLine,angleDisplay,iData);
+    return new TransformData(pLine, angleDisplay, iData);
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint) {
-    return Intersection.getIntersectionSide(iPoint, this);
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin) {
+    return Intersection.getIntersectionSide(iPoint, this, origin);
   }
 
   @Override
   public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
     double normalLength = 50;
-    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(normalLength / 2)));
+    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(-normalLength / 2)));
     l.getStrokeDashArray().addAll(4d);
     return l;
   }
@@ -150,6 +150,7 @@ public class Refract extends OpticalRectangle {
 
   @Override
   public OpticalRectangle clone(boolean shiftPositions) {
-    return new Refract(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),this.parent,this.getRotate(),this.refractiveIndex);
+    return new Refract(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
+            .getWidth(), this.getHeight(), this.parent, this.getRotate(), this.refractiveIndex);
   }
 }

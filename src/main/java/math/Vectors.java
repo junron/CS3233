@@ -30,6 +30,9 @@ public class Vectors extends Point2D {
     Point2D end = new Point2D(l.getEndX(),l.getEndY());
     return new Vectors(end.subtract(start));
   }
+  public static Point2D midPoint(Line l){
+    return new Point2D((l.getStartX()+l.getEndX())/2,(l.getStartY()+l.getEndY())/2);
+  }
   public static double distanceSquared(Point2D a, Point2D b){
     return Math.pow(a.getX()-b.getX(),2)+Math.pow(a.getY()-b.getY(),2);
   }

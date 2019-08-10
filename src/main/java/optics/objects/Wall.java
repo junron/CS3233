@@ -50,7 +50,7 @@ public class Wall extends OpticalRectangle{
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint) {
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint,Point2D origin) {
     return null;
   }
 

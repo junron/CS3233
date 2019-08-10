@@ -62,30 +62,34 @@ public class Mirror extends OpticalRectangle {
     PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint);
+    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
+    if(iData==null || iData.normalVector==null){
+      System.out.println("ERRORORROOROR: iData is null");
+      return null;
+    }
     double normalAngle = iData.normalVector.getAngle();
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
     Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
     PreciseLine preciseLine = new PreciseLine(newLine);
     preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
-    HashMap<String,String> data = new HashMap<>();
-    String angle = String.format("%.1f",Math.toDegrees(intersectionAngle));
-    data.put("Reflection: ",angle);
-    data.put("Incidence: ",angle);
+    HashMap<String, String> data = new HashMap<>();
+    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle));
+    data.put("Reflection: ", angle);
+    data.put("Incidence: ", angle);
     AngleDisplay angleDisplay = new AngleDisplay(data);
-    return new TransformData(preciseLine,angleDisplay,iData);
+    return new TransformData(preciseLine, angleDisplay, iData);
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint) {
-    return Intersection.getIntersectionSide(iPoint, this);
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin) {
+    return Intersection.getIntersectionSide(iPoint, this, origin);
   }
 
   @Override
   public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
     double normalLength = 50;
-    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(normalLength / 2)));
+    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(-normalLength / 2)));
     l.getStrokeDashArray().addAll(4d);
     return l;
   }
