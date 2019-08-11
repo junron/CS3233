@@ -74,7 +74,7 @@ public class Mirror extends OpticalRectangle {
     PreciseLine preciseLine = new PreciseLine(newLine);
     preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
     HashMap<String, String> data = new HashMap<>();
-    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle));
+    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle+Math.PI));
     data.put("Reflection: ", angle);
     data.put("Incidence: ", angle);
     AngleDisplay angleDisplay = new AngleDisplay(data);

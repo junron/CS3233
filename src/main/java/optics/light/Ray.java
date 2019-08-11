@@ -89,12 +89,16 @@ public class Ray implements LightSource, Serializable {
     this.color = color;
   }
 
+  public Circle getCircle() {
+    return circle;
+  }
 
   public void setOnFocusStateChanged(Function<Boolean, Void> onFocusStateChanged) {
     this.onFocusStateChanged = onFocusStateChanged;
   }
 
   private void addCircle() {
+    if (this.circle != null) this.parent.getChildren().remove(circle);
     //    Circle at the start of the ray
     this.circle = new RayCircle(this.origin.getX(), this.origin.getY(), this.angle, this);
     circle.focusedProperty().addListener((o, ol, state) -> onFocusStateChanged.apply(state));
@@ -173,12 +177,11 @@ public class Ray implements LightSource, Serializable {
       Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
               .hasIntersectionPoint(this.origin, opticalObject));
       TransformData transform = opticalObject.transform(this, iPoint);
-      if (transform == null) {
-//        End of line
-        break;
-      }
+      //        End of line
+      if (transform == null) break;
+
       Line normal = opticalObject.drawNormal(transform.getIntersectionSideData(), iPoint);
-      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20,Color.color(0,0,0,0));
+      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20, Color.color(0, 0, 0, 0));
       AngleDisplay angleDisplay = transform.getAngleDisplay();
       angleDisplay.setVisible(false);
       activeArea.setOnMouseEntered(event -> {

@@ -60,26 +60,18 @@ public class RayTabController{
     });
   }
   public void createRay(Ray r){
+    changeFocus(r);
     rays.add(r);
     r.setOnDestroy(e->{
       rays.remove(r);
       return null;
     });
     r.addOnStateChange(e-> {
+      changeFocus(r);
       r.renderRays(opticalRectangles);
-      this.expectedText = fixAngle(r.getAngle());
-      this.expectedColor = this.focusedRay.getColor();
-      rayColor.setValue(this.focusedRay.getColor());
-      rayRotation.setText(expectedText);
     });
     r.setOnFocusStateChanged(state -> {
-      if(state){
-        this.focusedRay = r;
-        this.expectedText = fixAngle(r.getAngle());
-        this.expectedColor = this.focusedRay.getColor();
-        rayColor.setValue(this.focusedRay.getColor());
-        rayRotation.setText(expectedText);
-      }
+      if(state) changeFocus(r);
       return null;
     });
     r.renderRays(opticalRectangles);
@@ -90,6 +82,21 @@ public class RayTabController{
     rayColor.valueProperty().setValue(Color.BLACK);
     r.requestFocus();
   }
+
+  private void changeFocus(Ray r) {
+    if(this.focusedRay!=null){
+      this.focusedRay.getCircle().setStroke(Color.BLACK);
+      this.focusedRay.getCircle().setStrokeWidth(1);
+    }
+    this.focusedRay = r;
+    this.focusedRay.getCircle().setStroke(Color.BLUE);
+    this.focusedRay.getCircle().setStrokeWidth(2);
+    this.expectedText = fixAngle(r.getAngle());
+    this.expectedColor = this.focusedRay.getColor();
+    rayColor.setValue(this.focusedRay.getColor());
+    rayRotation.setText(expectedText);
+  }
+
   private String fixAngle(double angle){
     angle %=360;
     if(angle<0) angle+=360;

@@ -22,10 +22,9 @@ public class Geometry {
   public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects, OpticalRectangle currentObj) {
 //    Intersection point must be at least 1 px away from origin
     boolean hasObj = currentObj != null;
-    double threshold = 1;
+    double threshold = 4;
     Vectors origin = new Vectors(l.getStartX(), l.getStartY());
     OpticalRectangle result = null;
-    OpticalRectangle reserve = null;
     double bestIntersectionDistance = Double.MAX_VALUE;
     for (OpticalRectangle i : interactiveObjects) {
       boolean isCurrObj = hasObj && i.equals(currentObj);
@@ -35,11 +34,7 @@ public class Geometry {
         Point2D iPoint = Intersection
                 .getIntersectionPoint(intersection, origin, !isCurrObj);
         double distance = Vectors.distanceSquared(iPoint, origin);
-        if(distance<threshold){
-          if(distance<bestIntersectionDistance){
-            reserve = i;
-            bestIntersectionDistance = distance;
-          }
+        if (distance < threshold) {
           continue;
         }
         if (distance < bestIntersectionDistance) {
@@ -47,9 +42,6 @@ public class Geometry {
           result = i;
         }
       }
-    }
-    if(result==null && reserve!=null){
-      return reserve;
     }
     return result;
   }
@@ -61,16 +53,18 @@ public class Geometry {
   public static String fixAngle(double angle, int decimalPlaces) {
     angle %= 360;
     if (angle < 0) angle += 360;
-    return String.format("%."+decimalPlaces+"f",angle);
+    return String.format("%." + decimalPlaces + "f", angle);
   }
 
   public static String fixAngle(double angle) {
     return fixAngle(angle, 1);
   }
+
   public static double fixAngleRadians(double angle) {
-    return fixAngleRadians(angle,Math.PI*2);
+    return fixAngleRadians(angle, Math.PI * 2);
   }
-  public static double fixAngleRadians(double angle,double mod) {
+
+  public static double fixAngleRadians(double angle, double mod) {
     angle %= mod;
     if (angle < 0) angle += mod;
     return angle;
