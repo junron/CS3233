@@ -1,0 +1,29 @@
+image: gradle:5.4-jdk11
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - rm src/main/java/module-info.java
+    - mv MainMain.txt src/main/java/application/MainMain.java
+    - sed -i 's/application.Main/application.MainMain/g' build.gradle
+    - ./gradlew clean
+    - ./gradlew shadowJar
+    - mv build/libs/*.jar build/libs/release-$(git rev-parse --verify HEAD --short=20).jar
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
