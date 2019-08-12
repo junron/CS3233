@@ -11,6 +11,8 @@ public class User implements Serializable {
   private String name;
   private String nric;
   private Date dob;
+  public User() {
+  }
 
   public User(String username, String password, String name, String nric, Date dob) throws Exception {
     if (username == null || username.length() == 0) throw new Exception("Username cannot be empty.");
@@ -35,6 +37,10 @@ public class User implements Serializable {
             .from(Instant.from(dob.atStartOfDay(ZoneId.systemDefault()))));
   }
 
+  public String getUsername() {
+    return username;
+  }
+
   public boolean signIn(String password) {
 //    Timing safe password comparison
     if (password.length() != this.password.length()) return false;
@@ -46,12 +52,29 @@ public class User implements Serializable {
   }
 
   @Override
-  public byte[] serialize() {
-    return new byte[0];
+  public String serialize() {
+    return String.join("|", new String[]{this.username, this.password, this.name, this.nric, String.valueOf(this.dob
+            .getTime())});
   }
 
   @Override
-  public Serializable deserialize(byte[] serialized) {
-    return null;
+  public void deserialize(String serialized) {
+    String[] parts = serialized.split("\\|");
+    this.username = parts[0];
+    this.password = parts[1];
+    this.name = parts[2];
+    this.nric = parts[3];
+    this.dob = new Date(Long.parseLong(parts[4]));
+  }
+
+  @Override
+  public String toString() {
+    return "User{" +
+            "username='" + username + '\'' +
+            ", password='" + password + '\'' +
+            ", name='" + name + '\'' +
+            ", nric='" + nric + '\'' +
+            ", dob=" + dob +
+            '}';
   }
 }

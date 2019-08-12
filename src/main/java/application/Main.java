@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import storage.UserStorage;
 
 public class Main extends Application {
   @Override
@@ -17,6 +18,9 @@ public class Main extends Application {
       primaryStage.setScene(scene);
       primaryStage.setResizable(false);
       primaryStage.show();
+
+//      Initialize storage
+      UserStorage.initialize();
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -33,10 +33,10 @@
          <children>
             <Label text="Username:" />
             <Label layoutX="10.0" layoutY="29.0" text="Password:" GridPane.rowIndex="1" />
-            <Button fx:id="signinBtn" mnemonicParsing="false" text="Sign In" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+            <Button mnemonicParsing="false" onAction="#triggerSignIn" text="Sign In" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
             <TextField fx:id="signinUsername" GridPane.columnIndex="1" />
             <PasswordField fx:id="signinPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Text fx:id="signinOutput" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Text fx:id="signinOutput" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <Text layoutX="106.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sign In">
@@ -61,7 +61,7 @@
          <children>
             <Label text="Username:" />
             <Label layoutX="10.0" layoutY="29.0" text="Password:" GridPane.rowIndex="1" />
-            <Button fx:id="signupBtn" mnemonicParsing="false" onAction="#triggerSignUp" text="Sign Up" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+            <Button mnemonicParsing="false" onAction="#triggerSignUp" text="Sign Up" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
             <TextField fx:id="signupUsername" GridPane.columnIndex="1" />
             <PasswordField fx:id="signupPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Text fx:id="signupOutput" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" />

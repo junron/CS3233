@@ -1,4 +1,5 @@
 build
 .idea
 .gradle
-
+*.txt
+!MainMain.txt
