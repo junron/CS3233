@@ -12,6 +12,10 @@ public class Main extends Application {
     try {
       AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
       Scene scene = new Scene(root, 600, 400);
+      ScreenController.initialize(scene,getClass());
+      ScreenController.addScreen("main");
+      ScreenController.addScreen("signup");
+      ScreenController.activate("main");
       primaryStage.setTitle("Title");
       scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
       primaryStage.setScene(scene);
