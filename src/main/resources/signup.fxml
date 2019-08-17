@@ -48,5 +48,6 @@
             <Font size="24.0" />
          </font>
       </Text>
+      <Button layoutX="27.0" layoutY="24.0" mnemonicParsing="false" onAction="#triggerBack" text="Back" />
     </children>
 </AnchorPane>

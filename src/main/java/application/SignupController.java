@@ -63,4 +63,8 @@ public class SignupController implements Initializable {
       }
     });
   }
+
+  public void triggerBack() {
+    ScreenController.activate("main");
+  }
 }

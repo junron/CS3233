@@ -23,6 +23,10 @@ public abstract class GeneralStorage {
     this(new File(filename));
   }
 
+  public ArrayList<Serializable> getObjects() {
+    return objects;
+  }
+
   void syncToFile() {
     if (!storageFile.canWrite()) return;
     PrintWriter printWriter;

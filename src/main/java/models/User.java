@@ -6,11 +6,12 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class User implements Serializable {
-  private String username;
-  private String password;
+  String username;
+  String password;
   private String name;
   private String nric;
   private Date dob;
+
   public User() {
   }
 
@@ -53,8 +54,8 @@ public class User implements Serializable {
 
   @Override
   public String serialize() {
-    return String.join("|", new String[]{this.username, this.password, this.name, this.nric, String.valueOf(this.dob
-            .getTime())});
+    String time = String.valueOf(this.dob == null ? null : this.dob.getTime());
+    return String.join("|", new String[]{this.username, this.password, this.name, this.nric, time});
   }
 
   @Override
@@ -64,7 +65,7 @@ public class User implements Serializable {
     this.password = parts[1];
     this.name = parts[2];
     this.nric = parts[3];
-    this.dob = new Date(Long.parseLong(parts[4]));
+    this.dob = parts[4].equals("null") ? null : new Date(Long.parseLong(parts[4]));
   }
 
   @Override

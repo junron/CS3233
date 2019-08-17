@@ -1,11 +1,11 @@
 package application;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import models.Admin;
 import models.User;
 
 import static storage.UserStorage.storage;
@@ -30,13 +30,16 @@ public class MainController {
     }
     if (user.signIn(signinPassword.getText())) {
       signinOutput.setText("Signed in successfully");
+      if(user instanceof Admin){
+        ScreenController.activate("admin");
+      }
       signinOutput.setFill(Color.GREEN);
     } else {
       signinOutput.setText("Incorrect password");
     }
   }
 
-  public void openSignup() {
+  public void openSignUp() {
     ScreenController.activate("signup");
   }
 }
