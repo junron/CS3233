@@ -15,15 +15,15 @@
          <children>
             <TableView fx:id="carTable" minWidth="600.0" prefHeight="234.0" prefWidth="600.0">
               <columns>
-                <TableColumn prefWidth="57.60003662109375" text="Reg No" />
-                  <TableColumn prefWidth="80.79998779296875" text="Model" />
-                  <TableColumn prefWidth="69.5999755859375" text="Type" />
-                  <TableColumn prefWidth="85.5999755859375" text="Reg Date" />
-                  <TableColumn prefWidth="75.0" text="Engine cap" />
-                  <TableColumn prefWidth="46.39996337890625" text="Rate" />
-                  <TableColumn prefWidth="56.0" text="Status" />
-                  <TableColumn prefWidth="126.4000244140625" text="Image" />
-                  <TableColumn prefWidth="82.39996337890625" text="Transmission" />
+                <TableColumn prefWidth="93.5999755859375" text="Registration No" />
+                  <TableColumn prefWidth="69.60003662109375" text="Model" />
+                  <TableColumn prefWidth="63.20001220703125" text="Type" />
+                  <TableColumn prefWidth="110.0" text="Registration Date" />
+                  <TableColumn prefWidth="95.0" text="Image" />
+                  <TableColumn prefWidth="75.0" text="Hourly rate" />
+                  <TableColumn prefWidth="55.0" text="Status" />
+                  <TableColumn prefWidth="77.0" text="Transmission" />
+                  <TableColumn minWidth="50.0" prefWidth="99.0" text="Engine Capacity" />
               </columns>
             </TableView>
          </children>

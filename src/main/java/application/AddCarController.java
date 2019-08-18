@@ -64,6 +64,7 @@ public class AddCarController implements Initializable {
       }
       storage.addCar(car);
       this.triggerBack();
+      AdminController.adminController.rerender();
     } catch (Exception e) {
       output.setText(e.getMessage());
     }

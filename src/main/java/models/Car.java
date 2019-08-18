@@ -39,7 +39,7 @@ public class Car implements Serializable {
     this.isEconomy = isEconomy;
     this.registrationNum = registrationNum;
     this.image = new Image(new ByteArrayInputStream(imageBytes));
-    this.imageBytes = imageBytes;
+    this.imageBytes = imageBytes.clone();
     this.registrationDate = registrationDate;
     this.engineCapacity = engineCapacity;
     this.isAuto = isAuto;
@@ -87,6 +87,10 @@ public class Car implements Serializable {
     return isEconomy ? "Economy" : "Luxury";
   }
 
+  public byte[] getImageBytes() {
+    return imageBytes;
+  }
+
   public ImageView getImage() {
     ImageView imageView = new ImageView(image);
     imageView.setFitHeight(100);
@@ -114,7 +118,7 @@ public class Car implements Serializable {
   @Override
   public String serialize() {
     String regTime = String.valueOf(this.registrationDate.getTime());
-    String encoded = Base64.getEncoder().encodeToString(imageBytes);
+    String encoded = Base64.getEncoder().encodeToString(this.imageBytes);
     return String
             .join("|", new String[]{this.registrationNum, this.brand, this.model, String.valueOf(this.engineCapacity)
                     , String.valueOf(this.isAuto), String.valueOf(this.isEconomy), regTime, encoded});
@@ -131,8 +135,8 @@ public class Car implements Serializable {
     this.isAuto = Boolean.parseBoolean(parts[4]);
     this.isEconomy = Boolean.parseBoolean(parts[5]);
     this.registrationDate = new Date(Long.parseLong(parts[6]));
-    byte[] bytes = Base64.getDecoder().decode(parts[7]);
-    InputStream inputStream = new ByteArrayInputStream(bytes);
+    this.imageBytes = Base64.getDecoder().decode(parts[7]);
+    InputStream inputStream = new ByteArrayInputStream(this.imageBytes);
     this.image = new Image(inputStream);
   }
 
