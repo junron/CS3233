@@ -13,10 +13,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-public class Car implements Serializable {
+public abstract class Car implements Serializable {
   private String brand;
   private String model;
-  private boolean isEconomy = true;
+  private boolean isEconomy;
   private String registrationNum;
   private Image image;
   private Date registrationDate;
@@ -24,7 +24,7 @@ public class Car implements Serializable {
   private boolean isAuto;
   private double hourlyCharge;
   private byte[] imageBytes;
-  String type = "Economy";
+  protected String type;
 
   public Car() {
   }

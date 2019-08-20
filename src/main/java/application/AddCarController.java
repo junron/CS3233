@@ -10,10 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import models.cars.Car;
-import models.cars.Limousine;
-import models.cars.SUV;
-import models.cars.Sport;
+import models.cars.*;
 import utils.Utils;
 
 import java.io.ByteArrayInputStream;
@@ -71,7 +68,7 @@ public class AddCarController implements Initializable {
       Car car;
       switch (type.getSelectionModel().getSelectedItem()) {
         case "Economy": {
-          car = new Car(brand.getText(), model.getText(), true, regNo.getText(), imageBytes, date, engineCap
+          car = new Economy(brand.getText(), model.getText(), regNo.getText(), imageBytes, date, engineCap
                   .getText(), isAuto, hourlyRate.getText());
           break;
         }

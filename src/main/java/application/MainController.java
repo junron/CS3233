@@ -33,6 +33,7 @@ public class MainController {
       if(user instanceof Admin){
         ScreenController.activate("admin");
       }
+      ScreenController.activate("gallery");
       signinOutput.setFill(Color.GREEN);
     } else {
       signinOutput.setText("Incorrect password");

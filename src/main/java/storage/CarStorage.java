@@ -1,12 +1,11 @@
 package storage;
 
-import models.cars.Car;
+import models.cars.*;
 import models.Serializable;
-import models.cars.Limousine;
-import models.cars.SUV;
-import models.cars.Sport;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.function.Function;
 
 public class CarStorage extends GeneralStorage {
   public static CarStorage storage;
@@ -18,6 +17,18 @@ public class CarStorage extends GeneralStorage {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public ArrayList<Car> filter(Function<Car,Boolean> predicate){
+    ArrayList<Car> result = new ArrayList<>();
+    for(Serializable s: getObjects()){
+      if(s instanceof Car){
+        if(predicate.apply((Car) s)){
+          result.add((Car) s);
+        }
+      }
+    }
+    return result;
   }
 
   public CarStorage() throws IOException {
@@ -44,7 +55,7 @@ public class CarStorage extends GeneralStorage {
     Serializable serializable;
     switch (type) {
       case "Economy": {
-        serializable = new Car();
+        serializable = new Economy();
         break;
       }
       case "SUV": {

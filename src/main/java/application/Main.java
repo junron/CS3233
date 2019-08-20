@@ -24,6 +24,7 @@ public class Main extends Application {
       ScreenController.addScreen("signup");
       ScreenController.addScreen("admin");
       ScreenController.addScreen("addcar");
+      ScreenController.addScreen("gallery");
       ScreenController.activate("main");
       primaryStage.setTitle("Title");
       scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
