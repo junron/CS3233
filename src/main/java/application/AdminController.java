@@ -5,7 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import models.Car;
+import models.cars.Car;
 import models.Serializable;
 import storage.CarStorage;
 
@@ -28,7 +28,8 @@ public class AdminController implements Initializable {
           entry("Image","image"),
           entry("Engine Capacity","engineCapacity"),
           entry("Registration Date","registrationDate"),
-          entry("Transmission","transmission")
+          entry("Transmission","transmission"),
+          entry("Hourly rate","hourlyCharge")
   );
   public void triggerOpenAddCar() {
     ScreenController.activate("addcar");

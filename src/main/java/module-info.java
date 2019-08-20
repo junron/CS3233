@@ -1,5 +1,5 @@
 module main {
-  opens models;
+  opens models.cars;
   opens application;
   requires javafx.controls;
   requires javafx.fxml;

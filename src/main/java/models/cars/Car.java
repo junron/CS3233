@@ -1,11 +1,14 @@
-package models;
+package models.cars;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import models.Serializable;
+import utils.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -13,7 +16,7 @@ import java.util.regex.Pattern;
 public class Car implements Serializable {
   private String brand;
   private String model;
-  private boolean isEconomy;
+  private boolean isEconomy = true;
   private String registrationNum;
   private Image image;
   private Date registrationDate;
@@ -21,19 +24,36 @@ public class Car implements Serializable {
   private boolean isAuto;
   private double hourlyCharge;
   private byte[] imageBytes;
+  String type = "Economy";
 
   public Car() {
   }
 
   public Car(String brand, String model, boolean isEconomy, String registrationNum, byte[] imageBytes,
-             Date registrationDate, double engineCapacity, boolean isAuto, double hourlyCharge) throws Exception {
-    if (hourlyCharge <= 0) { throw new Exception("Hourly charge must be positive"); }
+             Date registrationDate, String engineCapacity, boolean isAuto, String hourlyCharge) throws Exception {
     Pattern carPlateRegex = Pattern
             .compile("((S[A-Z && [^H]]{1,2})|(E[A-Z]))[0-9]{1,4}[A-Z]", Pattern.CASE_INSENSITIVE);
     if (!carPlateRegex.matcher(registrationNum).matches()) { throw new Exception("Invalid car plate number"); }
     char checkDigit = registrationNum.charAt(registrationNum.length() - 1);
     char correctCheckDigit = Car.getCheckDigit(registrationNum.substring(0, registrationNum.length() - 1));
     if (checkDigit != correctCheckDigit) { throw new Exception("Invalid checksum"); }
+    if (brand == null || brand.length() == 0) throw new Exception("Brand cannot be empty");
+    if (model == null || model.length() == 0) throw new Exception("Model cannot be empty");
+    if (imageBytes == null || imageBytes.length == 0) throw new Exception("Image cannot be empty");
+    if (registrationDate == null) throw new Exception("Invalid registration date");
+    if (!Utils.isPast(registrationDate)) throw new Exception("Registration date cannot be in future");
+    try {
+      this.engineCapacity = Double.parseDouble(engineCapacity);
+      if (this.engineCapacity < 0) throw new Exception("Invalid engine capacity");
+    } catch (NumberFormatException e) {
+      throw new Exception("Invalid engine capacity");
+    }
+    try {
+      this.hourlyCharge = Double.parseDouble(hourlyCharge);
+      if (this.hourlyCharge < 0) throw new Exception("Invalid hourly rate");
+    } catch (NumberFormatException e) {
+      throw new Exception("Invalid hourly rate");
+    }
     this.brand = brand;
     this.model = model;
     this.isEconomy = isEconomy;
@@ -41,9 +61,7 @@ public class Car implements Serializable {
     this.image = new Image(new ByteArrayInputStream(imageBytes));
     this.imageBytes = imageBytes.clone();
     this.registrationDate = registrationDate;
-    this.engineCapacity = engineCapacity;
     this.isAuto = isAuto;
-    this.hourlyCharge = hourlyCharge;
   }
 
   private static char getCheckDigit(String registrationNumber) {
@@ -84,7 +102,7 @@ public class Car implements Serializable {
   }
 
   public String getType() {
-    return isEconomy ? "Economy" : "Luxury";
+    return isEconomy ? "Economy" : "Luxury - " + this.type;
   }
 
   public byte[] getImageBytes() {
@@ -93,13 +111,13 @@ public class Car implements Serializable {
 
   public ImageView getImage() {
     ImageView imageView = new ImageView(image);
-    imageView.setFitHeight(100);
-    imageView.setFitWidth(100);
+    imageView.setPreserveRatio(true);
+    imageView.setFitWidth(120);
     return imageView;
   }
 
   public String getRegistrationDate() {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
     return simpleDateFormat.format(registrationDate);
   }
 
@@ -121,7 +139,8 @@ public class Car implements Serializable {
     String encoded = Base64.getEncoder().encodeToString(this.imageBytes);
     return String
             .join("|", new String[]{this.registrationNum, this.brand, this.model, String.valueOf(this.engineCapacity)
-                    , String.valueOf(this.isAuto), String.valueOf(this.isEconomy), regTime, encoded});
+                    , String.valueOf(this.isAuto), String.valueOf(this.isEconomy), regTime,
+                    String.valueOf(this.hourlyCharge), encoded, this.type});
   }
 
 
@@ -135,14 +154,17 @@ public class Car implements Serializable {
     this.isAuto = Boolean.parseBoolean(parts[4]);
     this.isEconomy = Boolean.parseBoolean(parts[5]);
     this.registrationDate = new Date(Long.parseLong(parts[6]));
-    this.imageBytes = Base64.getDecoder().decode(parts[7]);
+    this.hourlyCharge = Double.parseDouble(parts[7]);
+    this.imageBytes = Base64.getDecoder().decode(parts[8]);
     InputStream inputStream = new ByteArrayInputStream(this.imageBytes);
     this.image = new Image(inputStream);
+    this.type = parts[9];
   }
 
   @Override
   public String toString() {
     return "Car{" + "brand='" + brand + '\'' + ", model='" + model + '\'' + ", isEconomy=" + isEconomy + ", " +
-            "registrationNum='" + registrationNum + '\'' + ", image=" + image + ", registrationDate=" + registrationDate + ", engineCapacity=" + engineCapacity + ", isAuto=" + isAuto + ", hourlyCharge=" + hourlyCharge + '}';
+            "registrationNum='" + registrationNum + '\'' + ", image=" + image + ", registrationDate=" + registrationDate + ", engineCapacity=" + engineCapacity + ", isAuto=" + isAuto + ", hourlyCharge=" + hourlyCharge + ", imageBytes=" + Arrays
+            .toString(imageBytes) + ", type='" + type + '\'' + '}';
   }
 }

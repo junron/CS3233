@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import models.User;
+import utils.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -58,8 +59,7 @@ public class SignupController implements Initializable {
       @Override
       public void updateItem(LocalDate item, boolean empty) {
         super.updateItem(item, empty);
-        LocalDate today = LocalDate.now();
-        setDisable(empty || item.compareTo(today) > 0);
+        setDisable(empty || !Utils.isPast(item));
       }
     });
   }

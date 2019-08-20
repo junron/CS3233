@@ -19,7 +19,7 @@
                   <TableColumn prefWidth="69.60003662109375" text="Model" />
                   <TableColumn prefWidth="63.20001220703125" text="Type" />
                   <TableColumn prefWidth="110.0" text="Registration Date" />
-                  <TableColumn prefWidth="95.0" text="Image" />
+                  <TableColumn prefWidth="120.0" text="Image" />
                   <TableColumn prefWidth="75.0" text="Hourly rate" />
                   <TableColumn prefWidth="55.0" text="Status" />
                   <TableColumn prefWidth="77.0" text="Transmission" />

@@ -2,11 +2,21 @@ package application;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import models.Car;
+import models.cars.Car;
+import models.cars.Limousine;
+import models.cars.SUV;
+import models.cars.Sport;
+import utils.Utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -30,7 +40,8 @@ public class AddCarController implements Initializable {
   public TextField brand;
   public TextField model;
   public Text output;
-  public Label selectedFile;
+  public TextField hourlyRate;
+  public ImageView imageView;
 
   private byte[] imageBytes;
 
@@ -43,8 +54,9 @@ public class AddCarController implements Initializable {
     fileChooser.setTitle("Select image");
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg"));
     File file = fileChooser.showOpenDialog(null);
-    imageBytes = Files.readAllBytes(Path.of(file.toURI()));
-    selectedFile.setText("Selected file: " + file.getName());
+    this.imageBytes = Files.readAllBytes(Path.of(file.toURI()));
+    Image image = new Image(new ByteArrayInputStream(imageBytes));
+    imageView.setImage(image);
   }
 
   public void triggerAddCar() {
@@ -56,8 +68,32 @@ public class AddCarController implements Initializable {
         throw new Exception("Invalid date");
       }
       boolean isAuto = transm.getSelectionModel().getSelectedItem().equals("Auto");
-      Car car = new Car(brand.getText(), model.getText(), true, regNo.getText(), imageBytes, date, Double
-              .parseDouble(engineCap.getText()),isAuto,1);
+      Car car;
+      switch (type.getSelectionModel().getSelectedItem()) {
+        case "Economy": {
+          car = new Car(brand.getText(), model.getText(), true, regNo.getText(), imageBytes, date, engineCap
+                  .getText(), isAuto, hourlyRate.getText());
+          break;
+        }
+        case "SUV": {
+          car = new SUV(brand.getText(), model.getText(), regNo.getText(), imageBytes, date, engineCap
+                  .getText(), isAuto, hourlyRate.getText());
+          break;
+        }
+        case "Limousine": {
+          car = new Limousine(brand.getText(), model.getText(), regNo.getText(), imageBytes, date, engineCap
+                  .getText(), isAuto, hourlyRate.getText());
+          break;
+        }
+        case "Sport": {
+          car = new Sport(brand.getText(), model.getText(), regNo.getText(), imageBytes, date, engineCap
+                  .getText(), isAuto, hourlyRate.getText());
+          break;
+        }
+        default: {
+          throw new Exception("A bug has occurred");
+        }
+      }
       if (storage.getCarByRegistration(regNo.getText()) != null) {
         output.setText("Car with same car plate number exists.");
         return;
@@ -73,7 +109,9 @@ public class AddCarController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     transm.setItems(FXCollections.observableArrayList("Auto", "Manual"));
+    transm.getSelectionModel().select("Auto");
     category.setItems(FXCollections.observableArrayList("Economy", "Luxury"));
+    category.getSelectionModel().select("Economy");
     category.setOnAction(event -> {
       if (category.getSelectionModel().getSelectedItem().equals("Economy")) {
         type.getItems().add("Economy");
@@ -86,13 +124,14 @@ public class AddCarController implements Initializable {
       }
     });
     type.setItems(FXCollections.observableArrayList("SUV", "Limousine", "Sport"));
-
+    type.getItems().add("Economy");
+    type.getSelectionModel().select("Economy");
+    type.setDisable(true);
     regDate.setDayCellFactory(picker -> new DateCell() {
       @Override
       public void updateItem(LocalDate item, boolean empty) {
         super.updateItem(item, empty);
-        LocalDate today = LocalDate.now();
-        setDisable(empty || item.compareTo(today) > 0);
+        setDisable(empty || !Utils.isPast(item));
       }
     });
   }
