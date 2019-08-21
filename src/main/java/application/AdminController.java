@@ -5,8 +5,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import models.cars.Car;
 import models.Serializable;
+import models.cars.Car;
 import storage.CarStorage;
 
 import java.net.URL;
@@ -55,5 +55,9 @@ public class AdminController implements Initializable {
         carTable.getItems().add((Car) s);
       }
     }
+  }
+
+  public void triggerSignout() {
+    ScreenController.activate("main");
   }
 }

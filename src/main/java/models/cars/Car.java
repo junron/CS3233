@@ -64,7 +64,7 @@ public abstract class Car implements Serializable {
     this.isAuto = isAuto;
   }
 
-  private static char getCheckDigit(String registrationNumber) {
+  public static char getCheckDigit(String registrationNumber) {
     char[] registrationNum = registrationNumber.toUpperCase().toCharArray();
     char[] checkDigits = "AZYXUTSRPMLKJHGEDCB".toCharArray();
     int[] multiply = new int[]{9, 4, 5, 4, 3, 2};

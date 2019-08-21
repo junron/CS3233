@@ -6,7 +6,6 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import models.User;
 import utils.Utils;
@@ -38,15 +37,18 @@ public class SignupController implements Initializable {
 
   public void triggerSignUp() {
     try {
-      User user = new User(signupUsername.getText(), signupPassword.getText(), signupName.getText(),
-              signupNRIC.getText(), signupDOB.getValue());
+      User user = new User(signupUsername.getText(), signupPassword.getText(), signupName.getText(), signupNRIC
+              .getText(), signupDOB.getValue());
       if (storage.getUserByUsername(signupUsername.getText()) != null) {
         signupOutput.setText("Username already taken.");
         return;
       }
       storage.addUser(user);
-      signupOutput.setFill(Color.GREEN);
-      signupOutput.setText("Signed up successfully.");
+      signupDOB.getEditor().setText("");
+      signupName.setText("");
+      signupPassword.setText("");
+      signupNRIC.setText("");
+      signupUsername.setText("");
       GalleryController.setUser(user);
       ScreenController.activate("gallery");
     } catch (Exception e) {

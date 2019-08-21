@@ -96,6 +96,21 @@ public class AddCarController implements Initializable {
         return;
       }
       storage.addCar(car);
+      //      Reset fields
+      brand.setText("");
+      model.setText("");
+      regNo.setText("");
+      engineCap.setText("");
+      hourlyRate.setText("");
+      imageView.setImage(null);
+      imageBytes = null;
+      regDate.getEditor().setText("");
+      transm.getSelectionModel().select("Auto");
+      category.getSelectionModel().select("Economy");
+      type.getItems().add("Economy");
+      type.getSelectionModel().select("Economy");
+      type.setDisable(true);
+
       this.triggerBack();
       AdminController.adminController.rerender();
     } catch (Exception e) {

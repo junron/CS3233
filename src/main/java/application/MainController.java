@@ -3,7 +3,6 @@ package application;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import models.Admin;
 import models.User;
@@ -29,15 +28,14 @@ public class MainController {
       return;
     }
     if (user.signIn(signinPassword.getText())) {
-      signinOutput.setText("Signed in successfully");
+      signinPassword.setText("");
+      signinUsername.setText("");
       if (user instanceof Admin) {
-        System.out.println("Admin");
         ScreenController.activate("admin");
         return;
       }
       GalleryController.setUser(user);
       ScreenController.activate("gallery");
-      signinOutput.setFill(Color.GREEN);
     } else {
       signinOutput.setText("Incorrect password");
     }

@@ -41,6 +41,7 @@
          <children>
             <Button layoutX="340.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerOpenAddCar" text="Add car" />
             <Button layoutX="460.0" layoutY="26.0" mnemonicParsing="false" text="Reset status" />
+            <Button layoutX="29.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerSignout" text="Sign out" />
          </children>
       </AnchorPane>
    </bottom>

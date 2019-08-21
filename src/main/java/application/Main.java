@@ -27,7 +27,7 @@ public class Main extends Application {
       ScreenController.addScreen("gallery");
       ScreenController.activate("main");
       primaryStage.setTitle("Title");
-      scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
+      scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setScene(scene);
       primaryStage.setResizable(false);
       primaryStage.show();
