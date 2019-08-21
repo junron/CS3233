@@ -13,7 +13,7 @@ public class UserStorage extends GeneralStorage {
     try {
       UserStorage.storage = new UserStorage();
       storage.loadFromFile();
-      if (storage.objects.size() == 0) {
+      if (storage.getUserByUsername(new Admin().getUsername()) == null) {
         storage.addUser(new Admin());
       }
     } catch (IOException e) {
@@ -38,8 +38,10 @@ public class UserStorage extends GeneralStorage {
 
   @Override
   protected Serializable deserialize(String serialized) {
-    if (serialized.length() > 6 && serialized.substring(0, 6).equals("CS3323"))
+    String username = serialized.split("\\|")[0];
+    if (username.equals(new Admin().getUsername())) {
       return new Admin();
+    }
     Serializable serializable = new User();
     serializable.deserialize(serialized);
     return serializable;

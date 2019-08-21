@@ -42,8 +42,12 @@ public class User implements Serializable {
     return username;
   }
 
+  public String getName() {
+    return name;
+  }
+
   public boolean signIn(String password) {
-//    Timing safe password comparison
+    //    Timing safe password comparison
     if (password.length() != this.password.length()) return false;
     boolean res = true;
     for (int i = 0; i < password.length(); i++) {
@@ -70,12 +74,7 @@ public class User implements Serializable {
 
   @Override
   public String toString() {
-    return "User{" +
-            "username='" + username + '\'' +
-            ", password='" + password + '\'' +
-            ", name='" + name + '\'' +
-            ", nric='" + nric + '\'' +
-            ", dob=" + dob +
-            '}';
+    return "User{" + "username='" + username + '\'' + ", password='" + password + '\'' + ", name='" + name + '\'' +
+            ", nric='" + nric + '\'' + ", dob=" + dob + '}';
   }
 }

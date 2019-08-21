@@ -47,6 +47,7 @@ public class SignupController implements Initializable {
       storage.addUser(user);
       signupOutput.setFill(Color.GREEN);
       signupOutput.setText("Signed up successfully.");
+      GalleryController.setUser(user);
       ScreenController.activate("gallery");
     } catch (Exception e) {
       signupOutput.setText(e.getMessage());

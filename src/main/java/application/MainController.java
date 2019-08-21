@@ -30,9 +30,12 @@ public class MainController {
     }
     if (user.signIn(signinPassword.getText())) {
       signinOutput.setText("Signed in successfully");
-      if(user instanceof Admin){
+      if (user instanceof Admin) {
+        System.out.println("Admin");
         ScreenController.activate("admin");
+        return;
       }
+      GalleryController.setUser(user);
       ScreenController.activate("gallery");
       signinOutput.setFill(Color.GREEN);
     } else {
