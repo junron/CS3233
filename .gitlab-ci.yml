@@ -7,6 +7,18 @@ before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 stages:
   - build
+  - test
+
+test:
+  stage: test
+  script:
+    - ./gradlew test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
 
 build:
   stage: build
@@ -19,7 +31,7 @@ build:
     - mv build/libs/*.jar build/libs/release-$(git rev-parse --verify HEAD --short=20).jar
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: push
+    policy: pull
     paths:
       - build
       - .gradle
