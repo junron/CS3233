@@ -1,3 +1,18 @@
-.tilepane {
-    -fx-background-color: cornsilk;
+.carPanePadding {
+    -fx-padding: 15 0 15 0;
+    -fx-alignment: bottom-center;
+}
+
+.title {
+    -fx-font-size: 20;
+}
+
+.carGridPane {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+}
+
+.carVbox {
+    -fx-border-color: black;
+    -fx-border-width: 0.5;
 }

@@ -35,7 +35,7 @@ public abstract class Car implements Serializable {
             .compile("((S[A-Z && [^H]]{1,2})|(E[A-Z]))[0-9]{1,4}[A-Z]", Pattern.CASE_INSENSITIVE);
     if (!carPlateRegex.matcher(registrationNum).matches()) { throw new Exception("Invalid car plate number"); }
     char checkDigit = registrationNum.charAt(registrationNum.length() - 1);
-    char correctCheckDigit = Car.getCheckDigit(registrationNum.substring(0, registrationNum.length() - 1));
+    char correctCheckDigit = models.cars.Car.getCheckDigit(registrationNum.substring(0, registrationNum.length() - 1));
     if (checkDigit != correctCheckDigit) { throw new Exception("Invalid checksum"); }
     if (brand == null || brand.length() == 0) throw new Exception("Brand cannot be empty");
     if (model == null || model.length() == 0) throw new Exception("Model cannot be empty");

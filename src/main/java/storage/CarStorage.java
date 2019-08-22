@@ -1,7 +1,7 @@
 package storage;
 
-import models.cars.*;
 import models.Serializable;
+import models.cars.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,58 +19,80 @@ public class CarStorage extends GeneralStorage {
     }
   }
 
-  public ArrayList<Car> filter(Function<Car,Boolean> predicate){
+  public CarStorage() throws IOException {
+    super("cars.txt");
+  }
+
+  public void addCar(models.cars.Car c) {
+    this.objects.add(c);
+    this.syncToFile();
+  }
+
+  public models.cars.Car getCarByRegistration(String registrationNum) {
+    return (models.cars.Car) this.objects.stream().filter(car -> {
+      if (car instanceof models.cars.Car) {
+        return ((models.cars.Car) car).getRegistrationNum().equals(registrationNum);
+      }
+      return false;
+    }).findFirst().orElse(null);
+  }
+
+
+  public ArrayList<Car> filter(Function<Car, Boolean> predicate) {
     ArrayList<Car> result = new ArrayList<>();
-    for(Serializable s: getObjects()){
-      if(s instanceof Car){
-        if(predicate.apply((Car) s)){
-          result.add((Car) s);
+    for (Serializable car : getObjects()) {
+      if (car instanceof Car) {
+        if (predicate.apply((Car) car)) {
+          result.add((Car) car);
         }
       }
     }
     return result;
   }
 
-  public CarStorage() throws IOException {
-    super("cars.txt");
+  public ArrayList<Object> map(Function<Car, Object> mapping) {
+    ArrayList<Object> result = new ArrayList<>();
+    for (Serializable car : getObjects()) {
+      if (car instanceof Car) result.add(mapping.apply((Car) car));
+    }
+    return result;
   }
 
-  public void addCar(Car c) {
-    this.objects.add(c);
-    this.syncToFile();
-  }
-
-  public Car getCarByRegistration(String registrationNum) {
-    return (Car) this.objects.stream().filter(car -> {
+  public ArrayList<Object> mapUnique(Function<Car, Object> mapping) {
+    ArrayList<Object> result = new ArrayList<>();
+    for (Serializable car : getObjects()) {
       if (car instanceof Car) {
-        return ((Car) car).getRegistrationNum().equals(registrationNum);
+        Object res = mapping.apply((Car) car);
+        System.out.println("res" + res);
+        System.out.println("contains" + result.contains(res));
+        if (!result.contains(res)) result.add(res);
       }
-      return false;
-    }).findFirst().orElse(null);
+    }
+    return result;
   }
 
   @Override
   protected Serializable deserialize(String serialized) {
     String type = serialized.split("\\|")[9];
-    Serializable serializable;
+    Serializable car;
     switch (type) {
       case "Economy": {
-        serializable = new Economy();
+        car = new Economy();
         break;
       }
       case "SUV": {
-        serializable = new SUV();
+        car = new SUV();
         break;
       }
       case "Sport": {
-        serializable = new Sport();
+        car = new Sport();
         break;
       }
       default: {
-        serializable = new Limousine();
+        car = new Limousine();
       }
     }
-    serializable.deserialize(serialized);
-    return serializable;
+    car.deserialize(serialized);
+    return car;
   }
 }

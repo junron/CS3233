@@ -6,7 +6,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Serializable;
-import models.cars.Car;
 import storage.CarStorage;
 
 import java.net.URL;
@@ -19,7 +18,7 @@ import static java.util.Map.ofEntries;
 public class AdminController implements Initializable {
   public static AdminController adminController;
   @FXML
-  private TableView<Car> carTable;
+  private TableView<models.cars.Car> carTable;
 
   private Map<String,String> keyPropertyMappings = ofEntries(
           entry("Registration No","registrationNum"),
@@ -41,8 +40,8 @@ public class AdminController implements Initializable {
       column.setCellValueFactory(new PropertyValueFactory<>(keyPropertyMappings.get(column.getText())));
     }
     for(Serializable s: CarStorage.storage.getObjects()){
-      if(s instanceof Car){
-        carTable.getItems().add((Car) s);
+      if(s instanceof models.cars.Car){
+        carTable.getItems().add((models.cars.Car) s);
       }
     }
     AdminController.adminController = this;
@@ -51,8 +50,8 @@ public class AdminController implements Initializable {
   void rerender(){
     carTable.getItems().clear();
     for(Serializable s: CarStorage.storage.getObjects()){
-      if(s instanceof Car){
-        carTable.getItems().add((Car) s);
+      if(s instanceof models.cars.Car){
+        carTable.getItems().add((models.cars.Car) s);
       }
     }
   }

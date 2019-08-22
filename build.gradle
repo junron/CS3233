@@ -35,7 +35,6 @@ shadowJar {
 }
 
 test {
-    compileClassPath +=  
     jvmArgs(
             '--add-exports=javafx.graphics/com.sun.javafx.application=org.testfx',
             '--add-exports=javafx.graphics/com.sun.glass.ui=org.testfx.monocle',

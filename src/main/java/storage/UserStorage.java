@@ -42,8 +42,8 @@ public class UserStorage extends GeneralStorage {
     if (username.equals(new Admin().getUsername())) {
       return new Admin();
     }
-    Serializable serializable = new User();
-    serializable.deserialize(serialized);
-    return serializable;
+    Serializable car = new User();
+    car.deserialize(serialized);
+    return car;
   }
 }
