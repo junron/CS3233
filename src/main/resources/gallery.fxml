@@ -34,9 +34,10 @@
                 <Font size="21.0" />
             </font>
         </Text>
-        <ComboBox fx:id="type" layoutX="20.0" layoutY="82.0" prefWidth="150.0" promptText="Type of car">
+        <ComboBox fx:id="type" layoutX="20.0" layoutY="82.0" onAction="#filterChange" prefWidth="150.0" promptText="Type of car">
             <items>
                 <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="All" />
                     <String fx:value="Economy" />
                     <String fx:value="Luxury - SUV" />
                     <String fx:value="Luxury - Limousine" />
@@ -45,7 +46,7 @@
             </items>
         </ComboBox>
       <Text layoutX="20.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filters:" />
-      <ComboBox fx:id="brand" layoutX="188.0" layoutY="82.0" onAction="#brandChange" prefWidth="150.0" promptText="Brand">
+      <ComboBox fx:id="brand" layoutX="188.0" layoutY="82.0" onAction="#filterChange" prefWidth="150.0" promptText="Brand">
          <items>
             <FXCollections fx:factory="observableArrayList">
                <String fx:value="Economy" />
@@ -55,7 +56,8 @@
             </FXCollections>
          </items>
       </ComboBox>
-      <Slider fx:id="maxPrice" blockIncrement="2.0" layoutX="351.0" layoutY="88.0" showTickLabels="true" />
+      <Slider fx:id="maxPrice" blockIncrement="2.0" layoutX="351.0" layoutY="88.0" majorTickUnit="1000.0" max="7000.0" minorTickCount="0" prefHeight="33.0" prefWidth="228.0" showTickLabels="true" />
       <Text layoutX="351.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum price:" />
+      <Text fx:id="maxPriceOut" layoutX="442.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
     </children>
 </AnchorPane>

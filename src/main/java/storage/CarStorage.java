@@ -63,8 +63,6 @@ public class CarStorage extends GeneralStorage {
     for (Serializable car : getObjects()) {
       if (car instanceof Car) {
         Object res = mapping.apply((Car) car);
-        System.out.println("res" + res);
-        System.out.println("contains" + result.contains(res));
         if (!result.contains(res)) result.add(res);
       }
     }
