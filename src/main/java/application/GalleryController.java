@@ -9,13 +9,14 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import models.Transaction;
 import models.User;
 import models.cars.Car;
 import storage.CarStorage;
-import storage.TransactionStorage;
 import utils.Utils;
 
 import java.io.IOException;
@@ -29,14 +30,24 @@ import static javafx.collections.FXCollections.observableArrayList;
 public class GalleryController implements Initializable {
   private static GalleryController galleryController;
   private static User user;
-  public Text welcome;
-  public GridPane gridpane;
-  public Slider maxPrice;
-  public ComboBox<Object> brand;
-  public ComboBox type;
-  public Text maxPriceOut;
-  public TextField searchField;
+  @FXML
+  private Text welcome;
+  @FXML
+  private GridPane gridpane;
+  @FXML
+  private Slider maxPrice;
+  @FXML
+  private ComboBox<Object> brand;
+  @FXML
+  private ComboBox type;
+  @FXML
+  private Text maxPriceOut;
+  @FXML
+  private TextField searchField;
+  @FXML
+  private Button checkoutBtn;
   private ArrayList<Car> cars;
+  private ArrayList<Transaction> pendingTransactions = new ArrayList<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -86,32 +97,58 @@ public class GalleryController implements Initializable {
     }
   }
 
-  private VBox createPane(Car car) {
+  private Pane createPane(Car car) {
     VBox vBox = new VBox();
     ObservableList<Node> children = vBox.getChildren();
 
-    HBox title = Utils.showSearch(car.getBrandAndModel(),searchField.getText());
+    HBox title = Utils.showSearch(car.getBrandAndModel(), searchField.getText());
     title.getStyleClass().add("title");
     children.add(title);
 
     children.add(car.getImage());
 
     GridPane gridPane = new GridPane();
-    gridPane.add(Utils.showSearch(car.getType(),searchField.getText()), 0, 0, 2, 1);
+    gridPane.add(Utils.showSearch(car.getType(), searchField.getText()), 0, 0, 2, 1);
     gridPane.add(new Text("Price:"), 0, 1);
     gridPane.add(new Text("$" + car.getHourlyCharge()), 1, 1);
     Button rent = new Button("Order");
-    rent.setOnMouseClicked(e -> handleOrder(car));
+    rent.setOnMouseClicked(e -> handleOrder(car, rent.getText().equals("Order")));
     gridPane.add(rent, 0, 2, 2, 1);
     GridPane.setHalignment(rent, HPos.CENTER);
     gridPane.getStyleClass().addAll("carPanePadding", "carGridPane");
     children.add(gridPane);
 
     vBox.getStyleClass().addAll("carPanePadding", "carVbox");
+    for (Transaction transaction : pendingTransactions) {
+      if (transaction.getCar().getRegistrationNum().equals(car.getRegistrationNum())) {
+        rent.setWrapText(true);
+        rent.setText("Cancel order");
+        vBox.setStyle("-fx-background-color: gray");
+        vBox.setOpacity(0.7);
+      }
+    }
     return vBox;
   }
 
-  private void handleOrder(Car car) {
+  private void handleOrder(Car car, boolean ordering) {
+    if (!ordering) {
+      Transaction transaction = null;
+      for (Transaction t : pendingTransactions) {
+        if (t.getCar().getRegistrationNum().equals(car.getRegistrationNum())) {
+          transaction = t;
+          break;
+        }
+      }
+      if (transaction == null) return;
+      pendingTransactions.remove(transaction);
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("Order cancellation");
+      alert.setHeaderText("Order cancelled");
+      alert.setContentText("Your order for car " + transaction.getCar().getRegistrationNum() + " has been cancelled.");
+      alert.showAndWait();
+      render();
+      return;
+    }
     Dialog<ButtonType> dialog = new Dialog<>();
     dialog.setTitle("Confirm order");
     try {
@@ -126,7 +163,9 @@ public class GalleryController implements Initializable {
     Optional<ButtonType> result = dialog.showAndWait();
     if (result.isPresent()) {
       if (result.get().equals(CarInfoController.confirmButton)) {
-        TransactionStorage.storage.addTransaction(CarInfoController.getTransaction());
+        pendingTransactions.add(CarInfoController.getTransaction());
+        checkoutBtn.setDisable(false);
+        render();
       }
     }
   }
@@ -161,5 +200,11 @@ public class GalleryController implements Initializable {
   private void filterChange() {
     cars = CarStorage.storage.filter(this::filter);
     render();
+  }
+
+  @FXML
+  private void triggerCheckout() {
+    CheckoutController.checkoutController.setTransactions(pendingTransactions);
+    ScreenController.activate("checkout");
   }
 }

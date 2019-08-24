@@ -25,10 +25,11 @@ public class Main extends Application {
       ScreenController.addScreen("admin");
       ScreenController.addScreen("addcar");
       ScreenController.addScreen("gallery");
+      ScreenController.addScreen("checkout");
       ScreenController.activate("main");
       GalleryController.setUser(UserStorage.storage.getUserByUsername("blob"));
       ScreenController.activate("gallery");
-      primaryStage.setTitle("Title");
+      primaryStage.setTitle("Car sharing");
       scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setScene(scene);
       primaryStage.setResizable(false);
