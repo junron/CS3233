@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import storage.CarStorage;
+import storage.TransactionStorage;
 import storage.UserStorage;
 
 public class Main extends Application {
@@ -14,6 +15,7 @@ public class Main extends Application {
       //      Initialize storage
       UserStorage.initialize();
       CarStorage.initialize();
+      TransactionStorage.initialize();
 
       AnchorPane root = new AnchorPane();
       Scene scene = new Scene(root, 600, 400);

@@ -1,22 +1,25 @@
 package application;
 
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 import models.User;
 import models.cars.Car;
 import storage.CarStorage;
+import storage.TransactionStorage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -50,6 +53,13 @@ public class GalleryController implements Initializable {
 
   private void render() {
     gridpane.getChildren().removeAll(gridpane.getChildren());
+    if (cars.size() == 0) {
+      Text t = new Text("No cars available");
+      t.setFont(Font.font("Comic Sans MS", 24));
+      GridPane.setHalignment(t, HPos.CENTER);
+      gridpane.add(t, 0, 0, 4, 1);
+      return;
+    }
     int i = 0;
     for (Car car : cars) {
       int row = Math.floorDiv(i, 4);
@@ -91,10 +101,9 @@ public class GalleryController implements Initializable {
         return null;
       }
     });
-    //    maxPrice.setMin();
   }
 
-  private VBox createPane(models.cars.Car car) {
+  private VBox createPane(Car car) {
     VBox vBox = new VBox();
     ObservableList<Node> children = vBox.getChildren();
 
@@ -105,10 +114,11 @@ public class GalleryController implements Initializable {
     children.add(car.getImage());
 
     GridPane gridPane = new GridPane();
-    gridPane.add(new Text(car.getType()), 0, 0);
+    gridPane.add(new Text(car.getType()), 0, 0, 2, 1);
     gridPane.add(new Text("Price:"), 0, 1);
     gridPane.add(new Text("$" + car.getHourlyCharge()), 1, 1);
     Button rent = new Button("Order");
+    rent.setOnMouseClicked(e -> handleOrder(car));
     gridPane.add(rent, 0, 2, 2, 1);
     GridPane.setHalignment(rent, HPos.CENTER);
     gridPane.getStyleClass().addAll("carPanePadding", "carGridPane");
@@ -118,13 +128,34 @@ public class GalleryController implements Initializable {
     return vBox;
   }
 
+  private void handleOrder(Car car) {
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Confirm order");
+    try {
+      dialog.getDialogPane().setContent(FXMLLoader.load(getClass().getResource("/carinfo.fxml")));
+    } catch (IOException e) {
+      return;
+    }
+    dialog.getDialogPane().getButtonTypes()
+            .addAll(CarInfoController.confirmButton, ButtonType.CANCEL);
+    CarInfoController.setCar(car);
+    CarInfoController.setUser(user);
+    CarInfoController.setDialog(dialog);
+    Optional<ButtonType> result = dialog.showAndWait();
+    if(result.isPresent()){
+      if(result.get().equals(CarInfoController.confirmButton)){
+        TransactionStorage.storage.addTransaction(CarInfoController.getTransaction());
+      }
+    }
+  }
+
   public static void setUser(User user) {
     GalleryController.user = user;
     if (galleryController == null) return;
     galleryController.welcome.setText("Welcome, " + user.getName());
   }
 
-  public boolean filter(Car car) {
+  private boolean filter(Car car) {
     String brand = (String) this.brand.getSelectionModel().getSelectedItem();
     if (brand != null && !brand.equals("All")) {
       if (!car.getBrandAndModel().split(" - ")[0].equals(brand)) {
