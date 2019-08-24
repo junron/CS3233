@@ -89,12 +89,12 @@ public abstract class Car implements Serializable {
     return checkDigits[sum % 19];
   }
 
-  public double getHourlyCharge() {
-    return hourlyCharge;
+  public String search() {
+    return (this.getType()+this.getBrandAndModel()).replaceAll("\\W| ","").toLowerCase();
   }
 
-  public void setHourlyCharge(double hourlyCharge) {
-    this.hourlyCharge = hourlyCharge;
+  public double getHourlyCharge() {
+    return hourlyCharge;
   }
 
   public String getBrandAndModel() {

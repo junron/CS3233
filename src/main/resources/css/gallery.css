@@ -5,6 +5,7 @@
 
 .title {
     -fx-font-size: 20;
+    -fx-alignment: center;
 }
 
 .carGridPane {
