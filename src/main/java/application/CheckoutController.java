@@ -3,13 +3,11 @@ package application;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import models.Transaction;
+import storage.TransactionStorage;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -70,15 +68,18 @@ public class CheckoutController implements Initializable {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Payment successful");
     alert.setHeaderText("Payment received");
-    alert.setContentText("You payment of " + this.totalCostString + " has been received. \nThank you for using Amazing " +
-            "Car Sharing");
+    alert.setContentText("Your payment of " + this.totalCostString + " has been received. \nThank you for using " +
+            "Amazing Car Sharing");
     alert.showAndWait();
+    for (Transaction transaction : transactions) TransactionStorage.storage.addTransaction(transaction);
+    triggerCancel();
   }
 
   @FXML
   public void triggerCancel() {
     this.transactions.removeIf(e -> true);
     ScreenController.activate("gallery");
+    GalleryController.rerender();
   }
 
   @Override

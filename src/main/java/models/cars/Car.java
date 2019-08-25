@@ -2,12 +2,17 @@ package models.cars;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import models.Serializable;
+import models.Transaction;
+import storage.TransactionStorage;
 import utils.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -90,7 +95,7 @@ public abstract class Car implements Serializable {
   }
 
   public String search() {
-    return (this.getType()+this.getBrandAndModel()).replaceAll("\\W| ","").toLowerCase();
+    return (this.getType() + this.getBrandAndModel()).replaceAll("\\W| ", "").toLowerCase();
   }
 
   public double getHourlyCharge() {
@@ -114,6 +119,28 @@ public abstract class Car implements Serializable {
     imageView.setPreserveRatio(true);
     imageView.setFitWidth(120);
     return imageView;
+  }
+
+  public Text getStatus() {
+    Text result = new Text("Available");
+    result.setFill(Color.GREEN);
+    ArrayList<Transaction> transactionByCarPlate = TransactionStorage.storage.getTransactionByCarPlate(registrationNum);
+    Date now = new Date();
+    for (Transaction transaction : transactionByCarPlate) {
+      //        Transaction is still current
+      if (transaction.getReturnTime().compareTo(now) > 0) {
+        //        Transaction is ongoing
+        if (transaction.getStartTime().compareTo(now) < 0) {
+          result.setText("Not available");
+          result.setFill(Color.RED);
+          return result;
+        } else {
+          result.setText("Booked");
+          result.setFill(Color.ORANGE);
+        }
+      }
+    }
+    return result;
   }
 
   public String getRegistrationDate() {

@@ -17,6 +17,7 @@ import models.Transaction;
 import models.User;
 import models.cars.Car;
 import storage.CarStorage;
+import storage.TransactionStorage;
 import utils.Utils;
 
 import java.io.IOException;
@@ -170,10 +171,17 @@ public class GalleryController implements Initializable {
     }
   }
 
-  public static void setUser(User user) {
+  static void setUser(User user) {
     GalleryController.user = user;
     if (galleryController == null) return;
     galleryController.welcome.setText("Welcome, " + user.getName());
+  }
+
+  static void rerender() {
+    if (galleryController == null) return;
+    ArrayList<Transaction> transactions = TransactionStorage.storage
+            .filter(transaction -> transaction.getUser().getUsername().equals(user.getUsername()));
+    galleryController.render();
   }
 
   private boolean filter(Car car) {
@@ -206,5 +214,10 @@ public class GalleryController implements Initializable {
   private void triggerCheckout() {
     CheckoutController.checkoutController.setTransactions(pendingTransactions);
     ScreenController.activate("checkout");
+  }
+
+  public void triggerSignout() {
+    user = null;
+    ScreenController.activate("main");
   }
 }

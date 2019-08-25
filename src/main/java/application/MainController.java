@@ -30,6 +30,7 @@ public class MainController {
     if (user.signIn(signinPassword.getText())) {
       signinPassword.setText("");
       signinUsername.setText("");
+      signinOutput.setText("");
       if (user instanceof Admin) {
         ScreenController.activate("admin");
         return;

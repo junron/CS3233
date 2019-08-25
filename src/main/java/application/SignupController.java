@@ -8,7 +8,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import models.User;
-import utils.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -49,6 +48,7 @@ public class SignupController implements Initializable {
       signupPassword.setText("");
       signupNRIC.setText("");
       signupUsername.setText("");
+      signupOutput.setText("");
       GalleryController.setUser(user);
       ScreenController.activate("gallery");
     } catch (Exception e) {
@@ -59,13 +59,15 @@ public class SignupController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    LocalDate date18YearsAgo = LocalDate.now().minusYears(18);
     signupDOB.setDayCellFactory(picker -> new DateCell() {
       @Override
       public void updateItem(LocalDate item, boolean empty) {
         super.updateItem(item, empty);
-        setDisable(empty || !Utils.isPast(item));
+        setDisable(empty || item.compareTo(date18YearsAgo)>0);
       }
     });
+    signupDOB.setValue(date18YearsAgo);
   }
 
   public void triggerBack() {
