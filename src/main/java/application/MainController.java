@@ -35,8 +35,8 @@ public class MainController {
         ScreenController.activate("admin");
         return;
       }
-      GalleryController.setUser(user);
-      ScreenController.activate("gallery");
+      DashboardController.dashboardController.setUser(user);
+      ScreenController.activate("dashboard");
     } else {
       signinOutput.setText("Incorrect password");
     }

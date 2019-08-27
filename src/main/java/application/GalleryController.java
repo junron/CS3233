@@ -22,6 +22,7 @@ import utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -29,8 +30,9 @@ import java.util.ResourceBundle;
 import static javafx.collections.FXCollections.observableArrayList;
 
 public class GalleryController implements Initializable {
-  private static GalleryController galleryController;
-  private static User user;
+  public static GalleryController galleryController;
+  private User user;
+  private LocalDateTime startTime, returnTime;
   @FXML
   private Text welcome;
   @FXML
@@ -45,10 +47,7 @@ public class GalleryController implements Initializable {
   private Text maxPriceOut;
   @FXML
   private TextField searchField;
-  @FXML
-  private Button checkoutBtn;
   private ArrayList<Car> cars;
-  private ArrayList<Transaction> pendingTransactions = new ArrayList<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -111,77 +110,59 @@ public class GalleryController implements Initializable {
     GridPane gridPane = new GridPane();
     gridPane.add(Utils.showSearch(car.getType(), searchField.getText()), 0, 0, 2, 1);
     gridPane.add(new Text("Price:"), 0, 1);
-    gridPane.add(new Text("$" + car.getHourlyCharge()), 1, 1);
+    gridPane.add(new Text(String.format("$%.2f", car.getHourlyCharge())), 1, 1);
     Button rent = new Button("Order");
-    rent.setOnMouseClicked(e -> handleOrder(car, rent.getText().equals("Order")));
+    rent.setOnMouseClicked(e -> handleOrder(car));
     gridPane.add(rent, 0, 2, 2, 1);
     GridPane.setHalignment(rent, HPos.CENTER);
     gridPane.getStyleClass().addAll("carPanePadding", "carGridPane");
     children.add(gridPane);
 
     vBox.getStyleClass().addAll("carPanePadding", "carVbox");
-    for (Transaction transaction : pendingTransactions) {
-      if (transaction.getCar().getRegistrationNum().equals(car.getRegistrationNum())) {
-        rent.setWrapText(true);
-        rent.setText("Cancel order");
-        vBox.setStyle("-fx-background-color: gray");
-        vBox.setOpacity(0.7);
-      }
-    }
     return vBox;
   }
 
-  private void handleOrder(Car car, boolean ordering) {
-    if (!ordering) {
-      Transaction transaction = null;
-      for (Transaction t : pendingTransactions) {
-        if (t.getCar().getRegistrationNum().equals(car.getRegistrationNum())) {
-          transaction = t;
-          break;
-        }
-      }
-      if (transaction == null) return;
-      pendingTransactions.remove(transaction);
-      Alert alert = new Alert(Alert.AlertType.INFORMATION);
-      alert.setTitle("Order cancellation");
-      alert.setHeaderText("Order cancelled");
-      alert.setContentText("Your order for car " + transaction.getCar().getRegistrationNum() + " has been cancelled.");
-      alert.showAndWait();
-      render();
-      return;
-    }
+  private void handleOrder(Car car) {
     Dialog<ButtonType> dialog = new Dialog<>();
-    dialog.setTitle("Confirm order");
+    dialog.setTitle("Confirm order and pay");
     try {
       dialog.getDialogPane().setContent(FXMLLoader.load(getClass().getResource("/carinfo.fxml")));
     } catch (IOException e) {
       return;
     }
     dialog.getDialogPane().getButtonTypes().addAll(CarInfoController.confirmButton, ButtonType.CANCEL);
-    CarInfoController.setCar(car);
-    CarInfoController.setUser(user);
-    CarInfoController.setDialog(dialog);
+    Transaction transaction = new Transaction(startTime, returnTime, car, user);
+    CarInfoController.carInfoController.setTransaction(transaction, false);
     Optional<ButtonType> result = dialog.showAndWait();
-    if (result.isPresent()) {
-      if (result.get().equals(CarInfoController.confirmButton)) {
-        pendingTransactions.add(CarInfoController.getTransaction());
-        checkoutBtn.setDisable(false);
-        render();
+    if (result.isPresent() && result.get().equals(CarInfoController.confirmButton)) {
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("Payment successful");
+      alert.setHeaderText("Payment received");
+      alert.setContentText(String
+              .format("Your payment of $%.2f has been received. \nThank you for using Amazing Car Sharing", transaction
+                      .computeCost()));
+      alert.showAndWait();
+
+      Alert saveBillAlert = new Alert(Alert.AlertType.CONFIRMATION);
+      saveBillAlert.setTitle("Save bill");
+      saveBillAlert.setHeaderText("Please save your bill to a file so that you can refer to it later.");
+      CarInfoController.carInfoController.setTransaction(transaction, true);
+      saveBillAlert.getButtonTypes().removeIf(buttonType -> buttonType.equals(ButtonType.OK));
+      ButtonType saveBill = new ButtonType("Save bill", ButtonBar.ButtonData.YES);
+      saveBillAlert.getButtonTypes().add(0, saveBill);
+      Optional<ButtonType> res = saveBillAlert.showAndWait();
+      if (res.isPresent() && res.get().equals(saveBill)) {
+        CarInfoController.carInfoController.triggerBillSave();
       }
+      TransactionStorage.storage.addTransaction(transaction);
+      ScreenController.activate("dashboard");
     }
   }
 
-  static void setUser(User user) {
-    GalleryController.user = user;
+  void setUser(User user) {
+    this.user = user;
     if (galleryController == null) return;
     galleryController.welcome.setText("Welcome, " + user.getName());
-  }
-
-  static void rerender() {
-    if (galleryController == null) return;
-    ArrayList<Transaction> transactions = TransactionStorage.storage
-            .filter(transaction -> transaction.getUser().getUsername().equals(user.getUsername()));
-    galleryController.render();
   }
 
   private boolean filter(Car car) {
@@ -201,7 +182,17 @@ public class GalleryController implements Initializable {
       }
     }
     double charge = maxPrice.getValue();
-    return car.getHourlyCharge() <= charge;
+    if (car.getHourlyCharge() > charge) return false;
+    for (Transaction transaction : TransactionStorage.storage.getTransactionByCarPlate(car.getRegistrationNum())) {
+      //      Check for intersection
+      //      Start time before other transaction and return time after other transaction start time
+      if (startTime.compareTo(transaction.getStartTime()) <= 0 && returnTime.compareTo(transaction.getStartTime()) >= 0)
+        return false;
+      //      Start time after transaction and before transaction end
+      if (startTime.compareTo(transaction.getStartTime()) >= 0 && startTime.compareTo(transaction.getReturnTime()) <= 0)
+        return false;
+    }
+    return true;
   }
 
   @FXML
@@ -211,13 +202,18 @@ public class GalleryController implements Initializable {
   }
 
   @FXML
-  private void triggerCheckout() {
-    CheckoutController.checkoutController.setTransactions(pendingTransactions);
-    ScreenController.activate("checkout");
+  private void triggerBack() {
+    ScreenController.activate("dashboard");
   }
 
-  public void triggerSignout() {
-    user = null;
-    ScreenController.activate("main");
+  void setReturnTime(LocalDateTime returnTime) {
+    this.returnTime = returnTime;
+    if (this.startTime != null) filterChange();
   }
+
+  void setStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
+    if (this.returnTime != null) filterChange();
+  }
+
 }

@@ -6,34 +6,28 @@ import storage.UserStorage;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 public class Transaction implements Serializable {
-  private Date startTime;
-  private Date returnTime;
+  private LocalDateTime startTime;
+  private LocalDateTime returnTime;
   private Car car;
   private User user;
   private int serialNumber;
   private long hours;
 
-  public Transaction(Date startTime, Date returnTime, Car car, User user) {
+  public Transaction(LocalDateTime startTime, LocalDateTime returnTime, Car car, User user) {
     this.startTime = startTime;
     this.returnTime = returnTime;
     this.car = car;
     this.user = user;
     SecureRandom secureRandom = new SecureRandom();
     this.serialNumber = Math.abs(secureRandom.nextInt());
+    this.hours = startTime.until(returnTime, ChronoUnit.HOURS);
   }
 
   public Transaction() {
-  }
-
-  public Transaction(LocalDateTime startTime, LocalDateTime returnTime, Car car, User user) {
-    this(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()), Date
-            .from(returnTime.atZone(ZoneId.systemDefault()).toInstant()), car, user);
-    this.hours = startTime.until(returnTime, ChronoUnit.HOURS);
   }
 
   public Car getCar() {
@@ -48,11 +42,11 @@ public class Transaction implements Serializable {
     return user;
   }
 
-  public Date getStartTime() {
+  public LocalDateTime getStartTime() {
     return startTime;
   }
 
-  public Date getReturnTime() {
+  public LocalDateTime getReturnTime() {
     return returnTime;
   }
 
@@ -67,8 +61,8 @@ public class Transaction implements Serializable {
 
   @Override
   public String serialize() {
-    String startTime = String.valueOf(this.startTime.getTime());
-    String returnTime = String.valueOf(this.returnTime.getTime());
+    String startTime = String.valueOf(this.startTime.toInstant(ZoneOffset.UTC).getEpochSecond());
+    String returnTime = String.valueOf(this.returnTime.toInstant(ZoneOffset.UTC).getEpochSecond());
     return String
             .join("|", new String[]{String.valueOf(serialNumber), startTime, returnTime, car.getRegistrationNum(),
                     user.getUsername()});
@@ -78,8 +72,8 @@ public class Transaction implements Serializable {
   public void deserialize(String serialized) {
     String[] parts = serialized.split("\\|");
     this.serialNumber = Integer.parseInt(parts[0]);
-    this.startTime = new Date(Long.parseLong(parts[1]));
-    this.returnTime = new Date(Long.parseLong(parts[2]));
+    this.startTime = LocalDateTime.ofEpochSecond(Long.parseLong(parts[1]), 0, ZoneOffset.UTC);
+    this.returnTime = LocalDateTime.ofEpochSecond(Long.parseLong(parts[2]), 0, ZoneOffset.UTC);
     this.car = CarStorage.storage.getCarByRegistration(parts[3]);
     this.user = UserStorage.storage.getUserByUsername(parts[4]);
   }

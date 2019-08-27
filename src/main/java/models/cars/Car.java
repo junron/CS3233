@@ -12,6 +12,7 @@ import utils.Utils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -125,7 +126,7 @@ public abstract class Car implements Serializable {
     Text result = new Text("Available");
     result.setFill(Color.GREEN);
     ArrayList<Transaction> transactionByCarPlate = TransactionStorage.storage.getTransactionByCarPlate(registrationNum);
-    Date now = new Date();
+    LocalDateTime now = LocalDateTime.now();
     for (Transaction transaction : transactionByCarPlate) {
       //        Transaction is still current
       if (transaction.getReturnTime().compareTo(now) > 0) {

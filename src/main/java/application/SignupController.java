@@ -49,8 +49,8 @@ public class SignupController implements Initializable {
       signupNRIC.setText("");
       signupUsername.setText("");
       signupOutput.setText("");
-      GalleryController.setUser(user);
-      ScreenController.activate("gallery");
+      DashboardController.dashboardController.setUser(user);
+      ScreenController.activate("dashboard");
     } catch (Exception e) {
       signupOutput.setText(e.getMessage());
     }
@@ -64,7 +64,7 @@ public class SignupController implements Initializable {
       @Override
       public void updateItem(LocalDate item, boolean empty) {
         super.updateItem(item, empty);
-        setDisable(empty || item.compareTo(date18YearsAgo)>0);
+        setDisable(empty || item.compareTo(date18YearsAgo) > 0);
       }
     });
     signupDOB.setValue(date18YearsAgo);

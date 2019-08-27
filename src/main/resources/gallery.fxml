@@ -70,15 +70,6 @@
                 <Image url="@images/search.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="28.0" fitWidth="107.0" layoutX="431.0" layoutY="28.0" pickOnBounds="true"
-                   preserveRatio="true" AnchorPane.rightAnchor="137.5">
-            <Image url="@images/cart.png"/>
-        </ImageView>
-      <Button fx:id="checkoutBtn" defaultButton="true" disable="true" layoutX="479.0" layoutY="21.0" mnemonicParsing="false" onAction="#triggerCheckout" prefHeight="41.0" prefWidth="101.0" text="Checkout">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Button>
-      <Button layoutX="499.0" layoutY="361.0" mnemonicParsing="false" onAction="#triggerSignout" text="Sign out" />
+      <Button layoutX="499.0" layoutY="361.0" mnemonicParsing="false" onAction="#triggerBack" text="Back" />
     </children>
 </AnchorPane>
