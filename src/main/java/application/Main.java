@@ -27,8 +27,6 @@ public class Main extends Application {
       ScreenController.addScreen("gallery");
       ScreenController.addScreen("dashboard");
       ScreenController.activate("main");
-      DashboardController.dashboardController.setUser(UserStorage.storage.getUserByUsername("blob"));
-      ScreenController.activate("dashboard");
       primaryStage.setTitle("Car sharing");
       scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setScene(scene);

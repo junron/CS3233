@@ -166,6 +166,12 @@ public class GalleryController implements Initializable {
   }
 
   private boolean filter(Car car) {
+    for (Transaction transaction : TransactionStorage.storage.getTransactionByCarPlate(car.getRegistrationNum())) {
+      //      Check for intersection
+      //     https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+      if (startTime.compareTo(transaction.getReturnTime()) <= 0 && returnTime
+              .compareTo(transaction.getStartTime()) >= 0) return false;
+    }
     if (searchField.getText() != null && searchField.getText().trim().length() > 0) {
       return car.search().contains(searchField.getText().toLowerCase());
     }
@@ -182,17 +188,7 @@ public class GalleryController implements Initializable {
       }
     }
     double charge = maxPrice.getValue();
-    if (car.getHourlyCharge() > charge) return false;
-    for (Transaction transaction : TransactionStorage.storage.getTransactionByCarPlate(car.getRegistrationNum())) {
-      //      Check for intersection
-      //      Start time before other transaction and return time after other transaction start time
-      if (startTime.compareTo(transaction.getStartTime()) <= 0 && returnTime.compareTo(transaction.getStartTime()) >= 0)
-        return false;
-      //      Start time after transaction and before transaction end
-      if (startTime.compareTo(transaction.getStartTime()) >= 0 && startTime.compareTo(transaction.getReturnTime()) <= 0)
-        return false;
-    }
-    return true;
+    return car.getHourlyCharge() <= charge;
   }
 
   @FXML
