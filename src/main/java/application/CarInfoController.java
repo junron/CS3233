@@ -24,25 +24,24 @@ import java.util.ResourceBundle;
 
 public class CarInfoController implements Initializable {
   static ButtonType confirmButton = new ButtonType("Confirm and pay", ButtonBar.ButtonData.OK_DONE);
-  @FXML
-  private Text userName, userNameText, transIdText;
-  @FXML
-  private GridPane bill;
+  static CarInfoController carInfoController;
   public Text brand;
   public Text type;
   public Text regNo;
   public Text engineCap;
   public Text transmission;
   public ImageView imageView;
-  static CarInfoController carInfoController;
   public Text transactionId;
-  private Transaction transaction;
   public Text totalHours;
   public Text totalCost;
   public Text hourlyRate;
+  @FXML
+  private Text userName, userNameText, transIdText;
+  @FXML
+  private GridPane bill;
+  private Transaction transaction;
 
-
-  void setTransaction(Transaction transaction,boolean bill) {
+  void setTransaction(Transaction transaction, boolean bill) {
     this.transaction = transaction;
     updateUI(bill);
   }
@@ -50,12 +49,12 @@ public class CarInfoController implements Initializable {
 
   private void updateUI(boolean bill) {
     Car car = transaction.getCar();
-    if(bill){
+    if (bill) {
       transactionId.setText(String.valueOf(transaction.getSerialNumber()));
       userName.setText(transaction.getUser().getName());
       transIdText.setOpacity(1);
       userNameText.setOpacity(1);
-    }else{
+    } else {
       transIdText.setOpacity(0);
       userNameText.setOpacity(0);
     }
@@ -83,7 +82,7 @@ public class CarInfoController implements Initializable {
 
     //Prompt user to select a file
     File file = fileChooser.showSaveDialog(null);
-    if(file==null){
+    if (file == null) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("File Error");
       alert.setHeaderText("No file selected");
@@ -92,9 +91,9 @@ public class CarInfoController implements Initializable {
     }
 
     try {
-      WritableImage writableImage = bill.snapshot(new SnapshotParameters(),null);
-      RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage,null);
-      ImageIO.write(renderedImage,"png",file);
+      WritableImage writableImage = bill.snapshot(new SnapshotParameters(), null);
+      RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+      ImageIO.write(renderedImage, "png", file);
     } catch (IOException e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("File Error");

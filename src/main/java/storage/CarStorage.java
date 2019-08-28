@@ -10,6 +10,10 @@ import java.util.function.Function;
 public class CarStorage extends GeneralStorage {
   public static CarStorage storage;
 
+  public CarStorage() throws IOException {
+    super("cars.txt");
+  }
+
   public static void initialize() {
     try {
       CarStorage.storage = new CarStorage();
@@ -17,10 +21,6 @@ public class CarStorage extends GeneralStorage {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  public CarStorage() throws IOException {
-    super("cars.txt");
   }
 
   public void addCar(models.cars.Car c) {
@@ -31,7 +31,7 @@ public class CarStorage extends GeneralStorage {
   public void updateCar(models.cars.Car c) {
     int index = this.objects.indexOf(c);
     this.objects.remove(index);
-    this.objects.add(index,c);
+    this.objects.add(index, c);
     this.syncToFile();
   }
 

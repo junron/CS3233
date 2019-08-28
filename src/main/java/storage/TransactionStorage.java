@@ -10,6 +10,10 @@ import java.util.function.Function;
 public class TransactionStorage extends GeneralStorage {
   public static TransactionStorage storage;
 
+  public TransactionStorage() throws IOException {
+    super("transaction.txt");
+  }
+
   public static void initialize() {
     try {
       TransactionStorage.storage = new TransactionStorage();
@@ -17,10 +21,6 @@ public class TransactionStorage extends GeneralStorage {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  public TransactionStorage() throws IOException {
-    super("transaction.txt");
   }
 
   public void addTransaction(Transaction transaction) {

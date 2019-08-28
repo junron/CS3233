@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 public abstract class Car implements Serializable {
+  protected String type;
   private String brand;
   private String model;
   private boolean isEconomy;
@@ -30,7 +31,6 @@ public abstract class Car implements Serializable {
   private boolean isAuto;
   private double hourlyCharge;
   private byte[] imageBytes;
-  protected String type;
 
   public Car() {
   }
@@ -103,6 +103,10 @@ public abstract class Car implements Serializable {
     return hourlyCharge;
   }
 
+  public void setHourlyCharge(double hourlyCharge) {
+    this.hourlyCharge = hourlyCharge;
+  }
+
   public String getHourlyChargeFormatted() {
     return String.format("$%.2f", this.getHourlyCharge());
   }
@@ -163,10 +167,6 @@ public abstract class Car implements Serializable {
 
   public String getRegistrationNum() {
     return registrationNum;
-  }
-
-  public void setHourlyCharge(double hourlyCharge) {
-    this.hourlyCharge = hourlyCharge;
   }
 
   @Override

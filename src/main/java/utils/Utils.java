@@ -40,11 +40,11 @@ public class Utils {
       label.setStyle("-fx-background-color: yellow");
       hBox.getChildren().add(label);
       int index = text.toLowerCase().indexOf(search, i + 1);
-      if(index==-1) break;
-      prev = i+1;
+      if (index == -1) break;
+      prev = i + 1;
       i = index;
     }
-    hBox.getChildren().add(new Text(text.substring(i+search.length())));
+    hBox.getChildren().add(new Text(text.substring(i + search.length())));
     return hBox;
   }
 

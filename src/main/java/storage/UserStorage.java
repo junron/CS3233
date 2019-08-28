@@ -9,6 +9,10 @@ import java.io.IOException;
 public class UserStorage extends GeneralStorage {
   public static UserStorage storage;
 
+  public UserStorage() throws IOException {
+    super("users.txt");
+  }
+
   public static void initialize() {
     try {
       UserStorage.storage = new UserStorage();
@@ -19,10 +23,6 @@ public class UserStorage extends GeneralStorage {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  public UserStorage() throws IOException {
-    super("users.txt");
   }
 
   public void addUser(User u) {

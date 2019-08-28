@@ -43,7 +43,6 @@ public class AdminChartController implements Initializable {
       if (!cars.containsKey(transaction.getCar().getType())) {
         cars.put(transaction.getCar().getType(), 1);
       } else {
-        System.out.println(transaction.getCar().getType()+cars.containsKey(transaction.getCar().getType()));
         cars.put(transaction.getCar().getType(), cars.get(transaction.getCar().getType()) + 1);
       }
     }

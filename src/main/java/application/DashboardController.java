@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import static javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 
 public class DashboardController implements Initializable {
+  static DashboardController dashboardController;
   @FXML
   private Button selectBtn;
   @FXML
@@ -29,7 +30,6 @@ public class DashboardController implements Initializable {
   private Spinner<Integer> returnHour;
   @FXML
   private Text welcome, output;
-  static DashboardController dashboardController;
   private User user;
 
   void setUser(User user) {
