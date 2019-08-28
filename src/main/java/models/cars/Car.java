@@ -35,6 +35,19 @@ public abstract class Car implements Serializable {
   public Car() {
   }
 
+  /**
+   *
+   * @param brand
+   * @param model
+   * @param isEconomy
+   * @param registrationNum
+   * @param imageBytes
+   * @param registrationDate
+   * @param engineCapacity
+   * @param isAuto
+   * @param hourlyCharge
+   * @throws Exception
+   */
   public Car(String brand, String model, boolean isEconomy, String registrationNum, byte[] imageBytes,
              Date registrationDate, String engineCapacity, boolean isAuto, String hourlyCharge) throws Exception {
     Pattern carPlateRegex = Pattern
@@ -70,6 +83,11 @@ public abstract class Car implements Serializable {
     this.isAuto = isAuto;
   }
 
+  /**
+   *
+   * @param registrationNumber
+   * @return
+   */
   private static char getCheckDigit(String registrationNumber) {
     char[] registrationNum = registrationNumber.toUpperCase().toCharArray();
     char[] checkDigits = "AZYXUTSRPMLKJHGEDCB".toCharArray();
