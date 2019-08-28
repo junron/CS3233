@@ -41,6 +41,7 @@ public class TransactionStorage extends GeneralStorage {
   }
 
   public ArrayList<Transaction> getTransactionByCarPlate(String carPlate) {
+    System.out.println(carPlate);
     return filter(transaction -> transaction.getCar().getRegistrationNum().equals(carPlate));
   }
 

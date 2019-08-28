@@ -26,6 +26,7 @@ public class Main extends Application {
       ScreenController.addScreen("addcar");
       ScreenController.addScreen("gallery");
       ScreenController.addScreen("dashboard");
+      ScreenController.addScreen("adminchart");
       ScreenController.activate("main");
       primaryStage.setTitle("Car sharing");
       scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());

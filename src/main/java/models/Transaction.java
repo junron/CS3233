@@ -76,5 +76,6 @@ public class Transaction implements Serializable {
     this.returnTime = LocalDateTime.ofEpochSecond(Long.parseLong(parts[2]), 0, ZoneOffset.UTC);
     this.car = CarStorage.storage.getCarByRegistration(parts[3]);
     this.user = UserStorage.storage.getUserByUsername(parts[4]);
+    this.hours = startTime.until(returnTime, ChronoUnit.HOURS);
   }
 }

@@ -116,4 +116,11 @@ public class AdminController implements Initializable {
     car.setHourlyCharge(hourlyRate);
     CarStorage.storage.updateCar(car);
   }
+
+  @FXML
+  private void triggerLoadStats() {
+    AdminChartController.adminChartController.rentals();
+    AdminChartController.adminChartController.render();
+    ScreenController.activate("adminchart");
+  }
 }

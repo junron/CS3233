@@ -2,10 +2,7 @@ package application;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -39,6 +36,7 @@ public class AddCarController implements Initializable {
   public Text output;
   public TextField hourlyRate;
   public ImageView imageView;
+  public CheckBox includesChauffeur;
 
   private byte[] imageBytes;
 
@@ -79,7 +77,7 @@ public class AddCarController implements Initializable {
         }
         case "Limousine": {
           car = new Limousine(brand.getText(), model.getText(), regNo.getText(), imageBytes, date, engineCap
-                  .getText(), isAuto, hourlyRate.getText());
+                  .getText(), isAuto, hourlyRate.getText(), includesChauffeur.isSelected());
           break;
         }
         case "Sport": {
@@ -109,6 +107,7 @@ public class AddCarController implements Initializable {
       category.getSelectionModel().select("Economy");
       type.getItems().add("Economy");
       type.getSelectionModel().select("Economy");
+      includesChauffeur.setDisable(true);
       type.setDisable(true);
 
       this.triggerBack();
@@ -133,6 +132,13 @@ public class AddCarController implements Initializable {
         type.getItems().remove("Economy");
         type.getSelectionModel().select("SUV");
         type.setDisable(false);
+      }
+    });
+    type.setOnAction(event -> {
+      if (type.getSelectionModel().getSelectedItem().equals("Limousine")) {
+        includesChauffeur.setDisable(false);
+      } else {
+        includesChauffeur.setDisable(true);
       }
     });
     type.setItems(FXCollections.observableArrayList("SUV", "Limousine", "Sport"));

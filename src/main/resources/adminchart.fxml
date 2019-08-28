@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AdminChartController">
+    <children>
+        <Button layoutX="514.0" layoutY="360.0" mnemonicParsing="false" onAction="#triggerBack" text="Back" />
+        <LineChart fx:id="perMonth" layoutX="9.0" layoutY="50.0" prefHeight="206.0" prefWidth="320.0">
+            <xAxis>
+                <CategoryAxis side="BOTTOM" fx:id="xAxis">
+                    <categories>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Jan" />
+                            <String fx:value="Feb" />
+                            <String fx:value="Mar" />
+                            <String fx:value="Apr" />
+                            <String fx:value="May" />
+                            <String fx:value="Jun" />
+                            <String fx:value="Jul" />
+                            <String fx:value="Aug" />
+                            <String fx:value="Sep" />
+                            <String fx:value="Oct" />
+                            <String fx:value="Nov" />
+                            <String fx:value="Dec" />
+                        </FXCollections>
+                    </categories>
+                </CategoryAxis>
+            </xAxis>
+            <yAxis>
+                <NumberAxis lowerBound="5.0" side="LEFT" />
+            </yAxis>
+        </LineChart>
+        <RadioButton layoutX="109.0" layoutY="257.0" mnemonicParsing="false" onAction="#rentals" selected="true" text="Rentals">
+            <toggleGroup>
+                <ToggleGroup fx:id="chartGrp" />
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton layoutX="109.0" layoutY="286.0" mnemonicParsing="false" onAction="#revenue" text="Revenue" toggleGroup="$chartGrp" />
+        <PieChart fx:id="typesOfCars" layoutX="318.0" layoutY="54.0" prefHeight="271.0" prefWidth="264.0" title="Types of cars" />
+    </children>
+</AnchorPane>

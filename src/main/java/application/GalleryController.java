@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import models.Transaction;
 import models.User;
 import models.cars.Car;
+import models.cars.Limousine;
 import storage.CarStorage;
 import storage.TransactionStorage;
 import utils.Utils;
@@ -111,9 +112,17 @@ public class GalleryController implements Initializable {
     gridPane.add(Utils.showSearch(car.getType(), searchField.getText()), 0, 0, 2, 1);
     gridPane.add(new Text("Price:"), 0, 1);
     gridPane.add(new Text(String.format("$%.2f", car.getHourlyCharge())), 1, 1);
+    if (car instanceof Limousine) {
+      gridPane.add(new Text("Has chauffeur:"), 0, 2);
+      gridPane.add(new Text(((Limousine) car).isHasChauffeur() ? "Yes" : "No"), 1, 2);
+    }
     Button rent = new Button("Order");
     rent.setOnMouseClicked(e -> handleOrder(car));
-    gridPane.add(rent, 0, 2, 2, 1);
+    if (car instanceof Limousine) {
+      gridPane.add(rent, 0, 3, 2, 1);
+    } else {
+      gridPane.add(rent, 0, 2, 2, 1);
+    }
     GridPane.setHalignment(rent, HPos.CENTER);
     gridPane.getStyleClass().addAll("carPanePadding", "carGridPane");
     children.add(gridPane);
