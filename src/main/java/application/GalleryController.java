@@ -213,12 +213,18 @@ public class GalleryController implements Initializable {
 
   void setReturnTime(LocalDateTime returnTime) {
     this.returnTime = returnTime;
-    if (this.startTime != null) filterChange();
+    if (this.startTime != null) {
+      cars = CarStorage.storage.filter(a -> true);
+      filterChange();
+    }
   }
 
   void setStartTime(LocalDateTime startTime) {
     this.startTime = startTime;
-    if (this.returnTime != null) filterChange();
+    if (this.returnTime != null) {
+      cars = CarStorage.storage.filter(a -> true);
+      filterChange();
+    }
   }
 
 }
