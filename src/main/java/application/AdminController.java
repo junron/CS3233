@@ -2,10 +2,7 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Serializable;
 import models.Transaction;
@@ -17,6 +14,7 @@ import utils.Utils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static java.util.Map.entry;
@@ -25,14 +23,14 @@ import static java.util.Map.ofEntries;
 public class AdminController implements Initializable {
   static AdminController adminController;
   @FXML
-  private Button resetStatus;
+  private Button resetStatus, editHourlyRate;
   @FXML
   private TableView<models.cars.Car> carTable;
 
   private Map<String, String> keyPropertyMappings = ofEntries(entry("Registration No", "registrationNum"), entry(
           "Model", "brandAndModel"), entry("Type", "type"), entry("Image", "image"), entry("Engine Capacity",
           "engineCapacity"), entry("Registration Date", "registrationDate"), entry("Transmission", "transmission"),
-          entry("Hourly rate", "hourlyCharge"), entry("Status", "status"));
+          entry("Hourly rate", "hourlyChargeFormatted"), entry("Status", "status"));
 
   public void triggerOpenAddCar() {
     ScreenController.activate("addcar");
@@ -52,7 +50,12 @@ public class AdminController implements Initializable {
     }
 
     carTable.getSelectionModel().selectedItemProperty().addListener(((_observable, _oldValue, newValue) -> {
-      if (newValue == null) return;
+      if (newValue == null) {
+        resetStatus.setDisable(true);
+        editHourlyRate.setDisable(true);
+        return;
+      }
+      editHourlyRate.setDisable(false);
       if (newValue.getStatus().getText().equals("Available")) {
         resetStatus.setDisable(true);
       } else {
@@ -89,5 +92,28 @@ public class AdminController implements Initializable {
     alert.setTitle("Success");
     alert.setHeaderText(transactions.size() + " transactions removed.");
     alert.showAndWait();
+  }
+
+  @FXML
+  private void triggerRateEdit() {
+    Car car = carTable.getSelectionModel().getSelectedItem();
+    TextInputDialog textInputDialog = new TextInputDialog(car.getHourlyChargeFormatted().substring(1));
+    textInputDialog.setContentText("Enter new hourly rate: $");
+    Optional<String> result = Optional.empty();
+    double hourlyRate = -1;
+    while (result.isEmpty()) {
+      result = textInputDialog.showAndWait();
+      if (result.isEmpty()) continue;
+      try {
+        hourlyRate = Double.parseDouble(result.get());
+        if (hourlyRate <= 0) {
+          result = Optional.empty();
+        }
+      } catch (NumberFormatException e) {
+        result = Optional.empty();
+      }
+    }
+    car.setHourlyCharge(hourlyRate);
+    CarStorage.storage.updateCar(car);
   }
 }

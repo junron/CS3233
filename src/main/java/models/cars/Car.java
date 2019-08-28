@@ -70,7 +70,7 @@ public abstract class Car implements Serializable {
     this.isAuto = isAuto;
   }
 
-  public static char getCheckDigit(String registrationNumber) {
+  private static char getCheckDigit(String registrationNumber) {
     char[] registrationNum = registrationNumber.toUpperCase().toCharArray();
     char[] checkDigits = "AZYXUTSRPMLKJHGEDCB".toCharArray();
     int[] multiply = new int[]{9, 4, 5, 4, 3, 2};
@@ -101,6 +101,10 @@ public abstract class Car implements Serializable {
 
   public double getHourlyCharge() {
     return hourlyCharge;
+  }
+
+  public String getHourlyChargeFormatted() {
+    return String.format("$%.2f", this.getHourlyCharge());
   }
 
   public String getBrandAndModel() {
@@ -159,6 +163,10 @@ public abstract class Car implements Serializable {
 
   public String getRegistrationNum() {
     return registrationNum;
+  }
+
+  public void setHourlyCharge(double hourlyCharge) {
+    this.hourlyCharge = hourlyCharge;
   }
 
   @Override

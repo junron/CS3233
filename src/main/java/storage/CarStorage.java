@@ -28,6 +28,13 @@ public class CarStorage extends GeneralStorage {
     this.syncToFile();
   }
 
+  public void updateCar(models.cars.Car c) {
+    int index = this.objects.indexOf(c);
+    this.objects.remove(index);
+    this.objects.add(index,c);
+    this.syncToFile();
+  }
+
   public models.cars.Car getCarByRegistration(String registrationNum) {
     return (models.cars.Car) this.objects.stream().filter(car -> {
       if (car instanceof models.cars.Car) {

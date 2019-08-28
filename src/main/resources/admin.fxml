@@ -39,9 +39,10 @@
    <bottom>
       <AnchorPane prefHeight="78.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="340.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerOpenAddCar" text="Add car" />
-            <Button fx:id="resetStatus" layoutX="460.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerResetStatus" text="Reset status" />
+            <Button layoutX="278.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerOpenAddCar" text="Add car" />
+            <Button fx:id="resetStatus" layoutX="486.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerResetStatus" text="Reset status" />
             <Button layoutX="29.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerSignout" text="Sign out" />
+            <Button fx:id="editHourlyRate" layoutX="373.0" layoutY="26.0" mnemonicParsing="false" onAction="#triggerRateEdit" text="Change rate" />
          </children>
       </AnchorPane>
    </bottom>
