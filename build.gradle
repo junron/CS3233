@@ -1,7 +1,16 @@
 plugins {
     id 'java'
-    id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.7'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    modules = ["javafx.controls", "javafx.fxml"]
 }
 
 
@@ -9,17 +18,17 @@ group 'CS'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.11
-javafx {
-    modules = ["javafx.controls","javafx.fxml"]
-}
 
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.openjfx:javafx-graphics:11.0.1:win"
+    compile "org.openjfx:javafx-graphics:11.0.1:mac"
 }
 
-mainClassName = "application.Main"
+shadowJar {
+    baseName = 'dropbio'
+}
+
+
+mainClassName = 'application.Main'
