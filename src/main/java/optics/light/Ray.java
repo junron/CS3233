@@ -5,6 +5,9 @@ import application.Storage;
 import javafx.AngleDisplay;
 import javafx.Draggable;
 import javafx.Rotatable;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -25,9 +28,10 @@ import optics.objects.Refract;
 import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
+import utils.ThreadPool;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.function.Function;
 
 public class Ray implements LightSource, Serializable {
@@ -45,6 +49,7 @@ public class Ray implements LightSource, Serializable {
   private Circle circle;
   private Color color;
   private boolean inRefractiveMaterial;
+  private boolean maximumReflectionDepthExceeded;
 
   public Ray(PreciseLine l, Pane parent) {
     this.currentLine = l;
@@ -157,20 +162,15 @@ public class Ray implements LightSource, Serializable {
     this.circle.requestFocus();
   }
 
-  @Override
-  public void renderRays(OpticsList<OpticalRectangle> objects) {
+
+  private ObservableList<Node> renderRaysThreaded(OpticsList<OpticalRectangle> objects) throws IllegalStateException {
+    ObservableList<Node> nodes = FXCollections.observableArrayList();
     this.resetCurrentLine();
-    this.removeAllLines();
     OpticalRectangle opticalObject = Geometry.getNearestIntersection(this.currentLine, objects);
     int refNum = 0;
     while (opticalObject != null) {
       if (refNum > Storage.maximumReflectionDepth) {
-        System.out.println("Maximum reflection depth exceeded");
-        this.currentLine.setStroke(this.color);
-        Alert alert = FxAlerts
-                .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth exceeded");
-        alert.showAndWait();
-        return;
+        throw new IllegalStateException("Maximum reflection depth exceeded");
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
@@ -194,21 +194,22 @@ public class Ray implements LightSource, Serializable {
         angleDisplay.setLayoutY(event.getSceneY() + 7);
       });
       activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
-      parent.getChildren().addAll(this.currentLine, normal, angleDisplay, activeArea);
+      nodes.addAll(this.currentLine, normal, angleDisplay, activeArea);
       lines.add(this.currentLine);
       lines.add(normal);
       lines.add(angleDisplay);
       lines.add(activeArea);
       this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
-      opticalObject = opticalObject instanceof Refract ?
-              Geometry.getNearestIntersection(this.currentLine, objects, opticalObject)
-              : Geometry.getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
+      opticalObject = opticalObject instanceof Refract ? Geometry
+              .getNearestIntersection(this.currentLine, objects, opticalObject) : Geometry
+              .getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
       refNum++;
     }
     this.currentLine.setStroke(this.color);
-    parent.getChildren().add(this.currentLine);
+    nodes.add(this.currentLine);
     lines.add(this.currentLine);
+    return nodes;
   }
 
   private void resetCurrentLine() {
@@ -219,9 +220,48 @@ public class Ray implements LightSource, Serializable {
   }
 
   @Override
+  public void renderRays(OpticsList<OpticalRectangle> objects) {
+    final Node[] lines = this.lines.toArray(new Node[0]);
+    this.lines.clear();
+    ThreadPool.getExecutorService().execute(() -> {
+      ObservableList<Node> nodes;
+      try {
+        nodes = this.renderRaysThreaded(objects);
+      } catch (IllegalStateException e) {
+        Platform.runLater(() -> {
+          this.parent.getChildren().removeAll(lines);
+          System.out.println("Maximum reflection depth exceeded");
+          if (this.maximumReflectionDepthExceeded) return;
+          this.maximumReflectionDepthExceeded = true;
+          this.currentLine.setStroke(this.color);
+          Alert alert = FxAlerts
+                  .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth " +
+                          "exceeded");
+          alert.showAndWait();
+        });
+        return;
+      }
+      this.maximumReflectionDepthExceeded = false;
+      Platform.runLater(() -> {
+        List<Node> collect = new ArrayList<>();
+        Set<Node> uniqueValues = new HashSet<>();
+        for (Node node : Objects.requireNonNull(nodes)) {
+          if (uniqueValues.add(node)) {
+            collect.add(node);
+          }
+        }
+        this.parent.getChildren().removeAll(lines);
+        this.parent.getChildren().removeAll(collect);
+        parent.getChildren().addAll(Objects.requireNonNull(collect));
+      });
+    });
+  }
+
+  @Override
   public void removeAllLines() {
-    this.parent.getChildren().removeAll(lines);
-    lines.clear();
+    final Node[] lines = this.lines.toArray(new Node[0]);
+    this.lines.clear();
+    Platform.runLater(() -> this.parent.getChildren().removeAll(lines));
   }
 
   @Override
