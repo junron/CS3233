@@ -31,7 +31,7 @@ public class Rotatable {
         }
       }
       if (event.isShiftDown()) {
-//        Move object instead of rotating it
+        //        Move object instead of rotating it
         switch (eventCode) {
           case ("LEFT"): {
             if (this.shape instanceof Circle) {
@@ -72,7 +72,7 @@ public class Rotatable {
         return;
       }
       if (event.isAltDown()) {
-//        Move object instead of rotating it
+        //        Move object instead of rotating it
         OpticalRectangle optShape = null;
         if (this.shape instanceof OpticalRectangle) {
           optShape = (OpticalRectangle) this.shape;
@@ -105,9 +105,14 @@ public class Rotatable {
       }
       double rotate = this.shape.getRotate();
       if (eventCode.equals("LEFT")) {
-//        Rotate anticlockwise
+        //        Rotate anticlockwise
+        System.out.println(this.shape.getLayoutX());
+        System.out.println("y" + this.shape.getLayoutY());
         this.shape.setRotate((rotate - (event.isControlDown() ? 45 : 1)) % 360);
+        System.out.println("After" + this.shape.getLayoutX());
+        System.out.println("Aftery" + this.shape.getLayoutY());
       } else if (eventCode.equals("RIGHT")) {
+        //        Clockwise
         this.shape.setRotate((rotate + (event.isControlDown() ? 45 : 1)) % 360);
       } else if (eventCode.equals("UP") && event.isControlDown()) {
         this.shape.setRotate((360 - rotate) % 360);

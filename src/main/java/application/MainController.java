@@ -29,6 +29,7 @@ public class MainController implements Initializable {
     opticsTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
     Storage.rayTabController = rayTabController;
+    Storage.parent = parent;
     parent.getChildren().addAll(opticalRectangles);
   }
 }

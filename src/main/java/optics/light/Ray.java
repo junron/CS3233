@@ -28,10 +28,10 @@ import optics.objects.Refract;
 import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
-import utils.ThreadPool;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class Ray implements LightSource, Serializable {
@@ -174,8 +174,15 @@ public class Ray implements LightSource, Serializable {
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
-      Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
-              .hasIntersectionPoint(this.origin, opticalObject));
+      Point2D iPoint;
+      try {
+        iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
+                .hasIntersectionPoint(this.origin, opticalObject));
+      } catch (IndexOutOfBoundsException e) {
+        System.out.println(!Intersection.hasIntersectionPoint(this.origin, opticalObject));
+        throw e;
+      }
+
       TransformData transform = opticalObject.transform(this, iPoint);
       //        End of line
       if (transform == null) break;
@@ -220,14 +227,16 @@ public class Ray implements LightSource, Serializable {
   }
 
   @Override
-  public void renderRays(OpticsList<OpticalRectangle> objects) {
-    final Node[] lines = this.lines.toArray(new Node[0]);
+  public CompletableFuture<ArrayList<ArrayList<Node>>> renderRays(OpticsList<OpticalRectangle> objects) {
+    CompletableFuture<ArrayList<ArrayList<Node>>> completableFuture = new CompletableFuture<>();
+    final ArrayList<Node> lines = new ArrayList<>(this.lines);
     this.lines.clear();
-    ThreadPool.getExecutorService().execute(() -> {
+    new Thread(() -> {
       ObservableList<Node> nodes;
       try {
         nodes = this.renderRaysThreaded(objects);
       } catch (IllegalStateException e) {
+        System.out.println("Maximum reflection depth exceeded");
         Platform.runLater(() -> {
           this.parent.getChildren().removeAll(lines);
           System.out.println("Maximum reflection depth exceeded");
@@ -240,27 +249,30 @@ public class Ray implements LightSource, Serializable {
           alert.showAndWait();
         });
         return;
+      } catch (Exception e) {
+        e.printStackTrace();
+        completableFuture.completeExceptionally(e);
+        return;
       }
       this.maximumReflectionDepthExceeded = false;
-      Platform.runLater(() -> {
-        List<Node> collect = new ArrayList<>();
-        Set<Node> uniqueValues = new HashSet<>();
-        for (Node node : Objects.requireNonNull(nodes)) {
-          if (uniqueValues.add(node)) {
-            collect.add(node);
-          }
-        }
-        this.parent.getChildren().removeAll(lines);
-        this.parent.getChildren().removeAll(collect);
-        parent.getChildren().addAll(Objects.requireNonNull(collect));
-      });
-    });
+      ArrayList<ArrayList<Node>> result = new ArrayList<>();
+      result.add(new ArrayList<>(nodes));
+      result.add(lines);
+      completableFuture.complete(result);
+    }).start();
+    return completableFuture;
   }
 
   @Override
   public void removeAllLines() {
     final Node[] lines = this.lines.toArray(new Node[0]);
+    for (Node node : lines) {
+      if (node instanceof OpticalRectangle) {
+        System.out.println("Lines2" + node);
+      }
+    }
     this.lines.clear();
+    System.out.println("Suspecc");
     Platform.runLater(() -> this.parent.getChildren().removeAll(lines));
   }
 

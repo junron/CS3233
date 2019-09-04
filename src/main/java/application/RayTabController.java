@@ -1,6 +1,7 @@
 package application;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
@@ -8,6 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import optics.PreciseLine;
 import optics.light.Ray;
+
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static application.Storage.opticalRectangles;
 import static application.Storage.rays;
@@ -39,7 +44,7 @@ public class RayTabController{
       if(val.length()==0){
         if(this.focusedRay==null) return;
         this.focusedRay.setAngle(0);
-        this.focusedRay.renderRays(opticalRectangles);
+        handleRender(this.focusedRay.renderRays(opticalRectangles));
         return;
       }
       double value;
@@ -50,7 +55,7 @@ public class RayTabController{
       }
       if(this.focusedRay==null) return;
       this.focusedRay.setAngle(Double.parseDouble(fixAngle(value)));
-      this.focusedRay.renderRays(opticalRectangles);
+      handleRender(this.focusedRay.renderRays(opticalRectangles));
     });
     rayColor.valueProperty().addListener((o,ol,color)->{
       if(this.focusedRay==null) return;
@@ -68,13 +73,13 @@ public class RayTabController{
     });
     r.addOnStateChange(e-> {
       changeFocus(r);
-      r.renderRays(opticalRectangles);
+      handleRender(r.renderRays(opticalRectangles));
     });
     r.setOnFocusStateChanged(state -> {
       if(state) changeFocus(r);
       return null;
     });
-    r.renderRays(opticalRectangles);
+    handleRender(r.renderRays(opticalRectangles));
     this.expectedText = fixAngle(r.getAngle());
     this.focusedRay = r;
     this.expectedColor = Color.BLACK;
@@ -96,7 +101,18 @@ public class RayTabController{
     rayColor.setValue(this.focusedRay.getColor());
     rayRotation.setText(expectedText);
   }
-
+  private void handleRender(CompletableFuture<ArrayList<ArrayList<Node>>> future){
+    ArrayList<ArrayList<Node>> result = null;
+    try {
+      result = future.get();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+      return;
+    }
+    parent.getChildren().removeAll(result.get(1));
+    //        Add nodes
+    parent.getChildren().addAll(result.get(0));
+  }
   private String fixAngle(double angle){
     angle %=360;
     if(angle<0) angle+=360;
