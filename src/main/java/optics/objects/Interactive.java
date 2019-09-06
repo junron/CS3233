@@ -17,4 +17,5 @@ public interface Interactive extends Serializable {
   Line drawNormal(IntersectionSideData iData, Point2D iPoint);
   void addOnStateChange(EventHandler<Event> handler);
   void setOnDestroy(Function<Event, Void> onDestroy);
+  Interactive cloneObject();
 }

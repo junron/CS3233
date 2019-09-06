@@ -11,7 +11,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
-      ThreadPool.initialize(1);
+      ThreadPool.initialize(100);
 
       AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
       Scene scene = new Scene(root, 600, 400);

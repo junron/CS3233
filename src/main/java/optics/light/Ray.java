@@ -1,6 +1,5 @@
 package optics.light;
 
-import application.FxAlerts;
 import application.Storage;
 import javafx.AngleDisplay;
 import javafx.Draggable;
@@ -12,7 +11,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -49,7 +47,6 @@ public class Ray implements LightSource, Serializable {
   private Circle circle;
   private Color color;
   private boolean inRefractiveMaterial;
-  private boolean maximumReflectionDepthExceeded;
 
   public Ray(PreciseLine l, Pane parent) {
     this.currentLine = l;
@@ -163,25 +160,20 @@ public class Ray implements LightSource, Serializable {
   }
 
 
-  private ObservableList<Node> renderRaysThreaded(OpticsList<OpticalRectangle> objects) throws IllegalStateException {
+  private ObservableList<Node> renderRaysThreaded(OpticsList<OpticalRectangle> objects) {
     ObservableList<Node> nodes = FXCollections.observableArrayList();
     this.resetCurrentLine();
     OpticalRectangle opticalObject = Geometry.getNearestIntersection(this.currentLine, objects);
     int refNum = 0;
     while (opticalObject != null) {
       if (refNum > Storage.maximumReflectionDepth) {
-        throw new IllegalStateException("Maximum reflection depth exceeded");
+        return null;
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
       Point2D iPoint;
-      try {
-        iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
-                .hasIntersectionPoint(this.origin, opticalObject));
-      } catch (IndexOutOfBoundsException e) {
-        System.out.println(!Intersection.hasIntersectionPoint(this.origin, opticalObject));
-        throw e;
-      }
+      iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
+              .hasIntersectionPoint(this.origin, opticalObject));
 
       TransformData transform = opticalObject.transform(this, iPoint);
       //        End of line
@@ -235,28 +227,15 @@ public class Ray implements LightSource, Serializable {
       ObservableList<Node> nodes;
       try {
         nodes = this.renderRaysThreaded(objects);
-      } catch (IllegalStateException e) {
-        System.out.println("Maximum reflection depth exceeded");
-        Platform.runLater(() -> {
-          this.parent.getChildren().removeAll(lines);
-          System.out.println("Maximum reflection depth exceeded");
-          if (this.maximumReflectionDepthExceeded) return;
-          this.maximumReflectionDepthExceeded = true;
-          this.currentLine.setStroke(this.color);
-          Alert alert = FxAlerts
-                  .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth " +
-                          "exceeded");
-          alert.showAndWait();
-        });
-        return;
       } catch (Exception e) {
         e.printStackTrace();
         completableFuture.completeExceptionally(e);
         return;
       }
-      this.maximumReflectionDepthExceeded = false;
       ArrayList<ArrayList<Node>> result = new ArrayList<>();
-      result.add(new ArrayList<>(nodes));
+      //      If maximum reflection depth exceeded, nodes is null
+      if (nodes == null) result.add(null);
+      else result.add(new ArrayList<>(nodes));
       result.add(lines);
       completableFuture.complete(result);
     }).start();
@@ -266,13 +245,7 @@ public class Ray implements LightSource, Serializable {
   @Override
   public void removeAllLines() {
     final Node[] lines = this.lines.toArray(new Node[0]);
-    for (Node node : lines) {
-      if (node instanceof OpticalRectangle) {
-        System.out.println("Lines2" + node);
-      }
-    }
     this.lines.clear();
-    System.out.println("Suspecc");
     Platform.runLater(() -> this.parent.getChildren().removeAll(lines));
   }
 

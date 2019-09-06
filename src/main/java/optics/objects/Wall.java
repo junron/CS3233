@@ -17,14 +17,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class Wall extends OpticalRectangle{
+public class Wall extends OpticalRectangle {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
 
-  public Wall(double x, double y, double width, double height, Pane parent,double rotation) {
+  public Wall(double x, double y, double width, double height, Pane parent, double rotation) {
     super(x, y, width, height);
     this.setRotate(rotation);
-    this.setFill(Color.rgb(180,179,176));
+    this.setFill(Color.rgb(180, 179, 176));
     this.setStroke(Color.BLACK);
     this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
@@ -50,7 +50,7 @@ public class Wall extends OpticalRectangle{
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint,Point2D origin) {
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin) {
     return null;
   }
 
@@ -67,6 +67,11 @@ public class Wall extends OpticalRectangle{
   @Override
   public void setOnDestroy(Function<Event, Void> onDestroy) {
     this.onDestroy = onDestroy;
+  }
+
+  @Override
+  public Interactive cloneObject() {
+    return this.clone(false);
   }
 
   @Override
@@ -96,8 +101,10 @@ public class Wall extends OpticalRectangle{
     this.setHeight(height);
     this.setRotate(angle);
   }
+
   @Override
   public OpticalRectangle clone(boolean shiftPositions) {
-    return new Wall(this.getX()+(shiftPositions?10:0),this.getY()+(shiftPositions?10:0),this.getWidth(),this.getHeight(),parent,this.getRotate());
+    return new Wall(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
+            .getWidth(), this.getHeight(), parent, this.getRotate());
   }
 }

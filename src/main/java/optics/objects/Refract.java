@@ -60,6 +60,11 @@ public class Refract extends OpticalRectangle {
   }
 
   @Override
+  public Interactive cloneObject() {
+    return this.clone(false);
+  }
+
+  @Override
   public TransformData transform(Ray r, Point2D iPoint) {
     PreciseLine l = r.getCurrentLine();
 //    System.out.println(Math.toDegrees(l.getPreciseAngle()));

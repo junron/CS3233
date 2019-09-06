@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import serialize.Serializable;
 
-public abstract class OpticalRectangle extends Rectangle implements Interactive, Serializable {
+abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
   protected Pane parent;
 
   private final int maxSize = 10_00;

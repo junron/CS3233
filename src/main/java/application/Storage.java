@@ -1,6 +1,7 @@
 package application;
 
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import optics.light.Ray;
 import optics.objects.OpticalRectangle;
@@ -14,31 +15,45 @@ public class Storage {
   static Pane parent;
   static final ArrayList<Ray> rays = new ArrayList<>();
   static final OpticsList<OpticalRectangle> opticalRectangles = new OpticsList<>();
-  private static CompletableFuture<Void> allFuture;
+  private static boolean isMaximumDepthExceeded = false;
 
   static void reRenderAll() {
-    if (allFuture != null) {
-      System.out.println("Cancelled");
-      allFuture.cancel(true);
-    }
     ArrayList<CompletableFuture<ArrayList<ArrayList<Node>>>> futures = new ArrayList<>();
     for (Ray r : rays) {
-      futures.add(r.renderRays(opticalRectangles));
+      futures.add(r.renderRays(opticalRectangles.deepClone()));
     }
-    allFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-    allFuture.join();
+
+    CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+    //    Block operations
+    voidCompletableFuture.join();
+
+
     for (CompletableFuture<ArrayList<ArrayList<Node>>> future : futures) {
       try {
         ArrayList<ArrayList<Node>> result = future.get();
-        //        Remove old lines
-//        parent.getChildren().removeAll(result.get(1));
-//        //        Add nodes
-//        parent.getChildren().addAll(result.get(0));
+
+        //  Remove old lines
+        parent.getChildren().removeAll(result.get(1));
+
+        //        Reflection depth exceeded
+        if (result.get(0) == null) {
+          //          Cancel extra alerts
+          if (isMaximumDepthExceeded) break;
+          isMaximumDepthExceeded = true;
+          Alert alert = FxAlerts
+                  .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth " +
+                          "exceeded");
+          alert.showAndWait();
+          break;
+        }
+        isMaximumDepthExceeded = false;
+        //  Add nodes
+        parent.getChildren().addAll(result.get(0));
       } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
       }
     }
-    allFuture = null;
   }
 
   public static OpticsTabController opticsTabController;
