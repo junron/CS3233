@@ -68,7 +68,7 @@ public class Mirror extends OpticalRectangle {
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
-    if(iData==null || iData.normalVector==null){
+    if (iData == null || iData.normalVector == null) {
       System.out.println("ERRORORROOROR: iData is null");
       return null;
     }
@@ -78,8 +78,15 @@ public class Mirror extends OpticalRectangle {
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
     PreciseLine preciseLine = new PreciseLine(newLine);
     preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
+
+    //    Ray is going through the mirror
+    //    Something is wrong, abort
+    //    if (Intersection.hasExitPoint(Shape.intersect(preciseLine, this), iPoint)) {
+    //      return null;
+    //    }
+
     HashMap<String, String> data = new HashMap<>();
-    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle+Math.PI));
+    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle + Math.PI));
     data.put("Reflection: ", angle);
     data.put("Incidence: ", angle);
     AngleDisplay angleDisplay = new AngleDisplay(data);
@@ -102,7 +109,7 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public byte[] serialize() {
-//    x,y,width,height,rotation
+    //    x,y,width,height,rotation
     ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5);
     byteBuffer.putChar('m');
     byteBuffer.putDouble(this.getX());

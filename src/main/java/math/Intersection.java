@@ -15,11 +15,9 @@ public class Intersection {
     ArrayList<Point2D> iPoints = convertToPoints(intersection.getElements());
     //Inline extension of comparator iface
     if (nearest) {
-      iPoints.sort((o1, o2) ->
-              (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
+      iPoints.sort((o1, o2) -> (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
     } else {
-      iPoints.sort((o1, o2) ->
-              (int) (Vectors.distanceBetween(o2, origin) - Vectors.distanceBetween(o1, origin)));
+      iPoints.sort((o1, o2) -> (int) (Vectors.distanceBetween(o2, origin) - Vectors.distanceBetween(o1, origin)));
     }
     return iPoints.get(0);
   }
@@ -29,7 +27,7 @@ public class Intersection {
   }
 
   public static double getIntersectingAngle(IntersectionSideData iData, PreciseLine line) {
-//    Make angle in range [-180,180]
+    //    Make angle in range [-180,180]
     double lineAngle = line.getPreciseAngle() - Math.PI;
     double normalAngle = iData.normalVector.getAngle();
     double angle = lineAngle - normalAngle;
@@ -43,8 +41,7 @@ public class Intersection {
     Circle pointIndicator = new Circle(iPoint.getX(), iPoint.getY(), 1);
     ArrayList<Point2D> points = convertToPoints(((Path) Shape.intersect(intersector, intersector)).getElements());
     ArrayList<Line> lines = generateLinesPoints(points);
-    Stream<Line> stream = lines.stream()
-                               .filter(line -> hasIntersectionPoint(Shape.intersect(line, pointIndicator)));
+    Stream<Line> stream = lines.stream().filter(line -> hasIntersectionPoint(Shape.intersect(line, pointIndicator)));
     Line l = stream.min((Line a, Line b) -> {
       Point2D midA = Vectors.midPoint(a);
       Point2D midB = Vectors.midPoint(b);
@@ -53,12 +50,8 @@ public class Intersection {
 
     if (l == null) return null;
     Vectors v = Vectors.lineToVector(l);
-    return new IntersectionSideData(
-            v,
-            new Point2D(l.getStartX(), l.getStartY()),
-            null,
-            Vectors.constructWithMagnitude(v.getAngle() - Math.toRadians(90), 2)
-    );
+    return new IntersectionSideData(v, new Point2D(l.getStartX(), l.getStartY()), null, Vectors
+            .constructWithMagnitude(v.getAngle() - Math.toRadians(90), 2));
   }
 
 
@@ -88,8 +81,38 @@ public class Intersection {
     return intersection.getElements().size() > 0;
   }
 
+  public static boolean hasExitPoint(Path intersection, Point2D entryPoint) {
+    ObservableList<PathElement> elements = intersection.getElements();
+    if (elements.size() == 0) return false;
+    ArrayList<Point2D> points = convertToPoints(elements);
+    points.removeIf(point2D -> Vectors.distanceSquared(entryPoint, point2D) < 400);
+    //    List<Point2D> result = new ArrayList<>();
+    //    for (Point2D point : points) {
+    //      boolean duplicate = false;
+    //      for (Point2D point2D : result) {
+    //        if (Vectors.distanceSquared(point, point2D) <= 1) {
+    //          // Duplicate point
+    //
+    //        }
+    //      }
+    //    }
+    return points.size() > 0;
+    //    for (Point2D point : points) {
+    //      //      Check if there exists a point far away from the entry point
+    //      if (Vectors.distanceSquared(points.get(0), point) > 100) {
+    //        System.out.println(points);
+    //        return true;
+    //      }
+    //    }
+    //    return false;
+  }
+
   public static boolean hasIntersectionPoint(Shape intersection) {
     return hasIntersectionPoint((Path) intersection);
+  }
+
+  public static boolean hasExitPoint(Shape intersection, Point2D entryPoint) {
+    return hasExitPoint((Path) intersection, entryPoint);
   }
 
   public static boolean hasIntersectionPoint(Point2D point, Shape shape) {

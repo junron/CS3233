@@ -193,21 +193,35 @@ public class Ray implements LightSource, Serializable {
         angleDisplay.setLayoutY(event.getSceneY() + 7);
       });
       activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
+      //      Find next optical object for light to interact with
+      opticalObject = opticalObject instanceof Refract ? Geometry
+              .getNearestIntersection(transform.getPreciseLine(), objects, opticalObject) : Geometry
+              .getNearestIntersection(transform.getPreciseLine(), objects.getAllExcept(opticalObject));
+      //        Final check for bugs
+      //        Detect if ray is passing through an optical object (rays cant pass through mirrors)
+      //        If detected, stop further rendering
+      if (opticalObject == null) {
+        for (OpticalRectangle object : objects) {
+          if (Intersection.hasExitPoint(Shape.intersect(transform.getPreciseLine(), object), new Point2D(transform
+                  .getPreciseLine().getStartX(), transform.getPreciseLine().getStartY()))) {
+            if (nodes.size() == 0) {
+              //              Ensure that there is at least 1 line
+              lines.add(this.currentLine);
+              nodes.addAll(this.currentLine);
+            }
+            //  Abort rendering
+            return nodes;
+          }
+        }
+      }
       nodes.addAll(this.currentLine, normal, angleDisplay, activeArea);
-      lines.add(this.currentLine);
-      lines.add(normal);
-      lines.add(angleDisplay);
-      lines.add(activeArea);
       this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
-      opticalObject = opticalObject instanceof Refract ? Geometry
-              .getNearestIntersection(this.currentLine, objects, opticalObject) : Geometry
-              .getNearestIntersection(this.currentLine, objects.getAllExcept(opticalObject));
       refNum++;
     }
     this.currentLine.setStroke(this.color);
     nodes.add(this.currentLine);
-    lines.add(this.currentLine);
+    lines.addAll(nodes);
     return nodes;
   }
 
