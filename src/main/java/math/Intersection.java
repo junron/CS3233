@@ -85,26 +85,9 @@ public class Intersection {
     ObservableList<PathElement> elements = intersection.getElements();
     if (elements.size() == 0) return false;
     ArrayList<Point2D> points = convertToPoints(elements);
-    points.removeIf(point2D -> Vectors.distanceSquared(entryPoint, point2D) < 400);
-    //    List<Point2D> result = new ArrayList<>();
-    //    for (Point2D point : points) {
-    //      boolean duplicate = false;
-    //      for (Point2D point2D : result) {
-    //        if (Vectors.distanceSquared(point, point2D) <= 1) {
-    //          // Duplicate point
-    //
-    //        }
-    //      }
-    //    }
+    //    Remove close points
+    points.removeIf(point2D -> Vectors.distanceSquared(entryPoint, point2D) < 100);
     return points.size() > 0;
-    //    for (Point2D point : points) {
-    //      //      Check if there exists a point far away from the entry point
-    //      if (Vectors.distanceSquared(points.get(0), point) > 100) {
-    //        System.out.println(points);
-    //        return true;
-    //      }
-    //    }
-    //    return false;
   }
 
   public static boolean hasIntersectionPoint(Shape intersection) {

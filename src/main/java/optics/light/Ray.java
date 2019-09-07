@@ -194,14 +194,15 @@ public class Ray implements LightSource, Serializable {
       });
       activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
       //      Find next optical object for light to interact with
-      opticalObject = opticalObject instanceof Refract ? Geometry
+      OpticalRectangle nextOpticalObject = opticalObject instanceof Refract ? Geometry
               .getNearestIntersection(transform.getPreciseLine(), objects, opticalObject) : Geometry
               .getNearestIntersection(transform.getPreciseLine(), objects.getAllExcept(opticalObject));
       //        Final check for bugs
       //        Detect if ray is passing through an optical object (rays cant pass through mirrors)
       //        If detected, stop further rendering
-      if (opticalObject == null) {
+      if (nextOpticalObject == null) {
         for (OpticalRectangle object : objects) {
+          if (object == opticalObject) continue;
           if (Intersection.hasExitPoint(Shape.intersect(transform.getPreciseLine(), object), new Point2D(transform
                   .getPreciseLine().getStartX(), transform.getPreciseLine().getStartY()))) {
             if (nodes.size() == 0) {
@@ -214,6 +215,8 @@ public class Ray implements LightSource, Serializable {
           }
         }
       }
+      //      Let next optical object be current optical object
+      opticalObject = nextOpticalObject;
       nodes.addAll(this.currentLine, normal, angleDisplay, activeArea);
       this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
