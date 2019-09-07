@@ -15,6 +15,7 @@ import math.Vectors;
 import optics.PreciseLine;
 import optics.TransformData;
 import optics.light.Ray;
+import utils.FxDebug;
 import utils.Geometry;
 
 import java.nio.ByteBuffer;
@@ -27,7 +28,8 @@ public class Refract extends OpticalRectangle {
   private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
   private Function<Event, Void> onDestroy;
 
-  public Refract(double x, double y, double width, double height, Pane parent, double rotation, double refractiveIndex) {
+  public Refract(double x, double y, double width, double height, Pane parent, double rotation,
+                 double refractiveIndex) {
     super(x, y, width, height);
     this.refractiveIndex = refractiveIndex;
     this.setRotate(rotation);
@@ -67,42 +69,47 @@ public class Refract extends OpticalRectangle {
   @Override
   public TransformData transform(Ray r, Point2D iPoint) {
     PreciseLine l = r.getCurrentLine();
-//    System.out.println(Math.toDegrees(l.getPreciseAngle()));
+    //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
-    double normalAngle = iData.normalVector.getAngle();
-    double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
+    double intersectionAngle = Intersection.getIntersectingAngle(iData, l) + Math.PI;
     double refAngle = Math.asin(Math.sin(intersectionAngle) / this.refractiveIndex);
-    if (r.isInRefractiveMaterial()) {
-      System.out.println("Ref ang" + Math.toDegrees(refAngle));
-      System.out.println("Inci ang" + Math.toDegrees(intersectionAngle));
-    }
-    if (Double.isNaN(refAngle)) {
-      return null;
-//      System.out.println("TIR");
-////      r.setCurrentRefractiveIndex(this.refractiveIndex);
-////      Total internal reflection
-//      PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
-//              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
-//      pLine.setPreciseAngle(normalAngle - intersectionAngle);
-//      return new TransformData(pLine,null,iData);
-    }
     if (r.isInRefractiveMaterial()) {
       r.setInRefractiveMaterial(false);
       refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle + Math.PI));
+      //      Total internal reflection can only occur when light exits an object
+      if (Double.isNaN(refAngle)) {
+        return totalInternalReflection(iPoint, r, iData);
+      }
     } else {
       r.setInRefractiveMaterial(true);
     }
     Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
-    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
-            .add(vect)));
+    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
     pLine.setPreciseAngle(refAngle);
     HashMap<String, String> data = new HashMap<>();
     String angle = String.format("%.1f", Math.toDegrees(refAngle));
     String iAngle = String.format("%.1f", Math.toDegrees(intersectionAngle));
     data.put("Refraction: ", angle);
     data.put("Incidence: ", iAngle);
+    AngleDisplay angleDisplay = new AngleDisplay(data);
+    return new TransformData(pLine, angleDisplay, iData);
+  }
+
+  //  Total internal reflection occurs when a ray travels from inside a high refractive index
+  //  object to the air. The ray is internally reflected within the object
+  private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
+    FxDebug.indicatePoint(iPoint,parent);
+    double normalAngle = iData.normalVector.getAngle();
+    double intersectionAngle = Intersection.getIntersectingAngle(iData, r.getCurrentLine()) + Math.PI;
+    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
+    pLine.setPreciseAngle(normalAngle - intersectionAngle);
+    r.setInRefractiveMaterial(true);
+    //    Angle display
+    HashMap<String, String> data = new HashMap<>();
+    data.put("TIR: ", String.format("%.1f", Math.toDegrees(normalAngle - intersectionAngle)));
     AngleDisplay angleDisplay = new AngleDisplay(data);
     return new TransformData(pLine, angleDisplay, iData);
   }
@@ -123,7 +130,7 @@ public class Refract extends OpticalRectangle {
 
   @Override
   public byte[] serialize() {
-//    x,y,width,height,rotation,ref index
+    //    x,y,width,height,rotation,ref index
     ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 6);
     byteBuffer.putChar('e');
     byteBuffer.putDouble(this.getX());
