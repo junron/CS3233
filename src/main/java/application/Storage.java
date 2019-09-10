@@ -48,6 +48,7 @@ public class Storage {
           break;
         }
         isMaximumDepthExceeded = false;
+        parent.getChildren().removeAll(result.get(0));
         //  Add nodes
         parent.getChildren().addAll(result.get(0));
       } catch (InterruptedException | ExecutionException e) {

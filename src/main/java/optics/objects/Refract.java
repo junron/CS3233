@@ -15,7 +15,6 @@ import math.Vectors;
 import optics.PreciseLine;
 import optics.TransformData;
 import optics.light.Ray;
-import utils.FxDebug;
 import utils.Geometry;
 
 import java.nio.ByteBuffer;
@@ -100,9 +99,10 @@ public class Refract extends OpticalRectangle {
   //  Total internal reflection occurs when a ray travels from inside a high refractive index
   //  object to the air. The ray is internally reflected within the object
   private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
-    FxDebug.indicatePoint(iPoint,parent);
+    System.out.println("TIR");
     double normalAngle = iData.normalVector.getAngle();
-    double intersectionAngle = Intersection.getIntersectingAngle(iData, r.getCurrentLine()) + Math.PI;
+    System.out.println(Math.toDegrees(normalAngle));
+    double intersectionAngle = Intersection.getIntersectingAngle(iData, r.getCurrentLine());
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
     pLine.setPreciseAngle(normalAngle - intersectionAngle);
