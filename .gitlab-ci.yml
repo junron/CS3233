@@ -18,7 +18,7 @@ build:
     - sed -i 's/application.Main/application.MainMain/g' build.gradle
     - ./gradlew clean
     - ./gradlew shadowJar
-    - mv build/libs/*.jar build/libs/release-$(git rev-parse --verify HEAD --short=20).jar
+    - mv build/libs/*.jar ./release-$(git rev-parse --verify HEAD --short=20).jar
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -27,15 +27,21 @@ build:
       - .gradle
   artifacts:
     paths:
-      - build/libs/*.jar
-    expire_in: 1 week
+      - ./release-*.jar
+    expire_in: 1 month
 
 test:
   stage: test
-  script: ./gradlew test
+  script:
+    - ./gradlew test
+    - mkdir
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build
       - .gradle
+  artifacts:
+    paths:
+      - build/reports/*
+    expire_in: 1 week
