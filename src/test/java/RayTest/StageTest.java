@@ -38,5 +38,6 @@ public class StageTest extends ApplicationTest {
   @Test
   public void hasTitle() {
     assertEquals("Ray Simulator", stage.getTitle());
+    System.out.println("Title tested successfully");
   }
 }
