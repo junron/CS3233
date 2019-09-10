@@ -45,3 +45,4 @@ test:
     paths:
       - build/reports/*
     expire_in: 1 week
+    when: always
