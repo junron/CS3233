@@ -13,6 +13,7 @@ stages:
 test:
   stage: test
   script:
+    - ls ~/.openjfx/cache -R
     - ./gradlew test
     - mkdir
   cache:
