@@ -15,7 +15,6 @@ test:
   script:
     - apt-get update && apt-get install openjfx -y
     - ./gradlew test
-    - mkdir
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
