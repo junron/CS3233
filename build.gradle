@@ -19,11 +19,15 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.11
 
+String os = "win";
+
+if(System.getenv("CI_JOB_STAGE").equals("test")){
+    os = "linux";
+}
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile "org.openjfx:javafx-graphics:11:win"
-    testCompile "org.openjfx:javafx-graphics:11:linux"
+    compile "org.openjfx:javafx-graphics:11:${os}"
     testCompile "org.testfx:openjfx-monocle:jdk-11+26"
     testCompile 'org.testfx:testfx-junit:4.0+'
 }
