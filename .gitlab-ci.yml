@@ -5,7 +5,7 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - export _JAVA_OPTIONS="-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k -Dprism.verbose=true -Dtestfx.setup.timeout=2500"
+  - export _JAVA_OPTIONS="-Djava.library.path=. -Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k -Dprism.verbose=true -Dtestfx.setup.timeout=2500"
 stages:
   - test
   - build
@@ -13,8 +13,6 @@ stages:
 test:
   stage: test
   script:
-    - apt-get update
-    - apt-get install openjfx -y
     - ./gradlew test
     - mkdir
   cache:
