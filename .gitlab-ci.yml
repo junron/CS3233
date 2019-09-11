@@ -13,8 +13,8 @@ stages:
 test:
   stage: test
   script:
-    - apt update
-    - apt install openjfx
+    - apt-get update
+    - apt-get install openjfx -y
     - ./gradlew test
     - mkdir
   cache:
