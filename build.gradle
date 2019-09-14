@@ -40,18 +40,7 @@ shadowJar {
 mainClassName = "application.Main"
 
 test {
-    sourceSets {
-        main.java.setOutputDir(file("build/classes/java/test"))
-    }
     scanForTestClasses = false
     include "**/*Test.class"
-    jvmArgs(
-            '--add-exports=javafx.graphics/com.sun.javafx.application=org.testfx',
-            '--add-exports=javafx.graphics/com.sun.glass.ui=org.testfx.monocle',
-            '--add-exports=lightmoduleproj/application=javafx.fxml',
-            '--add-opens=lightmoduleproj/application=javafx.fxml',
-            '--add-opens=javafx.graphics/com.sun.glass.ui=org.testfx'
-    )
-
 }
 

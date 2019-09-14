@@ -171,8 +171,7 @@ public class Ray implements LightSource, Serializable {
       }
       this.currentLine.setStroke(this.color);
       Path intersection = (Path) Shape.intersect(this.currentLine, opticalObject);
-      Point2D iPoint;
-      iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
+      Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(origin), !Intersection
               .hasIntersectionPoint(this.origin, opticalObject));
 
       TransformData transform = opticalObject.transform(this, iPoint);
