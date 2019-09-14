@@ -28,6 +28,6 @@ public class RegularOpticsTest {
     Path intersection = (Path) Shape.intersect(r.getCurrentLine(), m);
     Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(10, 150), false);
     TransformData tData = m.transform(r, iPoint);
-    assertEquals(0.0, Math.toDegrees(tData.getIntersectionSideData().normalAngle));
+    assertEquals(1.0, Math.toDegrees(tData.getIntersectionSideData().normalAngle), 1E-6);
   }
 }
