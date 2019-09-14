@@ -100,7 +100,7 @@ public class Refract extends OpticalRectangle {
   //  object to the air. The ray is internally reflected within the object
   private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
     System.out.println("TIR");
-    double normalAngle = iData.normalVector.getAngle();
+    double normalAngle = iData.normalAngle;
     System.out.println(Math.toDegrees(normalAngle));
     double intersectionAngle = Intersection.getIntersectingAngle(iData, r.getCurrentLine());
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint

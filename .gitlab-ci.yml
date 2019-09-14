@@ -30,7 +30,6 @@ test:
 build:
   stage: build
   script:
-    - rm src/main/java/module-info.java
     - mv MainMain.txt src/main/java/application/MainMain.java
     - sed -i 's/application.Main/application.MainMain/g' build.gradle
     - ./gradlew clean

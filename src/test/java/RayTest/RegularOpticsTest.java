@@ -22,12 +22,12 @@ public class RegularOpticsTest {
   public void zeroDegTest() {
     AnchorPane pane = new AnchorPane();
     Vectors origin = new Vectors(10, 150);
-    Mirror m = new Mirror(100, 100, 20, 200, pane, 0);
+    Mirror m = new Mirror(100, 100, 20, 200, pane, 1);
     Ray r = new Ray(new PreciseLine(Geometry
             .createLineFromPoints(origin, origin.add(Vectors.constructWithMagnitude(Math.toRadians(10), 2000)))), pane);
     Path intersection = (Path) Shape.intersect(r.getCurrentLine(), m);
     Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(10, 150), false);
     TransformData tData = m.transform(r, iPoint);
-    assertEquals(-180.0, Math.toDegrees(tData.getIntersectionSideData().normalVector.getAngle()));
+    assertEquals(0.0, Math.toDegrees(tData.getIntersectionSideData().normalAngle));
   }
 }

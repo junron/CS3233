@@ -72,7 +72,7 @@ public class Mirror extends OpticalRectangle {
       System.out.println("ERRORORROOROR: iData is null");
       return null;
     }
-    double normalAngle = iData.normalVector.getAngle();
+    double normalAngle = iData.normalAngle;
     double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
     Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
@@ -86,7 +86,7 @@ public class Mirror extends OpticalRectangle {
     //    }
 
     HashMap<String, String> data = new HashMap<>();
-    String angle = String.format("%.1f", Math.toDegrees(intersectionAngle + Math.PI));
+    String angle = Geometry.fixAngle(Math.toDegrees(intersectionAngle));
     data.put("Reflection: ", angle);
     data.put("Incidence: ", angle);
     AngleDisplay angleDisplay = new AngleDisplay(data);
