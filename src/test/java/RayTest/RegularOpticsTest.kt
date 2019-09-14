@@ -1,33 +1,45 @@
-package RayTest;
+package RayTest
 
-import javafx.geometry.Point2D;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Shape;
-import math.Intersection;
-import math.Vectors;
-import optics.PreciseLine;
-import optics.TransformData;
-import optics.light.Ray;
-import optics.objects.Mirror;
-import org.junit.Test;
-import utils.Geometry;
-
-import static junit.framework.TestCase.assertEquals;
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Path
+import javafx.scene.shape.Shape
+import junit.framework.TestCase.assertEquals
+import math.Intersection
+import math.Vectors
+import optics.PreciseLine
+import optics.light.Ray
+import optics.objects.Mirror
+import org.junit.Test
+import utils.Geometry
 
 
-public class RegularOpticsTest {
+class RegularOpticsTest {
 
   @Test
-  public void zeroDegTest() {
-    AnchorPane pane = new AnchorPane();
-    Vectors origin = new Vectors(10, 150);
-    Mirror m = new Mirror(100, 100, 20, 200, pane, 1);
-    Ray r = new Ray(new PreciseLine(Geometry
-            .createLineFromPoints(origin, origin.add(Vectors.constructWithMagnitude(Math.toRadians(10), 2000)))), pane);
-    Path intersection = (Path) Shape.intersect(r.getCurrentLine(), m);
-    Point2D iPoint = Intersection.getIntersectionPoint(intersection, new Vectors(10, 150), false);
-    TransformData tData = m.transform(r, iPoint);
-    assertEquals(1.0, Math.toDegrees(tData.getIntersectionSideData().normalAngle), 1E-6);
+  fun zeroDegTest() {
+    val pane: Pane = AnchorPane()
+    val origin = Vectors(10.0, 150.0)
+    val m = Mirror(100.0, 100.0, 20.0, 200.0, pane, 0.0)
+    val r = Ray(PreciseLine(Geometry.createLineFromPoints(origin, origin
+            .add(Vectors.constructWithMagnitude(0.0, 2000.0)))), pane)
+    val intersection = Shape.intersect(r.currentLine, m) as Path
+    val iPoint = Intersection.getIntersectionPoint(intersection, origin, false)
+    val tData = m.transform(r, iPoint)!!
+    assertEquals(0.0, Math.toDegrees(tData.intersectionSideData.normalAngle), 1E-5)
+    assertEquals(180.0, Math.toDegrees(tData.preciseLine.preciseAngle), 1E-5)
+  }
+  @Test
+  fun zeroDegBothRotatedTest() {
+    val pane: Pane = AnchorPane()
+    val origin = Vectors(10.0, 150.0)
+    val m = Mirror(100.0, 100.0, 20.0, 200.0, pane, 10.0)
+    val r = Ray(PreciseLine(Geometry.createLineFromPoints(origin, origin
+            .add(Vectors.constructWithMagnitude(Math.toRadians(10.0), 2000.0)))), pane)
+    val intersection = Shape.intersect(r.currentLine, m) as Path
+    val iPoint = Intersection.getIntersectionPoint(intersection, origin, false)
+    val tData = m.transform(r, iPoint)!!
+    assertEquals(10.0, Math.toDegrees(tData.intersectionSideData.normalAngle), 1E-5)
+    assertEquals(200.0, Math.toDegrees(tData.preciseLine.preciseAngle), 1E-5)
   }
 }

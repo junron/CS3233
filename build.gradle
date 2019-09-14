@@ -3,6 +3,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.7'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
 }
 
 repositories {
@@ -31,6 +32,7 @@ dependencies {
     compile "org.openjfx:javafx-graphics:11:${os}"
     testCompile "org.testfx:openjfx-monocle:jdk-11+26"
     testCompile 'org.testfx:testfx-junit:4.0+'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
 shadowJar {
     baseName = 'lightproj'
@@ -42,5 +44,15 @@ mainClassName = "application.Main"
 test {
     scanForTestClasses = false
     include "**/*Test.class"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
