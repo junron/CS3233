@@ -3,32 +3,57 @@ package javafx;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 public class AngleDisplay extends GridPane {
-  private Map<String, String> data;
 
-  public AngleDisplay(Map<String, String> data) {
-    this.data = data;
+  private ArrayList<Pair> data = new ArrayList<>();
+
+  public AngleDisplay(String... data) {
+    int i = 0;
+    String key = "";
+    for (String s : data) {
+      if (i % 2 == 0) {
+        key = s;
+      } else {
+        this.data.add(new Pair(key, s));
+      }
+      i++;
+    }
     renderRows();
   }
 
-  public void renderRows() {
+  private void renderRows() {
     this.getChildren().removeAll(this.getChildren());
     int rowNum = 0;
-    for (Map.Entry<String,String> entry : data.entrySet()) {
-      Text title = new Text(entry.getKey() +": ");
+    for (Pair pair : data) {
+      Text title = new Text(pair.getA() + ": ");
       title.setStyle("-fx-font-weight: bold");
 
-      Text value = new Text(entry.getValue());
+      Text value = new Text(pair.getB());
 
-      this.add(title,0,rowNum);
-      this.add(value,1,rowNum);
+      this.add(title, 0, rowNum);
+      this.add(value, 1, rowNum);
       rowNum++;
     }
   }
 
-  public Map<String, String> getData() {
-    return data;
+  static class Pair {
+    private String a, b;
+
+    Pair(String a, String b) {
+      this.a = a;
+      this.b = b;
+    }
+
+    public String getA() {
+      return a;
+    }
+
+    public String getB() {
+      return b;
+    }
   }
+
 }
+

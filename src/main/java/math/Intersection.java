@@ -26,7 +26,7 @@ public class Intersection {
     return getIntersectionPoint(intersection, origin, true);
   }
 
-  public static double getIntersectingAngle(IntersectionSideData iData, PreciseLine line) {
+  public static double getObjectIntersectionAngle(IntersectionSideData iData, PreciseLine line) {
     //    Make angle in range [-180,180]
     double lineAngle = line.getPreciseAngle() - Math.PI;
     double normalAngle = iData.normalAngle;

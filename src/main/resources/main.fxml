@@ -3,6 +3,8 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
     <TabPane focusTraversable="false" layoutY="645.0" prefHeight="159.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -16,4 +18,9 @@
             <fx:include fx:id="opticsTab" source="opticstab.fxml" />
         </Tab>
     </TabPane>
+   <Line endX="-40.19999694824219" endY="-7.62939453125E-6" layoutX="149.0" layoutY="84.0" startX="-100.0" />
+   <Line endX="-40.19999694824219" endY="-7.62939453125E-6" layoutX="119.0" layoutY="53.0" rotate="90.0" startX="-100.0" />
+   <Text layoutX="122.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+   <Line endX="-40.19999694824219" endY="-7.62939453125E-6" layoutX="119.0" layoutY="114.0" rotate="90.0" startX="-100.0" />
+   <Text layoutX="43.0" layoutY="165.0" strokeType="OUTSIDE" strokeWidth="0.0" text="90" />
 </AnchorPane>

@@ -19,7 +19,6 @@ import utils.Geometry;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.function.Function;
 
 public class Mirror extends OpticalRectangle {
@@ -73,7 +72,7 @@ public class Mirror extends OpticalRectangle {
       return null;
     }
     double normalAngle = iData.normalAngle;
-    double intersectionAngle = Intersection.getIntersectingAngle(iData, l);
+    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
     Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
     PreciseLine preciseLine = new PreciseLine(newLine);
@@ -85,11 +84,11 @@ public class Mirror extends OpticalRectangle {
     //      return null;
     //    }
 
-    HashMap<String, String> data = new HashMap<>();
-    String angle = Geometry.fixAngle(Math.toDegrees(intersectionAngle));
-    data.put("Reflection: ", angle);
-    data.put("Incidence: ", angle);
-    AngleDisplay angleDisplay = new AngleDisplay(data);
+    double angle = Math.toDegrees(intersectionAngle) % 360;
+    if (angle > 180) angle = 360 - angle;
+    else if (angle < -180) angle += 360;
+    AngleDisplay angleDisplay = new AngleDisplay("Incidence", String.format("%.1f", -angle), "Reflection", String
+            .format("%.1f", angle));
     return new TransformData(preciseLine, angleDisplay, iData);
   }
 
