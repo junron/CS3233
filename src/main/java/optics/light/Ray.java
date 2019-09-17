@@ -235,10 +235,8 @@ public class Ray implements LightSource, Serializable {
   }
 
   @Override
-  public CompletableFuture<ArrayList<ArrayList<Node>>> renderRays(OpticsList<OpticalRectangle> objects) {
-    CompletableFuture<ArrayList<ArrayList<Node>>> completableFuture = new CompletableFuture<>();
-    final ArrayList<Node> lines = new ArrayList<>(this.lines);
-    this.lines.clear();
+  public CompletableFuture<ArrayList<Node>> renderRays(OpticsList<OpticalRectangle> objects) {
+    CompletableFuture<ArrayList<Node>> completableFuture = new CompletableFuture<>();
     new Thread(() -> {
       ObservableList<Node> nodes;
       try {
@@ -248,12 +246,7 @@ public class Ray implements LightSource, Serializable {
         completableFuture.completeExceptionally(e);
         return;
       }
-      ArrayList<ArrayList<Node>> result = new ArrayList<>();
-      //      If maximum reflection depth exceeded, nodes is null
-      if (nodes == null) result.add(null);
-      else result.add(new ArrayList<>(nodes));
-      result.add(lines);
-      completableFuture.complete(result);
+      completableFuture.complete(nodes == null ? null : new ArrayList<>(nodes));
     }).start();
     return completableFuture;
   }
@@ -261,6 +254,7 @@ public class Ray implements LightSource, Serializable {
   @Override
   public void removeAllLines() {
     final Node[] lines = this.lines.toArray(new Node[0]);
+    System.out.println("Hmm");
     this.lines.clear();
     Platform.runLater(() -> this.parent.getChildren().removeAll(lines));
   }

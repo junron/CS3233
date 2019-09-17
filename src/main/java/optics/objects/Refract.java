@@ -71,13 +71,14 @@ public class Refract extends OpticalRectangle {
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
-    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
+    double intersectionAngle = -l.getPreciseAngle();
     double normalAngle = iData.normalAngle;
+    double incidence = Math.PI - intersectionAngle - normalAngle;
     System.out.println("Weird");
-    System.out.println(Math.toDegrees(intersectionAngle - normalAngle));
-    System.out.println(Math.toDegrees(intersectionAngle));
-    System.out.println(Math.toDegrees(normalAngle));
-    double refAngle = Math.asin(Math.sin(intersectionAngle) / this.refractiveIndex);
+    System.out.println(Math.toDegrees(intersectionAngle) % 360);
+    System.out.println(Math.toDegrees(normalAngle) % 360);
+    System.out.println(Math.toDegrees(incidence));
+    double refAngle = Math.asin(Math.sin(incidence) / this.refractiveIndex);
     // if (r.isInRefractiveMaterial()) {
     //   r.setInRefractiveMaterial(false);
     //   refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle));
@@ -88,12 +89,16 @@ public class Refract extends OpticalRectangle {
     // } else {
     //   r.setInRefractiveMaterial(true);
     // }
+    System.out.println(Math.toDegrees(refAngle));
     Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
     pLine.setPreciseAngle(refAngle);
+    double iAngle = Math.toDegrees(intersectionAngle) % 360;
+    if (iAngle > 180) iAngle = 360 - iAngle;
+    else if (iAngle < -180) iAngle += 360;
     String angle = String.format("%.1f", Math.toDegrees(refAngle));
-    String iAngle = String.format("%.1f", Math.toDegrees(intersectionAngle));
-    AngleDisplay angleDisplay = new AngleDisplay("Incidence", iAngle, "Refraction", angle);
+    String iAngleStr = String.format("%.1f", iAngle);
+    AngleDisplay angleDisplay = new AngleDisplay("Incidence", iAngleStr, "Refraction", angle);
     return new TransformData(pLine, angleDisplay, iData);
   }
 

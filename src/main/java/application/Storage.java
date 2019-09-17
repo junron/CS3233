@@ -16,45 +16,58 @@ public class Storage {
   static final ArrayList<Ray> rays = new ArrayList<>();
   static final OpticsList<OpticalRectangle> opticalRectangles = new OpticsList<>();
   private static boolean isMaximumDepthExceeded = false;
+  private static ArrayList<Node> lines = new ArrayList<>();
+
+  static void rerenderRay(Ray ray) {
+    CompletableFuture<ArrayList<Node>> future = ray.renderRays(opticalRectangles.deepClone());
+    //Remove old lines
+    parent.getChildren().removeAll(lines);
+    handleRender(future);
+  }
 
   static void reRenderAll() {
-    ArrayList<CompletableFuture<ArrayList<ArrayList<Node>>>> futures = new ArrayList<>();
+    ArrayList<CompletableFuture<ArrayList<Node>>> futures = new ArrayList<>();
     for (Ray r : rays) {
       futures.add(r.renderRays(opticalRectangles.deepClone()));
     }
+    //Remove old lines
+    parent.getChildren().removeAll(lines);
 
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
     //    Block operations
     voidCompletableFuture.join();
 
-
-    for (CompletableFuture<ArrayList<ArrayList<Node>>> future : futures) {
-      try {
-        ArrayList<ArrayList<Node>> result = future.get();
-
-        //  Remove old lines
-        parent.getChildren().removeAll(result.get(1));
-
-        //        Reflection depth exceeded
-        if (result.get(0) == null) {
-          //          Cancel extra alerts
-          if (isMaximumDepthExceeded) break;
-          isMaximumDepthExceeded = true;
-          Alert alert = FxAlerts
-                  .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth " +
-                          "exceeded");
-          alert.showAndWait();
-          break;
-        }
-        isMaximumDepthExceeded = false;
-        parent.getChildren().removeAll(result.get(0));
-        //  Add nodes
-        parent.getChildren().addAll(result.get(0));
-      } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-      }
+    for (CompletableFuture<ArrayList<Node>> future : futures) {
+      handleRender(future);
     }
+
+  }
+
+  private static void handleRender(CompletableFuture<ArrayList<Node>> future) {
+    ArrayList<Node> result;
+    try {
+      result = future.get();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+      return;
+    }
+    if (result == null) {
+      //          Cancel extra alerts
+      if (isMaximumDepthExceeded) return;
+      isMaximumDepthExceeded = true;
+      Alert alert = FxAlerts
+              .showErrorDialog("Error", "Outstanding move, but that's illegal", "Maximum reflection depth " +
+                      "exceeded");
+      alert.showAndWait();
+      return;
+    }
+    isMaximumDepthExceeded = false;
+    parent.getChildren().removeAll(result);
+    //  Add nodes
+    parent.getChildren().addAll(result);
+    //Track lines for removal later
+    lines.addAll(result);
   }
 
   public static OpticsTabController opticsTabController;
