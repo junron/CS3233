@@ -1,7 +1,10 @@
 package optics.objects;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import math.IntersectionSideData;
+import optics.light.Ray;
 import serialize.Serializable;
 
 abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
@@ -9,33 +12,37 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
 
   private final int maxSize = 10_00;
   private final int minSize = 5;
-  public int setWidthChecked(double width){
-    if(width>maxSize){
+
+  public int setWidthChecked(double width) {
+    if (width > maxSize) {
       this.setWidth(maxSize);
       return maxSize;
     }
-    if(width<minSize){
+    if (width < minSize) {
       this.setWidth(minSize);
       return minSize;
     }
     this.setWidth(width);
-    return (int)width;
+    return (int) width;
   }
-  public int setHeightChecked(double height){
-    if(height>maxSize){
+
+  public int setHeightChecked(double height) {
+    if (height > maxSize) {
       this.setHeight(maxSize);
       return maxSize;
     }
-    if(height<minSize){
+    if (height < minSize) {
       this.setHeight(minSize);
       return minSize;
     }
     this.setHeight(height);
-    return (int)height;
+    return (int) height;
   }
+
   public OpticalRectangle(double x, double y, double width, double height) {
     super(x, y, width, height);
   }
+
   public abstract OpticalRectangle clone(boolean shiftPositions);
 
   public Pane getRealParent() {

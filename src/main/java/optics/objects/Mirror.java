@@ -66,7 +66,7 @@ public class Mirror extends OpticalRectangle {
     PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
+    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), null);
     if (iData == null || iData.normalVector == null) {
       System.out.println("ERRORORROOROR: iData is null");
       return null;
@@ -93,8 +93,8 @@ public class Mirror extends OpticalRectangle {
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin) {
-    return Intersection.getIntersectionSide(iPoint, this, origin);
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
+    return Intersection.getIntersectionSide(iPoint, this, origin, false);
   }
 
   @Override

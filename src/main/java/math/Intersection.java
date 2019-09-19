@@ -13,7 +13,6 @@ public class Intersection {
 
   public static Point2D getIntersectionPoint(Path intersection, Vectors origin, boolean nearest) {
     ArrayList<Point2D> iPoints = convertToPoints(intersection.getElements());
-    //Inline extension of comparator iface
     if (nearest) {
       iPoints.sort((o1, o2) -> (int) (Vectors.distanceBetween(o1, origin) - Vectors.distanceBetween(o2, origin)));
     } else {
@@ -37,7 +36,8 @@ public class Intersection {
     return angle;
   }
 
-  public static IntersectionSideData getIntersectionSide(Point2D iPoint, Rectangle intersector, Point2D origin) {
+  public static IntersectionSideData getIntersectionSide(Point2D iPoint, Rectangle intersector, Point2D origin,
+                                                         boolean isInObject) {
     Circle pointIndicator = new Circle(iPoint.getX(), iPoint.getY(), 1);
     ArrayList<Point2D> points = convertToPoints(((Path) Shape.intersect(intersector, intersector)).getElements());
     ArrayList<Line> lines = generateLinesPoints(points);
@@ -51,7 +51,7 @@ public class Intersection {
     if (l == null) return null;
     Vectors v = Vectors.lineToVector(l);
     return new IntersectionSideData(v, new Point2D(l.getStartX(), l.getStartY()), null, Vectors
-            .constructWithMagnitude(v.getAngle() - Math.toRadians(90), 2));
+            .constructWithMagnitude(v.getAngle() - Math.PI / 2 - (isInObject ? Math.PI : 0), 2));
   }
 
 

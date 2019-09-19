@@ -70,30 +70,26 @@ public class Refract extends OpticalRectangle {
     //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()));
-    double intersectionAngle = -l.getPreciseAngle();
+    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), r);
+    double intersectionAngle = Math.PI * 2 - l.getPreciseAngle();
     double normalAngle = iData.normalAngle;
     double incidence = Math.PI - intersectionAngle - normalAngle;
-    System.out.println("Weird");
-    System.out.println(Math.toDegrees(intersectionAngle) % 360);
-    System.out.println(Math.toDegrees(normalAngle) % 360);
-    System.out.println(Math.toDegrees(incidence));
     double refAngle = Math.asin(Math.sin(incidence) / this.refractiveIndex);
-    // if (r.isInRefractiveMaterial()) {
-    //   r.setInRefractiveMaterial(false);
-    //   refAngle = Math.asin(this.refractiveIndex * Math.sin(intersectionAngle));
-    //   //      Total internal reflection can only occur when light exits an object
-    //   if (Double.isNaN(refAngle)) {
-    //     return totalInternalReflection(iPoint, r, iData);
-    //   }
-    // } else {
-    //   r.setInRefractiveMaterial(true);
-    // }
-    System.out.println(Math.toDegrees(refAngle));
-    Vectors vect = Vectors.constructWithMagnitude(refAngle, 2500);
+    if (r.isInRefractiveMaterial()) {
+      r.setInRefractiveMaterial(false);
+      System.out.println(Math.toDegrees(incidence));
+      refAngle = Math.asin(this.refractiveIndex * Math.sin(incidence));
+      //      Total internal reflection can only occur when light exits an object
+      if (Double.isNaN(refAngle)) {
+        return totalInternalReflection(iPoint, r, iData);
+      }
+    } else {
+      r.setInRefractiveMaterial(true);
+    }
+    Vectors vect = Vectors.constructWithMagnitude(refAngle + normalAngle - Math.PI, 2500);
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
-    pLine.setPreciseAngle(refAngle);
-    double iAngle = Math.toDegrees(intersectionAngle) % 360;
+    pLine.setPreciseAngle(refAngle + normalAngle - Math.PI);
+    double iAngle = Math.toDegrees(incidence) % 360;
     if (iAngle > 180) iAngle = 360 - iAngle;
     else if (iAngle < -180) iAngle += 360;
     String angle = String.format("%.1f", Math.toDegrees(refAngle));
@@ -120,8 +116,8 @@ public class Refract extends OpticalRectangle {
   }
 
   @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin) {
-    return Intersection.getIntersectionSide(iPoint, this, origin);
+  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
+    return Intersection.getIntersectionSide(iPoint, this, origin, r.isInRefractiveMaterial());
   }
 
   @Override

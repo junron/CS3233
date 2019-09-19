@@ -22,6 +22,7 @@ import math.Vectors;
 import optics.PreciseLine;
 import optics.TransformData;
 import optics.objects.OpticalRectangle;
+import optics.objects.Refract;
 import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
@@ -192,10 +193,9 @@ public class Ray implements LightSource, Serializable {
       });
       activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
       //      Find next optical object for light to interact with
-      OpticalRectangle nextOpticalObject =
-              // opticalObject instanceof Refract ? Geometry
-              // .getNearestIntersection(transform.getPreciseLine(), objects, opticalObject) :
-              Geometry.getNearestIntersection(transform.getPreciseLine(), objects.getAllExcept(opticalObject));
+      OpticalRectangle nextOpticalObject = opticalObject instanceof Refract ? Geometry
+              .getNearestIntersection(transform.getPreciseLine(), objects, opticalObject) : Geometry
+              .getNearestIntersection(transform.getPreciseLine(), objects.getAllExcept(opticalObject));
       //        Final check for bugs
       //        Detect if ray is passing through an optical object (rays cant pass through mirrors)
       //        If detected, stop further rendering
