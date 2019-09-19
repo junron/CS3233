@@ -48,6 +48,7 @@ public class Ray implements LightSource, Serializable {
   private Color color;
   private boolean inRefractiveMaterial;
 
+
   public Ray(PreciseLine l, Pane parent) {
     this.currentLine = l;
     this.originalLine = new PreciseLine(l.getStartX(), l.getStartY(), l.getEndX(), l.getEndY());
@@ -74,6 +75,11 @@ public class Ray implements LightSource, Serializable {
   public PreciseLine getCurrentLine() {
     return currentLine;
   }
+
+  public ArrayList<Node> getLines() {
+    return lines;
+  }
+
 
   public boolean isInRefractiveMaterial() {
     return inRefractiveMaterial;

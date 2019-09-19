@@ -21,18 +21,19 @@ public class Storage {
   static void rerenderRay(Ray ray) {
     CompletableFuture<ArrayList<Node>> future = ray.renderRays(opticalRectangles.deepClone());
     //Remove old lines
-    parent.getChildren().removeAll(lines);
+    ray.removeAllLines();
     handleRender(future);
   }
 
   static void reRenderAll() {
     ArrayList<CompletableFuture<ArrayList<Node>>> futures = new ArrayList<>();
+    ArrayList<Node> lines = new ArrayList<>();
     for (Ray r : rays) {
+      lines.addAll(r.getLines());
       futures.add(r.renderRays(opticalRectangles.deepClone()));
     }
     //Remove old lines
     parent.getChildren().removeAll(lines);
-
     CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
     //    Block operations
