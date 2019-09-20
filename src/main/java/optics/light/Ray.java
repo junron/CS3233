@@ -199,7 +199,8 @@ public class Ray implements LightSource, Serializable {
       });
       activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
       //      Find next optical object for light to interact with
-      OpticalRectangle nextOpticalObject = opticalObject instanceof Refract ? Geometry
+      //Can interact with current object if currently inside object and is refractor
+      OpticalRectangle nextOpticalObject = opticalObject instanceof Refract && this.isInRefractiveMaterial() ? Geometry
               .getNearestIntersection(transform.getPreciseLine(), objects, opticalObject) : Geometry
               .getNearestIntersection(transform.getPreciseLine(), objects.getAllExcept(opticalObject));
       //        Final check for bugs
@@ -213,9 +214,11 @@ public class Ray implements LightSource, Serializable {
             if (nodes.size() == 0) {
               //              Ensure that there is at least 1 line
               lines.add(this.currentLine);
-              nodes.addAll(this.currentLine);
+              nodes.add(this.currentLine);
             }
             //  Abort rendering
+            this.inRefractiveMaterial = false;
+            lines.addAll(nodes);
             return nodes;
           }
         }
@@ -230,6 +233,7 @@ public class Ray implements LightSource, Serializable {
     this.currentLine.setStroke(this.color);
     nodes.add(this.currentLine);
     lines.addAll(nodes);
+    this.inRefractiveMaterial = false;
     return nodes;
   }
 
@@ -260,7 +264,6 @@ public class Ray implements LightSource, Serializable {
   @Override
   public void removeAllLines() {
     final Node[] lines = this.lines.toArray(new Node[0]);
-    System.out.println("Hmm");
     this.lines.clear();
     Platform.runLater(() -> this.parent.getChildren().removeAll(lines));
   }
@@ -295,7 +298,7 @@ public class Ray implements LightSource, Serializable {
     this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
   }
 
-  public Ray clone(boolean move) {
+  Ray clone(boolean move) {
     Point2D add = move ? new Point2D(10, 10) : new Point2D(0, 0);
     PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add), Vectors
             .constructWithMagnitude(this.originalLine.getPreciseAngle(), 2500).add(this.originalOrigin).add(add)));

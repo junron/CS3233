@@ -77,7 +77,6 @@ public class Refract extends OpticalRectangle {
     double refAngle = Math.asin(Math.sin(incidence) / this.refractiveIndex);
     if (r.isInRefractiveMaterial()) {
       r.setInRefractiveMaterial(false);
-      System.out.println(Math.toDegrees(incidence));
       refAngle = Math.asin(this.refractiveIndex * Math.sin(incidence));
       //      Total internal reflection can only occur when light exits an object
       if (Double.isNaN(refAngle)) {
@@ -101,9 +100,7 @@ public class Refract extends OpticalRectangle {
   //  Total internal reflection occurs when a ray travels from inside a high refractive index
   //  object to the air. The ray is internally reflected within the object
   private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
-    System.out.println("TIR");
     double normalAngle = iData.normalAngle;
-    System.out.println(Math.toDegrees(normalAngle));
     double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, r.getCurrentLine());
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
