@@ -1,8 +1,8 @@
 package application;
 
+import javafx.SettableTextField;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import optics.objects.Mirror;
@@ -10,7 +10,8 @@ import optics.objects.OpticalRectangle;
 import optics.objects.Refract;
 import optics.objects.Wall;
 
-import static application.Storage.*;
+import static application.Storage.opticalRectangles;
+import static application.Storage.reRenderAll;
 import static utils.Geometry.fixAngle;
 
 public class OpticsTabController {
@@ -22,7 +23,7 @@ public class OpticsTabController {
   @FXML
   private Button newRefractor;
   @FXML
-  private TextField rotation, width, height;
+  private SettableTextField refractiveIndex, width, rotation, height;
 
   private OpticalRectangle focusedObject;
   private String expectedText;
@@ -42,7 +43,6 @@ public class OpticsTabController {
     });
 
     rotation.textProperty().addListener((o, ol, val) -> {
-      if (val.equals(expectedText.split(" ")[0])) return;
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setRotate(0);
@@ -55,8 +55,7 @@ public class OpticsTabController {
       reRenderAll();
     });
 
-    width.textProperty().addListener((o, ol, val) -> {
-      if (val.equals(expectedText.split(" ")[1])) return;
+    width.setChangeListener((o, ol, val) -> {
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setWidth(5);
@@ -70,7 +69,6 @@ public class OpticsTabController {
     });
 
     height.textProperty().addListener((o, ol, val) -> {
-      if (val.equals(expectedText.split(" ")[2])) return;
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setHeight(5);
@@ -92,10 +90,10 @@ public class OpticsTabController {
     });
     object.setOnDestroy(e -> {
       if (this.focusedObject == object) this.focusedObject = null;
-      this.expectedText = "- - -";
       rotation.setText("-");
       height.setText("-");
-      height.setText("-");
+      width.setText("-");
+      refractiveIndex.setText("-");
       opticalRectangles.remove(object);
       reRenderAll();
       return null;
@@ -117,7 +115,6 @@ public class OpticsTabController {
     this.focusedObject = object;
     this.focusedObject.setStroke(Color.BLUE);
     this.focusedObject.setStrokeWidth(2);
-    this.expectedText = fixAngle(object.getRotate()) + " " + object.getWidth() + " " + object.getHeight();
     rotation.setText(fixAngle(object.getRotate()));
     width.setText(String.valueOf(object.getWidth()));
     height.setText(String.valueOf(object.getHeight()));
