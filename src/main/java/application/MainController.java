@@ -3,11 +3,13 @@ package application;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
+import optics.objects.Wall;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static application.Storage.opticalRectangles;
+import static application.Storage.reRenderAll;
 
 public class MainController implements Initializable {
 
@@ -31,6 +33,12 @@ public class MainController implements Initializable {
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;
     parent.getChildren().addAll(opticalRectangles);
+    Wall wall = new Wall(0, 0, 2500, 10, parent, 0);
+    opticalRectangles.add(wall);
+    parent.heightProperty().addListener((o, e, val) -> {
+      wall.setY((double) val - 160);
+      reRenderAll();
+    });
   }
 }
 

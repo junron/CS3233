@@ -17,6 +17,7 @@ public class Storage {
   public static OpticsTabController opticsTabController;
   public static RayTabController rayTabController;
   public static int maximumReflectionDepth = 1000;
+  public static boolean showLabels = true;
   static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
 

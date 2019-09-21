@@ -2,6 +2,7 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
@@ -21,6 +22,8 @@ import static application.Storage.*;
 
 public class GeneralTabController {
 
+  @FXML
+  private CheckBox showAngles;
   @FXML
   private Button save, load, clearAll;
   @FXML
@@ -98,6 +101,12 @@ public class GeneralTabController {
       maximumReflectionDepth = maxInts;
       reRenderAll();
     });
+  }
+
+  @FXML
+  private void triggerShowAnglesChange() {
+    Storage.showLabels = showAngles.isSelected();
+    reRenderAll();
   }
 }
 

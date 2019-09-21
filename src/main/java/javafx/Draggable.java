@@ -27,6 +27,10 @@ public class Draggable {
     }
 
     shape.setOnMouseDragged(event -> {
+      // Prevent object from entering UI area
+      if ((event.getSceneY()) > (parent.getHeight() - 165) &&
+              //        Except when moving object to trash
+              !(event.getSceneX() > (parent.getWidth() - 82))) return;
       if (this.shape instanceof Rectangle) {
         ((Rectangle) this.shape).setX(event.getSceneX() + movementDelta.getX());
         ((Rectangle) this.shape).setY(event.getSceneY() + movementDelta.getY());
@@ -39,7 +43,7 @@ public class Draggable {
       this.onDrag.handle(event);
     });
     shape.setOnMouseReleased(e -> {
-      if (e.getSceneY() > (parent.getHeight() - 82) && e.getSceneX() > (parent.getWidth() - 82)) {
+      if (e.getSceneY() > (parent.getHeight() - 165) && e.getSceneX() > (parent.getWidth() - 82)) {
         parent.getChildren().remove(this.shape);
         this.onDestroy.handle(e);
       }

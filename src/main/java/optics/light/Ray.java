@@ -225,7 +225,9 @@ public class Ray implements LightSource, Serializable {
       }
       //      Let next optical object be current optical object
       opticalObject = nextOpticalObject;
-      nodes.addAll(this.currentLine, normal, angleDisplay, activeArea);
+      nodes.addAll(this.currentLine, normal);
+      // Only show labels if option enabled
+      if (Storage.showLabels) nodes.addAll(angleDisplay, activeArea);
       this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
       refNum++;
