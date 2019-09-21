@@ -38,7 +38,7 @@ public class OpticsTabController {
       addObject(w, parent);
     });
     newRefractor.setOnMouseClicked(event -> {
-      Refract re = new Refract(parent.getWidth() / 2, parent.getHeight() / 2 - 50, 20, 100, parent, 0, 1.42);
+      Refract re = new Refract(parent.getWidth() / 2, parent.getHeight() / 2 - 50, 20, 100, parent, 0, 1);
       addObject(re, parent);
     });
 
@@ -80,6 +80,22 @@ public class OpticsTabController {
       this.focusedObject.setHeightChecked(value);
       reRenderAll();
     });
+
+    refractiveIndex.setChangeListener((o, ol, val) -> {
+      if (this.focusedObject == null) return;
+      if (!(this.focusedObject instanceof Refract)) return;
+      Refract object = (Refract) this.focusedObject;
+      if (val.length() == 0) {
+        object.setRefractiveIndex(1);
+        reRenderAll();
+        return;
+      }
+      Double value = validate(val, true);
+      if (value == null) return;
+      if (value < 1) return;
+      object.setRefractiveIndex(value);
+      reRenderAll();
+    });
   }
 
   public void addObject(OpticalRectangle object, Pane parent) {
@@ -118,6 +134,7 @@ public class OpticsTabController {
     rotation.setText(fixAngle(object.getRotate()));
     width.setText(String.valueOf(object.getWidth()));
     height.setText(String.valueOf(object.getHeight()));
+    if (object instanceof Refract) refractiveIndex.setText(String.valueOf(((Refract) object).getRefractiveIndex()));
   }
 
   private Double validate(String value, boolean positive) {

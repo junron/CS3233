@@ -120,22 +120,6 @@ public class Mirror extends OpticalRectangle {
   }
 
   @Override
-  public void deserialize(byte[] serialized) {
-    ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    buffer.getChar();
-    double x = buffer.getDouble();
-    double y = buffer.getDouble();
-    double width = buffer.getDouble();
-    double height = buffer.getDouble();
-    double angle = buffer.getDouble();
-    this.setX(x);
-    this.setY(y);
-    this.setWidth(width);
-    this.setHeight(height);
-    this.setRotate(angle);
-  }
-
-  @Override
   public OpticalRectangle clone(boolean shiftPositions) {
     return new Mirror(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
             .getWidth(), this.getHeight(), parent, this.getRotate());

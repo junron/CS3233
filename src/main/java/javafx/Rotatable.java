@@ -9,6 +9,7 @@ import javafx.scene.shape.Shape;
 import optics.light.Ray;
 import optics.light.RayCircle;
 import optics.objects.OpticalRectangle;
+import optics.objects.Refract;
 
 
 public class Rotatable {
@@ -28,6 +29,18 @@ public class Rotatable {
             Ray newRay = ((RayCircle) shape).clone();
             Storage.rayTabController.createRay(newRay);
           }
+        }
+      }
+      if (this.shape instanceof Refract) {
+        Refract object = (Refract) this.shape;
+        if (eventCode.equals("ADD") || event.isShiftDown() && eventCode.equals("EQUALS")) {
+          object.setRefractiveIndex(object.getRefractiveIndex() + 0.01);
+          onRotate.handle(event);
+          return;
+        }else if(eventCode.equals("SUBTRACT") || eventCode.equals("MINUS")){
+          object.setRefractiveIndex(object.getRefractiveIndex() - 0.01);
+          onRotate.handle(event);
+          return;
         }
       }
       if (event.isShiftDown()) {
@@ -73,7 +86,7 @@ public class Rotatable {
       }
       if (event.isAltDown()) {
         //        Move object instead of rotating it
-        OpticalRectangle optShape = null;
+        OpticalRectangle optShape;
         if (this.shape instanceof OpticalRectangle) {
           optShape = (OpticalRectangle) this.shape;
         } else {

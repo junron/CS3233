@@ -33,7 +33,7 @@ public class Refract extends OpticalRectangle {
     this.setRotate(rotation);
     this.setArcHeight(0);
     this.setArcWidth(0);
-    this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
+    this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.50));
     this.setStrokeWidth(1);
     this.setStroke(Color.BLACK);
     this.parent = parent;
@@ -57,6 +57,14 @@ public class Refract extends OpticalRectangle {
 
   public void setOnDestroy(Function<Event, Void> onDestroy) {
     this.onDestroy = onDestroy;
+  }
+
+  public void setRefractiveIndex(double refractiveIndex) {
+    this.refractiveIndex = Math.round(Math.max(1.0, refractiveIndex) * 100) / 100.0;
+  }
+
+  public double getRefractiveIndex() {
+    return refractiveIndex;
   }
 
   @Override
@@ -136,26 +144,23 @@ public class Refract extends OpticalRectangle {
     byteBuffer.putDouble(this.getWidth());
     byteBuffer.putDouble(this.getHeight());
     byteBuffer.putDouble(this.getRotate());
+    System.out.println(this.refractiveIndex);
     byteBuffer.putDouble(this.refractiveIndex);
     return byteBuffer.array();
   }
 
   @Override
   public void deserialize(byte[] serialized) {
+    super.deserialize(serialized);
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    buffer.getChar();
-    double x = buffer.getDouble();
-    double y = buffer.getDouble();
-    double width = buffer.getDouble();
-    double height = buffer.getDouble();
-    double angle = buffer.getDouble();
-    double refractiveIndex = buffer.getDouble();
-    this.setX(x);
-    this.setY(y);
-    this.setWidth(width);
-    this.setHeight(height);
-    this.setRotate(angle);
-    this.refractiveIndex = refractiveIndex;
+    System.out.println(buffer.getChar());
+    System.out.println(buffer.getDouble());
+    System.out.println(buffer.getDouble());
+    System.out.println(buffer.getDouble());
+    System.out.println(buffer.getDouble());
+    System.out.println(buffer.getDouble());
+    System.out.println(buffer.getDouble());
+    this.refractiveIndex = buffer.getDouble(Double.BYTES * 5);
   }
 
   @Override

@@ -1,11 +1,10 @@
 package optics.objects;
 
-import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import math.IntersectionSideData;
-import optics.light.Ray;
 import serialize.Serializable;
+
+import java.nio.ByteBuffer;
 
 abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
   protected Pane parent;
@@ -47,5 +46,21 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
 
   public Pane getRealParent() {
     return parent;
+  }
+
+  @Override
+  public void deserialize(byte[] serialized) {
+    ByteBuffer buffer = ByteBuffer.wrap(serialized);
+    buffer.getChar();
+    double x = buffer.getDouble();
+    double y = buffer.getDouble();
+    double width = buffer.getDouble();
+    double height = buffer.getDouble();
+    double angle = buffer.getDouble();
+    this.setX(x);
+    this.setY(y);
+    this.setWidth(width);
+    this.setHeight(height);
+    this.setRotate(angle);
   }
 }
