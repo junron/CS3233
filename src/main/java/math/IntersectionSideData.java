@@ -9,6 +9,7 @@ public class IntersectionSideData {
   public Sides side;
   public Vectors normalVector;
   public double normalAngle;
+
   public IntersectionSideData(Vectors lineVector, Point2D startPoint, Sides side, Vectors normalVector) {
     this.lineVector = lineVector;
     this.startPoint = startPoint;

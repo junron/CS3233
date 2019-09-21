@@ -61,7 +61,7 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     this.setRotate(angle);
   }
 
-  public ByteBuffer serialize(char id,int bytes) {
+  public ByteBuffer serialize(char id, int bytes) {
     ByteBuffer byteBuffer = ByteBuffer.allocate(bytes);
     byteBuffer.putChar(id);
     byteBuffer.putDouble(this.getX());
