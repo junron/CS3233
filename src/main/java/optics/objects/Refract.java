@@ -137,14 +137,7 @@ public class Refract extends OpticalRectangle {
   @Override
   public byte[] serialize() {
     //    x,y,width,height,rotation,ref index
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 6);
-    byteBuffer.putChar('e');
-    byteBuffer.putDouble(this.getX());
-    byteBuffer.putDouble(this.getY());
-    byteBuffer.putDouble(this.getWidth());
-    byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putDouble(this.getRotate());
-    System.out.println(this.refractiveIndex);
+    ByteBuffer byteBuffer = super.serialize('e', Character.BYTES + Double.BYTES * 6);
     byteBuffer.putDouble(this.refractiveIndex);
     return byteBuffer.array();
   }
@@ -153,14 +146,7 @@ public class Refract extends OpticalRectangle {
   public void deserialize(byte[] serialized) {
     super.deserialize(serialized);
     ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    System.out.println(buffer.getChar());
-    System.out.println(buffer.getDouble());
-    System.out.println(buffer.getDouble());
-    System.out.println(buffer.getDouble());
-    System.out.println(buffer.getDouble());
-    System.out.println(buffer.getDouble());
-    System.out.println(buffer.getDouble());
-    this.refractiveIndex = buffer.getDouble(Double.BYTES * 5);
+    this.refractiveIndex = buffer.getDouble(Character.BYTES + Double.BYTES * 5);
   }
 
   @Override

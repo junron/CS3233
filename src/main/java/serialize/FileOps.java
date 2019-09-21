@@ -13,19 +13,18 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class FileOps {
-  public static boolean save(Collection objects, Stage stage) throws IOException {
+  public static void save(Collection objects, Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Save Ray Simulation");
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
     File file = fileChooser.showSaveDialog(stage);
-    if (file == null) return false;
+    if (file == null) return;
     FileOutputStream out = new FileOutputStream(file);
     for (Object object : objects) {
-      if (!(object instanceof Serializable)) return false;
+      if (!(object instanceof Serializable)) return;
       out.write(((Serializable) object).serialize());
       out.write('\n');
     }
-    return true;
   }
 
   public static ArrayList<byte[]> load(Stage stage) throws IOException {
@@ -38,8 +37,11 @@ public class FileOps {
     ArrayList<byte[]> res = new ArrayList<>();
     int lastVal = 0;
     int currIndex = 0;
-    for (byte b : data) {
-      if (b == 10) {
+    for (int i = 0; i < data.length; i++) {
+      byte b = data[i];
+      // Each element is denoted by a new line and a NULL char
+      // Prevent array overflow
+      if (b == 10 && ((i + 1) == data.length || data[i + 1] == 0)) {
         byte[] elem = Arrays.copyOfRange(data, lastVal, currIndex + 1);
         res.add(elem);
         lastVal = currIndex + 1;

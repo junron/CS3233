@@ -17,7 +17,6 @@ import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -108,15 +107,7 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public byte[] serialize() {
-    //    x,y,width,height,rotation
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5);
-    byteBuffer.putChar('m');
-    byteBuffer.putDouble(this.getX());
-    byteBuffer.putDouble(this.getY());
-    byteBuffer.putDouble(this.getWidth());
-    byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putDouble(this.getRotate());
-    return byteBuffer.array();
+    return super.serialize('m', Character.BYTES + Double.BYTES * 5).array();
   }
 
   @Override

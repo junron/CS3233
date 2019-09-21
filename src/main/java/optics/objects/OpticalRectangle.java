@@ -15,30 +15,28 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     super(x, y, width, height);
   }
 
-  public int setWidthChecked(double width) {
+  public void setWidthChecked(double width) {
     if (width > maxSize) {
       this.setWidth(maxSize);
-      return maxSize;
+      return;
     }
     if (width < minSize) {
       this.setWidth(minSize);
-      return minSize;
+      return;
     }
     this.setWidth(width);
-    return (int) width;
   }
 
-  public int setHeightChecked(double height) {
+  public void setHeightChecked(double height) {
     if (height > maxSize) {
       this.setHeight(maxSize);
-      return maxSize;
+      return;
     }
     if (height < minSize) {
       this.setHeight(minSize);
-      return minSize;
+      return;
     }
     this.setHeight(height);
-    return (int) height;
   }
 
   public abstract OpticalRectangle clone(boolean shiftPositions);
@@ -61,5 +59,16 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     this.setWidth(width);
     this.setHeight(height);
     this.setRotate(angle);
+  }
+
+  public ByteBuffer serialize(char id,int bytes) {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(bytes);
+    byteBuffer.putChar(id);
+    byteBuffer.putDouble(this.getX());
+    byteBuffer.putDouble(this.getY());
+    byteBuffer.putDouble(this.getWidth());
+    byteBuffer.putDouble(this.getHeight());
+    byteBuffer.putDouble(this.getRotate());
+    return byteBuffer;
   }
 }

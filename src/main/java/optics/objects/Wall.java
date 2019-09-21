@@ -13,7 +13,6 @@ import optics.PreciseLine;
 import optics.TransformData;
 import optics.light.Ray;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -76,14 +75,7 @@ public class Wall extends OpticalRectangle {
 
   @Override
   public byte[] serialize() {
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Character.BYTES + Double.BYTES * 5);
-    byteBuffer.putChar('w');
-    byteBuffer.putDouble(this.getX());
-    byteBuffer.putDouble(this.getY());
-    byteBuffer.putDouble(this.getWidth());
-    byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putDouble(this.getRotate());
-    return byteBuffer.array();
+    return super.serialize('w', Character.BYTES + Double.BYTES * 5).array();
   }
 
   @Override
