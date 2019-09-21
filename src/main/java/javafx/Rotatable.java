@@ -37,7 +37,7 @@ public class Rotatable {
           object.setRefractiveIndex(object.getRefractiveIndex() + 0.01);
           onRotate.handle(event);
           return;
-        }else if(eventCode.equals("SUBTRACT") || eventCode.equals("MINUS")){
+        } else if (eventCode.equals("SUBTRACT") || eventCode.equals("MINUS")) {
           object.setRefractiveIndex(object.getRefractiveIndex() - 0.01);
           onRotate.handle(event);
           return;

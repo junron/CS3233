@@ -8,9 +8,9 @@ public class SettableTextField extends TextField {
   private ChangeListener<String> changeListener;
 
   public SettableTextField() {
-    this.textProperty().addListener((observable,_old,val) -> {
-      if(val.equals(previousValue)) return;
-      if(this.changeListener != null) this.changeListener.changed(observable,_old,val);
+    this.textProperty().addListener((observable, _old, val) -> {
+      if (val.equals(previousValue)) return;
+      if (this.changeListener != null) this.changeListener.changed(observable, _old, val);
       this.previousValue = val;
     });
   }

@@ -59,12 +59,12 @@ public class Refract extends OpticalRectangle {
     this.onDestroy = onDestroy;
   }
 
-  public void setRefractiveIndex(double refractiveIndex) {
-    this.refractiveIndex = Math.round(Math.max(1.0, refractiveIndex) * 100) / 100.0;
-  }
-
   public double getRefractiveIndex() {
     return refractiveIndex;
+  }
+
+  public void setRefractiveIndex(double refractiveIndex) {
+    this.refractiveIndex = Math.round(Math.max(1.0, refractiveIndex) * 100) / 100.0;
   }
 
   @Override

@@ -29,6 +29,7 @@ class RegularOpticsTest {
     assertEquals(0.0, Math.toDegrees(tData.intersectionSideData.normalAngle), 1E-5)
     assertEquals(180.0, Math.toDegrees(tData.preciseLine.preciseAngle), 1E-5)
   }
+
   @Test
   fun zeroDegBothRotatedTest() {
     val pane: Pane = AnchorPane()

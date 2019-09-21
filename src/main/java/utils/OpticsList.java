@@ -11,21 +11,21 @@ public class OpticsList<T extends Interactive> extends ArrayList<T> {
     super();
   }
 
-  public void addAll(T... args){
+  public void addAll(T... args) {
     Collections.addAll(this, args);
   }
 
-  public OpticsList<T> getAllExcept(T exclude){
+  public OpticsList<T> getAllExcept(T exclude) {
     OpticsList<T> result = new OpticsList<>();
-    for(T elem: this){
-      if(!elem.equals(exclude))result.add(elem);
+    for (T elem : this) {
+      if (!elem.equals(exclude)) result.add(elem);
     }
     return result;
   }
 
-  public OpticsList<T> deepClone(){
+  public OpticsList<T> deepClone() {
     OpticsList<T> result = new OpticsList<>();
-    for(T elem: this){
+    for (T elem : this) {
       result.add((T) elem.cloneObject());
     }
     return result;

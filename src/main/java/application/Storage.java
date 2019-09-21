@@ -12,9 +12,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class Storage {
-  static Pane parent;
   static final ArrayList<Ray> rays = new ArrayList<>();
   static final OpticsList<OpticalRectangle> opticalRectangles = new OpticsList<>();
+  public static OpticsTabController opticsTabController;
+  public static RayTabController rayTabController;
+  public static int maximumReflectionDepth = 1000;
+  static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
 
   static void rerenderRay(Ray ray) {
@@ -68,8 +71,4 @@ public class Storage {
     parent.getChildren().addAll(result);
     return false;
   }
-
-  public static OpticsTabController opticsTabController;
-  public static RayTabController rayTabController;
-  public static int maximumReflectionDepth = 1000;
 }

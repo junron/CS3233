@@ -22,53 +22,53 @@ import static application.Storage.*;
 public class GeneralTabController {
 
   @FXML
-  private Button save,load,clearAll;
+  private Button save, load, clearAll;
   @FXML
   private TextField maxInteract;
 
-  public void initialize(Pane parent,OpticsTabController optics,RayTabController rayController) {
+  public void initialize(Pane parent, OpticsTabController optics, RayTabController rayController) {
     save.setOnMouseClicked(event -> {
       ArrayList<Object> allObjects = new ArrayList<>();
       allObjects.addAll(opticalRectangles);
       allObjects.addAll(rays);
       try {
-        FileOps.save(allObjects,(Stage)parent.getScene().getWindow());
+        FileOps.save(allObjects, (Stage) parent.getScene().getWindow());
       } catch (IOException e) {
         e.printStackTrace();
       }
     });
-    load.setOnMouseClicked(e->{
+    load.setOnMouseClicked(e -> {
       ArrayList<byte[]> data;
       try {
-        data = FileOps.load((Stage)parent.getScene().getWindow());
+        data = FileOps.load((Stage) parent.getScene().getWindow());
       } catch (IOException ex) {
         ex.printStackTrace();
         return;
       }
-      if(data==null) return;
-      for(byte[] object:data){
+      if (data == null) return;
+      for (byte[] object : data) {
         ByteBuffer buffer = ByteBuffer.wrap(object);
-        switch (buffer.getChar()){
-          case 'm':{
-            Mirror m = new Mirror(0,0,0,0,parent,0);
+        switch (buffer.getChar()) {
+          case 'm': {
+            Mirror m = new Mirror(0, 0, 0, 0, parent, 0);
             m.deserialize(object);
-            optics.addObject(m,parent);
+            optics.addObject(m, parent);
             break;
           }
-          case 'w':{
-            Wall w = new Wall(0,0,0,0,parent,0);
+          case 'w': {
+            Wall w = new Wall(0, 0, 0, 0, parent, 0);
             w.deserialize(object);
-            optics.addObject(w,parent);
+            optics.addObject(w, parent);
             break;
           }
-          case 'e':{
-            Refract re = new Refract(0,0,0,0,parent,0,1);
+          case 'e': {
+            Refract re = new Refract(0, 0, 0, 0, parent, 0, 1);
             re.deserialize(object);
-            optics.addObject(re,parent);
+            optics.addObject(re, parent);
             break;
           }
-          case 'r':{
-            Ray r = new Ray(new PreciseLine(new Line()),parent);
+          case 'r': {
+            Ray r = new Ray(new PreciseLine(new Line()), parent);
             r.deserialize(object);
             rayController.createRay(r);
             break;
@@ -76,10 +76,10 @@ public class GeneralTabController {
         }
       }
     });
-    clearAll.setOnMouseClicked(event->{
+    clearAll.setOnMouseClicked(event -> {
       parent.getChildren().removeAll(opticalRectangles);
       opticalRectangles.clear();
-      for(Ray r: rays){
+      for (Ray r : rays) {
         r.destroy();
       }
       rays.clear();
@@ -88,9 +88,9 @@ public class GeneralTabController {
 
     maxInteract.setOnKeyPressed(event -> {
       int maxInts;
-      try{
+      try {
         maxInts = Integer.parseInt(maxInteract.getText());
-        if(maxInts<10) throw new NumberFormatException();
+        if (maxInts < 10) throw new NumberFormatException();
       } catch (NumberFormatException e) {
         maxInteract.setText(String.valueOf(maximumReflectionDepth));
         return;

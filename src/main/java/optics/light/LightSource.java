@@ -7,5 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface LightSource {
   CompletableFuture renderRays(OpticsList<OpticalRectangle> objects);
+
   void removeAllLines();
 }

@@ -8,6 +8,10 @@ import javafx.stage.Stage;
 import utils.ThreadPool;
 
 public class Main extends Application {
+  public static void main(String[] args) {
+    launch(args);
+  }
+
   @Override
   public void start(Stage primaryStage) {
     try {
@@ -29,10 +33,6 @@ public class Main extends Application {
   public void stop() throws Exception {
     super.stop();
     ThreadPool.getExecutorService().shutdown();
-  }
-
-  public static void main(String[] args) {
-    launch(args);
   }
 
 }

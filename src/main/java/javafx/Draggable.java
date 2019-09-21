@@ -20,19 +20,17 @@ public class Draggable {
     this.onDestroy = onDestroy;
     if (this.shape instanceof Rectangle) {
       this.shape.setOnMousePressed(event -> movementDelta = new Point2D(((Rectangle) this.shape).getX() - event
-              .getSceneX(),
-              ((Rectangle) this.shape).getY() - event.getSceneY()));
+              .getSceneX(), ((Rectangle) this.shape).getY() - event.getSceneY()));
     } else if (this.shape instanceof Circle) {
       this.shape.setOnMousePressed(event -> movementDelta = new Point2D(((Circle) this.shape).getCenterX() - event
-              .getSceneX(),
-              ((Circle) this.shape).getCenterY() - event.getSceneY()));
+              .getSceneX(), ((Circle) this.shape).getCenterY() - event.getSceneY()));
     }
 
     shape.setOnMouseDragged(event -> {
-      if(this.shape instanceof Rectangle){
+      if (this.shape instanceof Rectangle) {
         ((Rectangle) this.shape).setX(event.getSceneX() + movementDelta.getX());
-        ((Rectangle)this.shape).setY(event.getSceneY() + movementDelta.getY());
-      }else if(this.shape instanceof Circle){
+        ((Rectangle) this.shape).setY(event.getSceneY() + movementDelta.getY());
+      } else if (this.shape instanceof Circle) {
         ((Circle) this.shape).setCenterX(event.getSceneX() + movementDelta.getX());
         ((Circle) this.shape).setCenterY(event.getSceneY() + movementDelta.getY());
       }

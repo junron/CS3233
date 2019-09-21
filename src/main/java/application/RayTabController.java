@@ -69,7 +69,7 @@ public class RayTabController {
     });
     r.addOnStateChange(e -> {
       changeFocus(r);
-     rerenderRay(r);
+      rerenderRay(r);
     });
     r.setOnFocusStateChanged(state -> {
       if (state) changeFocus(r);

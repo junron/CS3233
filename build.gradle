@@ -22,7 +22,7 @@ sourceCompatibility = 1.11
 
 String os = "win";
 
-if(System.getenv("CI_JOB_STAGE") == "test"){
+if (System.getenv("CI_JOB_STAGE") == "test") {
     println("Using Test deps")
     os = "linux";
 }

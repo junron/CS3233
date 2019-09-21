@@ -16,36 +16,33 @@ public class FileOps {
   public static boolean save(Collection objects, Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Save Ray Simulation");
-    fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim")
-    );
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
     File file = fileChooser.showSaveDialog(stage);
-    if(file==null) return false;
+    if (file == null) return false;
     FileOutputStream out = new FileOutputStream(file);
-    for(Object object:objects){
-      if(!(object instanceof Serializable)) return false;
+    for (Object object : objects) {
+      if (!(object instanceof Serializable)) return false;
       out.write(((Serializable) object).serialize());
       out.write('\n');
     }
     return true;
   }
+
   public static ArrayList<byte[]> load(Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Load Ray Simulation");
-    fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim")
-    );
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
     File file = fileChooser.showOpenDialog(stage);
-    if(file==null) return null;
+    if (file == null) return null;
     byte[] data = Files.readAllBytes(Paths.get(file.getPath()));
     ArrayList<byte[]> res = new ArrayList<>();
     int lastVal = 0;
-    int currIndex=0;
-    for(byte b :data){
-      if(b==10){
-        byte[] elem = Arrays.copyOfRange(data,lastVal,currIndex+1);
+    int currIndex = 0;
+    for (byte b : data) {
+      if (b == 10) {
+        byte[] elem = Arrays.copyOfRange(data, lastVal, currIndex + 1);
         res.add(elem);
-        lastVal = currIndex+1;
+        lastVal = currIndex + 1;
       }
       currIndex++;
     }

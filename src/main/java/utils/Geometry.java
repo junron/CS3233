@@ -19,8 +19,9 @@ public class Geometry {
     return new Circle(p1.getX(), p1.getY(), radius);
   }
 
-  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects, OpticalRectangle currentObj) {
-//    Intersection point must be at least 1 px away from origin
+  public static OpticalRectangle getNearestIntersection(Line l, OpticsList<OpticalRectangle> interactiveObjects,
+                                                        OpticalRectangle currentObj) {
+    //    Intersection point must be at least 1 px away from origin
     boolean hasObj = currentObj != null;
     double threshold = 4;
     Vectors origin = new Vectors(l.getStartX(), l.getStartY());
@@ -31,8 +32,7 @@ public class Geometry {
       if (isCurrObj && !(i instanceof Refract)) continue;
       Path intersection = (Path) Shape.intersect(l, i);
       if (Intersection.hasIntersectionPoint(intersection)) {
-        Point2D iPoint = Intersection
-                .getIntersectionPoint(intersection, origin, !isCurrObj);
+        Point2D iPoint = Intersection.getIntersectionPoint(intersection, origin, !isCurrObj);
         double distance = Vectors.distanceSquared(iPoint, origin);
         if (distance < threshold) {
           continue;

@@ -7,10 +7,13 @@ import serialize.Serializable;
 import java.nio.ByteBuffer;
 
 abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
-  protected Pane parent;
-
   private final int maxSize = 10_00;
   private final int minSize = 5;
+  protected Pane parent;
+
+  public OpticalRectangle(double x, double y, double width, double height) {
+    super(x, y, width, height);
+  }
 
   public int setWidthChecked(double width) {
     if (width > maxSize) {
@@ -36,10 +39,6 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     }
     this.setHeight(height);
     return (int) height;
-  }
-
-  public OpticalRectangle(double x, double y, double width, double height) {
-    super(x, y, width, height);
   }
 
   public abstract OpticalRectangle clone(boolean shiftPositions);
