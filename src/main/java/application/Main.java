@@ -7,6 +7,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import utils.ThreadPool;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class Main extends Application {
   public static void main(String[] args) {
     launch(args);
@@ -18,7 +21,8 @@ public class Main extends Application {
       ThreadPool.initialize(100);
       // Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
 
-      AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
+      ResourceBundle bundle = ResourceBundle.getBundle("langs", new Locale("en"));
+      AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"), bundle);
       Scene scene = new Scene(root, 600, 400);
       scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setScene(scene);

@@ -1,4 +1,4 @@
-.label, .tab-pane, .check-box, .tab-pane.tab-header-area {
+.label, .tab-pane, .check-box, .tab-pane.tab-header-area, .dark {
     -fx-background-color: #303030;
     -fx-text-fill: white;
 }
