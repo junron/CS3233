@@ -23,7 +23,7 @@ import static application.Storage.*;
 public class GeneralTabController {
 
   @FXML
-  private CheckBox showAngles;
+  private CheckBox showAngles, darkTheme;
   @FXML
   private Button save, load, clearAll;
   @FXML
@@ -107,6 +107,16 @@ public class GeneralTabController {
   private void triggerShowAnglesChange() {
     Storage.showLabels = showAngles.isSelected();
     reRenderAll();
+  }
+
+  @FXML
+  private void triggerThemeChange() {
+    Storage.darkTheme = darkTheme.isSelected();
+    if (Storage.darkTheme) {
+      parent.getStylesheets().add(getClass().getResource("/css/dark.css").toExternalForm());
+    } else {
+      parent.getStylesheets().remove(getClass().getResource("/css/dark.css").toExternalForm());
+    }
   }
 }
 

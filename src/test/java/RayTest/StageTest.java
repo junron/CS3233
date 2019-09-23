@@ -27,7 +27,7 @@ public class StageTest extends ApplicationTest {
       return;
     }
     Scene scene = new Scene(root, 600, 400);
-    scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
+    scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
     stage.setScene(scene);
     stage.setTitle("Ray Simulator");
     stage.setMaximized(true);

@@ -1,0 +1,9 @@
+.label, .tab-pane, .check-box, .tab-pane.tab-header-area {
+    -fx-background-color: #303030;
+    -fx-text-fill: white;
+}
+
+/*.text-field, .button {*/
+/*    -fx-background-color: #7f878f;*/
+/*    -fx-text-fill: white;*/
+/*}*/

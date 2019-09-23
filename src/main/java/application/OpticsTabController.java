@@ -26,7 +26,6 @@ public class OpticsTabController {
   private SettableTextField refractiveIndex, width, rotation, height;
 
   private OpticalRectangle focusedObject;
-  private String expectedText;
 
   void initialize(Pane parent) {
     newMirror.setOnMouseClicked(event -> {

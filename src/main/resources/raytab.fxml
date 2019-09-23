@@ -2,14 +2,14 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0"
-            xmlns="http://javafx.com/javafx/10.0.1" fx:controller="application.RayTabController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0" xmlns="http://javafx.com/javafx/10.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.RayTabController">
     <Button fx:id="newRay" focusTraversable="false" layoutX="14.0" layoutY="37.0" mnemonicParsing="false"
             text="Create ray" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="14.0"/>
     <Label layoutX="137.0" layoutY="35.0" text="Rotation (°)"/>
     <Label layoutX="137.0" layoutY="66.0" text="Color"/>
     <TextField fx:id="rayRotation" focusTraversable="false" layoutX="210.0" layoutY="31.0" prefHeight="25.0"
                prefWidth="79.0"/>
-    <ColorPicker fx:id="rayColor" editable="true" focusTraversable="false" layoutX="198.0" layoutY="62.0"
+    <ColorPicker fx:id="rayColor" editable="true" focusTraversable="false" layoutX="210.0" layoutY="62.0"
                  promptText="hello"/>
 </AnchorPane>

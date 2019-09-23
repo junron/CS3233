@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import utils.Minified;
 import utils.ThreadPool;
 
 public class Main extends Application {
@@ -17,11 +16,11 @@ public class Main extends Application {
   public void start(Stage primaryStage) {
     try {
       ThreadPool.initialize(100);
-      Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
+      // Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
 
       AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
       Scene scene = new Scene(root, 600, 400);
-      scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
+      scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setScene(scene);
       primaryStage.setTitle("Ray Simulator");
       primaryStage.setMaximized(true);

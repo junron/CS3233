@@ -18,6 +18,7 @@ public class Storage {
   public static RayTabController rayTabController;
   public static int maximumReflectionDepth = 1000;
   public static boolean showLabels = true;
+  static boolean darkTheme = false;
   static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
 
