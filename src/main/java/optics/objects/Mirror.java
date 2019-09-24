@@ -2,7 +2,7 @@ package optics.objects;
 
 import javafx.AngleDisplay;
 import javafx.Draggable;
-import javafx.Rotatable;
+import javafx.KeyActions;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -34,7 +34,7 @@ public class Mirror extends OpticalRectangle {
     this.setStroke(Color.BLACK);
     this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
-    new Rotatable(this, this::triggerStateChange);
+    new KeyActions(this, this::triggerStateChange);
   }
 
   public void addOnStateChange(EventHandler<Event> handler) {

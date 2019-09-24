@@ -1,5 +1,6 @@
 package javafx;
 
+import application.Storage;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -27,6 +28,8 @@ public class Draggable {
     }
 
     shape.setOnMouseDragged(event -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       // Prevent object from entering UI area
       if ((event.getSceneY()) > (parent.getHeight() - 165) &&
               //        Except when moving object to trash

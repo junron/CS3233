@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.util.Callback;
 import math.Vectors;
 
 import java.util.ArrayList;
@@ -21,13 +22,15 @@ public class LineAnimation extends AnimationTimer {
   private final Pane parent;
   private Line l;
   private Point2D[] points;
+  private Callback<LineAnimation, Void> onComplete;
 
 
-  public LineAnimation(Point2D[] points, int pxRate, Color color, Pane parent) {
+  public LineAnimation(Point2D[] points, int pxRate, Color color, Pane parent, Callback<LineAnimation, Void> onComplete) {
     this.points = points;
     this.pxRate = pxRate;
     this.color = color;
     this.parent = parent;
+    this.onComplete = onComplete;
   }
 
   public ArrayList<Line> getLines() {
@@ -41,6 +44,7 @@ public class LineAnimation extends AnimationTimer {
   private void nextPoint() {
     currentPointIndex++;
     if (currentPointIndex == points.length - 1) {
+      onComplete.call(this);
       this.stop();
       return;
     }

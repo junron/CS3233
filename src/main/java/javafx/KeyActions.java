@@ -12,13 +12,15 @@ import optics.objects.OpticalRectangle;
 import optics.objects.Refract;
 
 
-public class Rotatable {
+public class KeyActions {
   private Shape shape;
 
-  public Rotatable(Shape shape, EventHandler<KeyEvent> onRotate) {
+  public KeyActions(Shape shape, EventHandler<KeyEvent> onRotate) {
     this.shape = shape;
     this.shape.setOnMouseClicked(event -> this.shape.requestFocus());
     this.shape.setOnKeyPressed(event -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       String eventCode = event.getCode().toString();
       if (event.isControlDown()) {
         if (eventCode.equals("D")) {

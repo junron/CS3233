@@ -19,6 +19,7 @@ public class Storage {
   public static int maximumReflectionDepth = 1000;
   public static boolean showLabels = true;
   static boolean darkTheme = false;
+  public static boolean isAnimating = false;
   static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
 

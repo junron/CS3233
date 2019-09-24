@@ -80,12 +80,14 @@ public class GeneralTabController {
       }
     });
     clearAll.setOnMouseClicked(event -> {
+      Wall border = (Wall) opticalRectangles.get(0);
       parent.getChildren().removeAll(opticalRectangles);
       opticalRectangles.clear();
       for (Ray r : rays) {
         r.destroy();
       }
       rays.clear();
+      opticalRectangles.add(border);
       reRenderAll();
     });
 

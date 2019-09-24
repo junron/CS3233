@@ -3,7 +3,7 @@ package optics.light;
 import application.Storage;
 import javafx.AngleDisplay;
 import javafx.Draggable;
-import javafx.Rotatable;
+import javafx.KeyActions;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -110,7 +110,7 @@ public class Ray implements LightSource, Serializable {
     //    Circle at the start of the ray
     this.circle = new RayCircle(this.origin.getX(), this.origin.getY(), this.angle, this);
     circle.focusedProperty().addListener((o, ol, state) -> onFocusStateChanged.apply(state));
-    new Rotatable(circle, e -> {
+    new KeyActions(circle, e -> {
       this.angle = circle.getRotate();
       updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
       triggerStateChange(e);

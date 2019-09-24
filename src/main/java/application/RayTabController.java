@@ -26,6 +26,8 @@ public class RayTabController {
 
   public void initialize(Pane parent) {
     newRay.setOnMouseClicked(e -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       PreciseLine l = new PreciseLine(parent.getWidth() / 2, parent.getHeight() / 2, parent
               .getWidth() / 2 + 2500, parent.getHeight() / 2);
       l.setPreciseAngle(0);
@@ -33,6 +35,8 @@ public class RayTabController {
       this.createRay(r);
     });
     rayRotation.textProperty().addListener((o, ol, val) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (val.equals(expectedText)) return;
       if (val.length() == 0) {
         if (this.focusedRay == null) return;
@@ -51,6 +55,8 @@ public class RayTabController {
       rerenderRay(this.focusedRay);
     });
     rayColor.valueProperty().addListener((o, ol, color) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (this.focusedRay == null) return;
       if (color.equals(expectedColor)) return;
       this.focusedRay.setColor(color);

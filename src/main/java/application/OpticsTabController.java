@@ -29,19 +29,27 @@ public class OpticsTabController {
 
   void initialize(Pane parent) {
     newMirror.setOnMouseClicked(event -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       Mirror m = new Mirror(parent.getWidth() / 2, parent.getHeight() / 2 - 100, 20, 200, parent, 0);
       addObject(m, parent);
     });
     newWall.setOnMouseClicked(event -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       Wall w = new Wall(parent.getWidth() / 2, parent.getHeight() / 2 - 25, 20, 50, parent, 0);
       addObject(w, parent);
     });
     newRefractor.setOnMouseClicked(event -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       Refract re = new Refract(parent.getWidth() / 2, parent.getHeight() / 2 - 50, 20, 100, parent, 0, 1);
       addObject(re, parent);
     });
 
     rotation.textProperty().addListener((o, ol, val) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setRotate(0);
@@ -55,6 +63,8 @@ public class OpticsTabController {
     });
 
     width.setChangeListener((o, ol, val) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setWidth(5);
@@ -68,6 +78,8 @@ public class OpticsTabController {
     });
 
     height.textProperty().addListener((o, ol, val) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (this.focusedObject == null) return;
       if (val.length() == 0) {
         this.focusedObject.setHeight(5);
@@ -81,6 +93,8 @@ public class OpticsTabController {
     });
 
     refractiveIndex.setChangeListener((o, ol, val) -> {
+      // Prevent changes when animating
+      if(Storage.isAnimating) return;
       if (this.focusedObject == null) return;
       if (!(this.focusedObject instanceof Refract)) return;
       Refract object = (Refract) this.focusedObject;
@@ -145,7 +159,6 @@ public class OpticsTabController {
     }
     if (positive && res < 0) return null;
     return res;
-
   }
 }
 
