@@ -12,14 +12,18 @@
         <Tab closable="false" text="General">
             <fx:include fx:id="generalTab" source="generaltab.fxml"/>
         </Tab>
+        <Tab closable="false" text="Animation">
+            <fx:include fx:id="animationTab" source="animation.fxml"/>
+        </Tab>
         <Tab closable="false" text="Rays">
             <fx:include fx:id="rayTab" source="raytab.fxml"/>
         </Tab>
-        <Tab closable="false" text ="Optical objects">
+        <Tab closable="false" text="Optical objects">
             <fx:include fx:id="opticsTab" source="opticstab.fxml"/>
         </Tab>
     </TabPane>
-    <Pane styleClass="dark" layoutX="840.0" layoutY="90.0" prefHeight="82.0" prefWidth="82.0" style="-fx-background-color: #dfdfdf;"
+    <Pane styleClass="dark" layoutX="840.0" layoutY="90.0" prefHeight="82.0" prefWidth="82.0"
+          style="-fx-background-color: #dfdfdf;"
           AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <Label layoutX="30.0" layoutY="46.0" text="%trash"/>
     </Pane>

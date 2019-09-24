@@ -23,10 +23,8 @@ public class RayTabController {
   private Ray focusedRay;
   private String expectedText;
   private Color expectedColor;
-  private Pane parent;
 
   public void initialize(Pane parent) {
-    this.parent = parent;
     newRay.setOnMouseClicked(e -> {
       PreciseLine l = new PreciseLine(parent.getWidth() / 2, parent.getHeight() / 2, parent
               .getWidth() / 2 + 2500, parent.getHeight() / 2);
@@ -96,6 +94,10 @@ public class RayTabController {
     this.expectedColor = this.focusedRay.getColor();
     rayColor.setValue(this.focusedRay.getColor());
     rayRotation.setText(expectedText);
+  }
+
+  Ray getFocusedRay() {
+    return focusedRay;
   }
 
   private String fixAngle(double angle) {

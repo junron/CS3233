@@ -22,6 +22,8 @@ public class MainController implements Initializable {
   private GeneralTabController generalTabController;
   @FXML
   private OpticsTabController opticsTabController;
+  @FXML
+  private AnimationTabController animationTabController;
 
 
   @Override
@@ -29,6 +31,7 @@ public class MainController implements Initializable {
     rayTabController.initialize(parent);
     generalTabController.initialize(parent, opticsTabController, rayTabController);
     opticsTabController.initialize(parent);
+    animationTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;

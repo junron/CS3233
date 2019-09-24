@@ -40,7 +40,7 @@ public class Intersection {
                                                          boolean isInObject) {
     Circle pointIndicator = new Circle(iPoint.getX(), iPoint.getY(), 1);
     ArrayList<Point2D> points = convertToPoints(((Path) Shape.intersect(intersector, intersector)).getElements());
-    ArrayList<Line> lines = generateLinesPoints(points);
+    ArrayList<Line> lines = generateLineFromPoints(points);
     Stream<Line> stream = lines.stream().filter(line -> hasIntersectionPoint(Shape.intersect(line, pointIndicator)));
     Line l = stream.min((Line a, Line b) -> {
       Point2D midA = Vectors.midPoint(a);
@@ -55,7 +55,7 @@ public class Intersection {
   }
 
 
-  private static ArrayList<Line> generateLinesPoints(ArrayList<Point2D> points) {
+  private static ArrayList<Line> generateLineFromPoints(ArrayList<Point2D> points) {
     ArrayList<Line> res = new ArrayList<>();
     for (int i = 0; i < points.size(); i++) {
       Point2D p1 = points.get(i);

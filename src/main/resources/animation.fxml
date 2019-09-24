@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AnimationTabController">
+   <children>
+      <Button layoutX="66.0" layoutY="100.0" mnemonicParsing="false" onAction="#startAnimation" text="Animate focused ray" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="66.0" />
+      <Label layoutX="66.0" layoutY="61.0" text="Pixels/second: " AnchorPane.bottomAnchor="102.0" AnchorPane.leftAnchor="66.0" />
+      <TextField fx:id="pixelsPerSecond" focusTraversable="false" layoutX="155.0" layoutY="57.0" AnchorPane.bottomAnchor="98.0" AnchorPane.leftAnchor="155.0" />
+   </children>
+</AnchorPane>
