@@ -29,10 +29,10 @@ public class GeneralTabController {
   @FXML
   private TextField maxInteract;
 
-  public void initialize(Pane parent, OpticsTabController optics, RayTabController rayController) {
+  void initialize(Pane parent, OpticsTabController optics, RayTabController rayController) {
     save.setOnMouseClicked(event -> {
-      ArrayList<Object> allObjects = new ArrayList<>();
-      allObjects.addAll(opticalRectangles);
+      ArrayList<Object> allObjects = new ArrayList<>(opticalRectangles);
+      allObjects.remove(0);
       allObjects.addAll(rays);
       try {
         FileOps.save(allObjects, (Stage) parent.getScene().getWindow());
