@@ -31,4 +31,4 @@ shadowJar {
 }
 
 
-mainClassName = 'application.Main'
+mainClassName = 'application.FadeApp'
