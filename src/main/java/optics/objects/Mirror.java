@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
@@ -65,24 +66,36 @@ public class Mirror extends OpticalRectangle {
     PreciseLine l = r.getCurrentLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), null);
-    if (iData == null || iData.normalVector == null) {
-      System.out.println("ERRORORROOROR: iData is null");
-      return null;
+    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), r);
+    ArrayList<Double> failedAngles = new ArrayList<>();
+    double normalAngle;
+    double intersectionAngle = 0;
+    PreciseLine preciseLine = null;
+
+    for (int i = 0; i < 5; i++) {
+      if (iData == null || iData.normalVector == null) {
+        System.out.println("ERRORORROOROR: iData is null");
+        return null;
+      }
+      normalAngle = iData.normalAngle;
+      intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
+      Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
+              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+      preciseLine = new PreciseLine(newLine);
+      preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
+
+      // Ray is going through the mirror
+      // Something is wrong, abort
+      if (Intersection.hasExitPoint(Shape.intersect(preciseLine, this), iPoint)) {
+        failedAngles.add(iData.normalAngle);
+        iData = Intersection
+                .getIntersectionSide(r, iPoint, this, new Point2D(l.getStartX(), l.getStartY()), false, failedAngles);
+        System.out.println("Cancelled");
+        if (i == 4) return null;
+        continue;
+      }
+      break;
     }
-    double normalAngle = iData.normalAngle;
-    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
-    Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
-    PreciseLine preciseLine = new PreciseLine(newLine);
-    preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
-
-    //    Ray is going through the mirror
-    //    Something is wrong, abort
-    //    if (Intersection.hasExitPoint(Shape.intersect(preciseLine, this), iPoint)) {
-    //      return null;
-    //    }
-
     double angle = Math.toDegrees(intersectionAngle) % 360;
     if (angle > 180) angle = 360 - angle;
     else if (angle < -180) angle += 360;
@@ -93,7 +106,7 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
-    return Intersection.getIntersectionSide(iPoint, this, origin, false);
+    return Intersection.getIntersectionSide(r, iPoint, this, origin, false);
   }
 
   @Override

@@ -122,7 +122,7 @@ public class Refract extends OpticalRectangle {
 
   @Override
   public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
-    return Intersection.getIntersectionSide(iPoint, this, origin, r.isInRefractiveMaterial());
+    return Intersection.getIntersectionSide(r, iPoint, this, origin, r.isInRefractiveMaterial());
   }
 
   @Override
