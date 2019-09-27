@@ -35,7 +35,7 @@ public class Mirror extends OpticalRectangle {
     this.setStroke(Color.BLACK);
     this.parent = parent;
     new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
-    new KeyActions(this, this::triggerStateChange);
+    new KeyActions(this, this::triggerStateChange, this::triggerDestroy, parent);
   }
 
   public void addOnStateChange(EventHandler<Event> handler) {

@@ -114,7 +114,7 @@ public class Ray implements LightSource, Serializable {
       this.angle = circle.getRotate();
       updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
       triggerStateChange(e);
-    });
+    }, this::triggerDestroy, parent);
     new Draggable(circle, e -> {
       this.angle = circle.getRotate();
       updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));

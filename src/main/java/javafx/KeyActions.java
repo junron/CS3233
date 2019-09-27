@@ -1,8 +1,10 @@
 package javafx;
 
 import application.Storage;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -15,13 +17,17 @@ import optics.objects.Refract;
 public class KeyActions {
   private Shape shape;
 
-  public KeyActions(Shape shape, EventHandler<KeyEvent> onRotate) {
+  public KeyActions(Shape shape, EventHandler<KeyEvent> onRotate, EventHandler<Event> onDestroy, Pane parent) {
     this.shape = shape;
     this.shape.setOnMouseClicked(event -> this.shape.requestFocus());
     this.shape.setOnKeyPressed(event -> {
       // Prevent changes when animating
-      if(Storage.isAnimating) return;
+      if (Storage.isAnimating) return;
       String eventCode = event.getCode().toString();
+      if (eventCode.equals("DELETE")) {
+        parent.getChildren().remove(this.shape);
+        onDestroy.handle(event);
+      }
       if (event.isControlDown()) {
         if (eventCode.equals("D")) {
           if (shape instanceof OpticalRectangle) {

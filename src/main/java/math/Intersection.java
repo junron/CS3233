@@ -80,7 +80,7 @@ public class Intersection {
     return res;
   }
 
-  private static ArrayList<Point2D> convertToPoints(ObservableList<PathElement> elements) {
+  public static ArrayList<Point2D> convertToPoints(ObservableList<PathElement> elements) {
     ArrayList<Point2D> results = new ArrayList<>();
     for (PathElement elem : elements) {
       if (elem instanceof MoveTo) {
