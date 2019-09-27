@@ -2,8 +2,8 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0" xmlns="http://javafx.com/javafx/10.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.RayTabController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0"
+            xmlns="http://javafx.com/javafx/10.0.1" fx:controller="application.RayTabController">
     <Button fx:id="newRay" focusTraversable="false" layoutX="14.0" layoutY="37.0" mnemonicParsing="false"
             text="%createRay" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="14.0"/>
     <Label layoutX="137.0" layoutY="35.0" text="%rotation"/>

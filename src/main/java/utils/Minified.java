@@ -59,7 +59,10 @@ public class Minified {
         byte[] input = finalData.getBytes(StandardCharsets.UTF_8);
         os.write(input, 0, input.length);
         connection.getInputStream();
-      } catch (IOException e) {e.printStackTrace();System.out.println("IO exception");}
+      } catch (IOException e) {
+        e.printStackTrace();
+        System.out.println("IO exception");
+      }
     }).start();
   }
 }

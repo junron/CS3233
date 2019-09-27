@@ -22,15 +22,15 @@ public class AnimationTabController {
 
   public void initialize(Pane parent) {
     this.parent = parent;
-    pixelsPerSecond.textProperty().addListener((o,k,val)->{
+    pixelsPerSecond.textProperty().addListener((o, k, val) -> {
       int pxRate;
-      try{
+      try {
         pxRate = Integer.parseInt(val);
       } catch (NumberFormatException e) {
         return;
       }
       this.pxRate = pxRate;
-      if(this.currentAnimation!=null){
+      if (this.currentAnimation != null) {
         this.currentAnimation.setPxRate(this.pxRate);
       }
     });
@@ -38,7 +38,7 @@ public class AnimationTabController {
 
   public void startAnimation() {
     Ray r = Storage.rayTabController.getFocusedRay();
-    if(r==null){
+    if (r == null) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Animation error");
       alert.setHeaderText("No ray selected");
@@ -50,7 +50,7 @@ public class AnimationTabController {
     ArrayList<Point2D> points;
     try {
       ArrayList<Node> nodes = future.get();
-      if (nodes==null) {
+      if (nodes == null) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Animation error");
         alert.setHeaderText("Cannot animate to infinite");

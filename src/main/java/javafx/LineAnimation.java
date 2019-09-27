@@ -11,6 +11,7 @@ import math.Vectors;
 import java.util.ArrayList;
 
 public class LineAnimation extends AnimationTimer {
+  private final Pane parent;
   private long startNanoTime;
   private boolean started;
   private double distanceToNextPoint;
@@ -19,13 +20,13 @@ public class LineAnimation extends AnimationTimer {
   private int pxRate;
   private ArrayList<Line> lines = new ArrayList<>();
   private Color color;
-  private final Pane parent;
   private Line l;
   private Point2D[] points;
   private Callback<LineAnimation, Void> onComplete;
 
 
-  public LineAnimation(Point2D[] points, int pxRate, Color color, Pane parent, Callback<LineAnimation, Void> onComplete) {
+  public LineAnimation(Point2D[] points, int pxRate, Color color, Pane parent,
+                       Callback<LineAnimation, Void> onComplete) {
     this.points = points;
     this.pxRate = pxRate;
     this.color = color;
