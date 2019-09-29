@@ -1,6 +1,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -23,12 +24,23 @@ public class Main extends Application {
 
       ResourceBundle bundle = ResourceBundle.getBundle("langs", new Locale("en"));
       AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"), bundle);
-      Scene scene = new Scene(root, 600, 400);
-      scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
-      primaryStage.setScene(scene);
+      Scene mainScene = new Scene(root, 600, 400);
+      mainScene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+      Scene preloader = new Scene(FXMLLoader.load(getClass().getResource("/splash.fxml")), 350, 250);
+      primaryStage.setScene(preloader);
       primaryStage.setTitle("Ray Simulator");
-      primaryStage.setMaximized(true);
       primaryStage.show();
+      new Thread(() -> {
+        try {
+          Thread.sleep(7000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        Platform.runLater(() -> {
+          primaryStage.setScene(mainScene);
+          primaryStage.setMaximized(true);
+        });
+      }).start();
     } catch (Exception e) {
       e.printStackTrace();
     }
