@@ -8,9 +8,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import utils.ThreadPool;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 public class Main extends Application {
   public static void main(String[] args) {
     launch(args);
@@ -19,20 +16,26 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
+      boolean usePreloader = false;
       ThreadPool.initialize(100);
       // Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
 
-      ResourceBundle bundle = ResourceBundle.getBundle("langs", new Locale("en"));
-      AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"), bundle);
+      AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
       Scene mainScene = new Scene(root, 600, 400);
       mainScene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+      primaryStage.setTitle("Ray Simulator");
+      if (!usePreloader) {
+        primaryStage.setScene(mainScene);
+        primaryStage.setMaximized(true);
+        primaryStage.show();
+        return;
+      }
       Scene preloader = new Scene(FXMLLoader.load(getClass().getResource("/splash.fxml")), 350, 250);
       primaryStage.setScene(preloader);
-      primaryStage.setTitle("Ray Simulator");
       primaryStage.show();
       new Thread(() -> {
         try {
-          Thread.sleep(7000);
+          Thread.sleep(7500);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }

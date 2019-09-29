@@ -10,7 +10,7 @@
         <Button focusTraversable="false" layoutX="66.0" layoutY="133.0" mnemonicParsing="false"
                 onAction="#startAnimation" text="Animate focused ray" AnchorPane.bottomAnchor="22.0"
                 AnchorPane.leftAnchor="66.0"/>
-        <Label layoutX="66.0" layoutY="94.0" text="Pixels/second: " AnchorPane.bottomAnchor="69.0"
+        <Label layoutX="66.0" layoutY="94.0" text="Pixels/second" AnchorPane.bottomAnchor="69.0"
                AnchorPane.leftAnchor="66.0"/>
         <TextField fx:id="pixelsPerSecond" focusTraversable="false" layoutX="155.0" layoutY="90.0" text="300"
                    AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="155.0"/>

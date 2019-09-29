@@ -1,8 +1,11 @@
 package application;
 
+import internationalization.Translate;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
@@ -17,11 +20,17 @@ import serialize.FileOps;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static application.Storage.*;
+import static java.util.Map.entry;
 
 public class GeneralTabController {
 
+  @FXML
+  private ComboBox<String> languageSelect;
   @FXML
   private CheckBox showAngles, darkTheme;
   @FXML
@@ -29,7 +38,30 @@ public class GeneralTabController {
   @FXML
   private TextField maxInteract;
 
+  private Map<String, String> languageIdMapping = Map
+          .ofEntries(entry("English", "en"), entry("Chinese (Simplified)", "zh"), entry("Chinese (Traditional)",
+                  "zh" + "-TW"), entry("Malay", "ms"), entry("Tamil", "ta"), entry("French", "fr"), entry("Hindi",
+                  "hi"), entry("Tagalog", "tl"), entry("Spanish", "es"), entry("Korean", "ko"), entry("Japanese", "ja"
+          ), entry("German", "de"), entry("Greek", "el"));
+  private Map<String, Locale> resourceBundlesLanguages = Map
+          .ofEntries(entry("en", new Locale("en", "US")), entry("fr", new Locale("fr", "FR")), entry("zh-TW",
+                  new Locale("zh-tw", "TW")), entry("zh", new Locale("zh", "CN")));
+
+
   void initialize(Pane parent, OpticsTabController optics, RayTabController rayController) {
+    // Translation
+    Translate translate = new Translate(parent);
+    languageSelect.setItems(FXCollections.observableArrayList(languageIdMapping.keySet()));
+    languageSelect.setOnAction(action -> {
+      String langId = languageIdMapping.get(languageSelect.getSelectionModel().getSelectedItem());
+      Locale locale = resourceBundlesLanguages.get(langId);
+      if(locale!=null){
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("languages",locale);
+        translate.translateAll(locale,resourceBundle);
+      }else{
+        translate.translateAll(new Locale(langId));
+      }
+    });
     save.setOnMouseClicked(event -> {
       ArrayList<Object> allObjects = new ArrayList<>(opticalRectangles);
       allObjects.remove(0);

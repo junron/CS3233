@@ -11,7 +11,7 @@
             text="Create wall" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="20.0"/>
     <SettableTextField fx:id="rotation" focusTraversable="false" layoutX="228.0" layoutY="72.0" prefHeight="25.0"
                        prefWidth="75.0" AnchorPane.bottomAnchor="83.0" AnchorPane.leftAnchor="228.0"/>
-    <Label layoutX="167.0" layoutY="88.0" text="Rotation"
+    <Label layoutX="167.0" layoutY="88.0" text="Rotation (°)"
            AnchorPane.bottomAnchor="88.98828125" AnchorPane.leftAnchor="167.0"/>
     <SettableTextField fx:id="height" focusTraversable="false" layoutX="228.0" layoutY="103.0" prefHeight="25.0"
                        prefWidth="75.0" AnchorPane.bottomAnchor="52.0" AnchorPane.leftAnchor="228.0"/>
