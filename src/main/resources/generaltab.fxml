@@ -16,5 +16,5 @@
     <CheckBox fx:id="showAngles" layoutX="97.0" layoutY="130.0" mnemonicParsing="false" onAction="#triggerShowAnglesChange" selected="true" text="Show angles on hover" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="97.0" />
     <CheckBox fx:id="darkTheme" layoutX="290.0" layoutY="130.0" mnemonicParsing="false" onAction="#triggerThemeChange" text="Dark theme" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="290.0" />
     <Label layoutX="423.0" layoutY="91.0" text="Language:" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="423.0" />
-    <ComboBox fx:id="languageSelect" layoutX="490.0" layoutY="86.0" prefWidth="150.0" AnchorPane.bottomAnchor="69.0" AnchorPane.leftAnchor="490.0" />
+    <ComboBox fx:id="languageSelect" layoutX="490.0" layoutY="86.0" prefWidth="150.0" promptText="Select language" AnchorPane.bottomAnchor="69.0" AnchorPane.leftAnchor="490.0" />
 </AnchorPane>

@@ -30,7 +30,17 @@ public class Storage {
     handleRender(future);
   }
 
-  static void reRenderAll() {
+  public static void addRay(Ray r) {
+    rays.add(r);
+  }
+
+  public static void replaceOpticalRectangle(OpticalRectangle rectangle, int index) {
+    OpticalRectangle outGoing = opticalRectangles.get(index);
+    opticalRectangles.set(index, rectangle);
+    parent.getChildren().set(parent.getChildren().indexOf(outGoing), rectangle);
+  }
+
+  public static void reRenderAll() {
     ArrayList<CompletableFuture<ArrayList<Node>>> futures = new ArrayList<>();
     ArrayList<Node> lines = new ArrayList<>();
     for (Ray r : rays) {

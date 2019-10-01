@@ -3,6 +3,7 @@ package application;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
+import networking.NetworkingClient;
 import optics.objects.Wall;
 
 import java.net.URL;
@@ -42,6 +43,7 @@ public class MainController implements Initializable {
       wall.setY((double) val - 160);
       reRenderAll();
     });
+    NetworkingClient.init(parent);
   }
 }
 
