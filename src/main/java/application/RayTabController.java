@@ -64,7 +64,7 @@ public class RayTabController {
     });
   }
 
-  public void createRay(Ray r) {
+  public void createRay(Ray r, boolean syncToServer) {
     changeFocus(r);
     rays.add(r);
     r.setOnDestroy(e -> {
@@ -86,6 +86,10 @@ public class RayTabController {
     rayRotation.setText(expectedText);
     rayColor.valueProperty().setValue(Color.BLACK);
     r.requestFocus();
+  }
+
+  public void createRay(Ray r) {
+    createRay(r, false);
   }
 
   private void changeFocus(Ray r) {

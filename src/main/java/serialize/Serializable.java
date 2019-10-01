@@ -1,7 +1,7 @@
 package serialize;
 
 public interface Serializable {
-  byte[] serialize();
+  String serialize();
 
-  void deserialize(byte[] serialized);
+  void deserialize(String serialized);
 }

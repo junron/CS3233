@@ -4,8 +4,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import serialize.Serializable;
 
-import java.nio.ByteBuffer;
-
 abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
   private final int maxSize = 10_00;
   private final int minSize = 5;
@@ -45,30 +43,17 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     return parent;
   }
 
-  @Override
-  public void deserialize(byte[] serialized) {
-    ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    buffer.getChar();
-    double x = buffer.getDouble();
-    double y = buffer.getDouble();
-    double width = buffer.getDouble();
-    double height = buffer.getDouble();
-    double angle = buffer.getDouble();
-    this.setX(x);
-    this.setY(y);
-    this.setWidth(width);
-    this.setHeight(height);
-    this.setRotate(angle);
+  public String serialize(char id) {
+    return id + "|" + this.getX() + "|" + this.getY() + "|" + this.getWidth() + "|" + this.getHeight() + "|" + this
+            .getRotate();
   }
 
-  public ByteBuffer serialize(char id, int bytes) {
-    ByteBuffer byteBuffer = ByteBuffer.allocate(bytes);
-    byteBuffer.putChar(id);
-    byteBuffer.putDouble(this.getX());
-    byteBuffer.putDouble(this.getY());
-    byteBuffer.putDouble(this.getWidth());
-    byteBuffer.putDouble(this.getHeight());
-    byteBuffer.putDouble(this.getRotate());
-    return byteBuffer;
+  @Override
+  public void deserialize(String string) {
+    String[] parts = string.split("\\|");
+    this.setX(Double.parseDouble(parts[1]));
+    this.setY(Double.parseDouble(parts[2]));
+    this.setWidth(Double.parseDouble(parts[3]));
+    this.setHeight(Double.parseDouble(parts[4]));
   }
 }

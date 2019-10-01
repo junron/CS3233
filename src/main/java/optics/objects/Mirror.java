@@ -119,8 +119,8 @@ public class Mirror extends OpticalRectangle {
 
 
   @Override
-  public byte[] serialize() {
-    return super.serialize('m', Character.BYTES + Double.BYTES * 5).array();
+  public String serialize() {
+    return super.serialize('m');
   }
 
   @Override

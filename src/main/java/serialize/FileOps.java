@@ -22,27 +22,25 @@ public class FileOps {
     FileOutputStream out = new FileOutputStream(file);
     for (Object object : objects) {
       if (!(object instanceof Serializable)) return;
-      out.write(((Serializable) object).serialize());
+      out.write(((Serializable) object).serialize().getBytes());
       out.write('\n');
     }
   }
 
-  public static ArrayList<byte[]> load(Stage stage) throws IOException {
+  public static ArrayList<String> load(Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Load Ray Simulation");
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
     File file = fileChooser.showOpenDialog(stage);
     if (file == null) return null;
     byte[] data = Files.readAllBytes(Paths.get(file.getPath()));
-    ArrayList<byte[]> res = new ArrayList<>();
+    ArrayList<String> res = new ArrayList<>();
     int lastVal = 0;
     int currIndex = 0;
-    for (int i = 0; i < data.length; i++) {
-      byte b = data[i];
-      // Each element is denoted by a new line and a NULL char
-      // Prevent array overflow
-      if (b == 10 && ((i + 1) == data.length || data[i + 1] == 0)) {
-        byte[] elem = Arrays.copyOfRange(data, lastVal, currIndex + 1);
+    for (byte b : data) {
+      // Each element is denoted by a new line
+      if (b == 10) {
+        String elem = new String(Arrays.copyOfRange(data, lastVal, currIndex + 1));
         res.add(elem);
         lastVal = currIndex + 1;
       }

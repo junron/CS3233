@@ -74,8 +74,8 @@ public class Wall extends OpticalRectangle {
   }
 
   @Override
-  public byte[] serialize() {
-    return super.serialize('w', Character.BYTES + Double.BYTES * 5).array();
+  public String serialize() {
+    return super.serialize('w');
   }
 
   @Override

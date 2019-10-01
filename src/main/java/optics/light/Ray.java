@@ -27,7 +27,6 @@ import serialize.Serializable;
 import utils.Geometry;
 import utils.OpticsList;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -271,29 +270,20 @@ public class Ray implements LightSource, Serializable {
   }
 
   @Override
-  public byte[] serialize() {
+  public String serialize() {
     //    x,y,rotation,r,g,b
-    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 3 + Character.BYTES + Double.BYTES * 3);
-    byteBuffer.putChar('r');
-    byteBuffer.putDouble(this.originalOrigin.getX());
-    byteBuffer.putDouble(this.originalOrigin.getY());
-    byteBuffer.putDouble(this.angle);
-    byteBuffer.putDouble(this.color.getRed());
-    byteBuffer.putDouble(this.color.getGreen());
-    byteBuffer.putDouble(this.color.getBlue());
-    return byteBuffer.array();
+    return this.originalOrigin.getX() + "|" + this.originalOrigin.getY() + "|" + this.color.getRed() + "|" + this.color
+            .getGreen() + "|" + this.color.getBlue();
   }
 
   @Override
-  public void deserialize(byte[] serialized) {
-    ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    buffer.getChar();
-    double x = buffer.getDouble();
-    double y = buffer.getDouble();
-    this.angle = buffer.getDouble();
-    double red = buffer.getDouble();
-    double green = buffer.getDouble();
-    double blue = buffer.getDouble();
+  public void deserialize(String string) {
+    String[] parts = string.split("\\|");
+    double x = Double.parseDouble(parts[1]);
+    double y = Double.parseDouble(parts[2]);
+    double red =(Double.parseDouble(parts[3]));
+    double green = Double.parseDouble(parts[4]);
+    double blue = Double.parseDouble(parts[5]);
     updateLine(angle, new Point2D(x, y));
     parent.getChildren().removeAll(this.circle);
     addCircle();

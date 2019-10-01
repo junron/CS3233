@@ -112,14 +112,12 @@ public class OpticsTabController {
     });
   }
 
-  private void addObject(OpticalRectangle object, Pane parent, boolean syncToServer) {
+  public void addObject(OpticalRectangle object, Pane parent, boolean syncToServer) {
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
+      System.out.println("Change");
+      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object));
       changeFocus(object);
-      if (syncToServer) {
-        System.out.println("Sync");
-        NetworkingClient.updateObject(object, opticalRectangles.indexOf(object));
-      }
       reRenderAll();
     });
     object.setOnDestroy(e -> {

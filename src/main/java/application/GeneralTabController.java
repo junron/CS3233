@@ -69,7 +69,7 @@ public class GeneralTabController {
       }
     });
     load.setOnMouseClicked(e -> {
-      ArrayList<byte[]> data;
+      ArrayList<String> data;
       try {
         data = FileOps.load((Stage) parent.getScene().getWindow());
       } catch (IOException ex) {
@@ -77,7 +77,7 @@ public class GeneralTabController {
         return;
       }
       if (data == null) return;
-      for (byte[] object : data) {
+      for (String object : data) {
         Deserialize.deserializeAndAdd(object,parent);
       }
     });

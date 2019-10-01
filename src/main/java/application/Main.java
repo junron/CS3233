@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import networking.NetworkingClient;
 import utils.ThreadPool;
 
 public class Main extends Application {
@@ -53,6 +54,7 @@ public class Main extends Application {
   public void stop() throws Exception {
     super.stop();
     ThreadPool.getExecutorService().shutdown();
+    NetworkingClient.shutdown();
   }
 
 }

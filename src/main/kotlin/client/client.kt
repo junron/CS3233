@@ -70,4 +70,11 @@ class Client(
       }
     }
   }
+
+  fun close() {
+    runBlocking {
+      socket.close()
+    }
+    client.close()
+  }
 }

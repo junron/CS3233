@@ -9,15 +9,12 @@ import optics.objects.OpticalRectangle;
 import optics.objects.Refract;
 import optics.objects.Wall;
 
-import java.nio.ByteBuffer;
-
 import static application.Storage.opticsTabController;
 import static application.Storage.rayTabController;
 
 public class Deserialize {
-  public static Serializable deserialize(byte[] object, Pane parent) {
-    ByteBuffer buffer = ByteBuffer.wrap(object);
-    switch (buffer.getChar()) {
+  public static Serializable deserialize(String object, Pane parent) {
+    switch (object.charAt(0)) {
       case 'm': {
         Mirror m = new Mirror(0, 0, 0, 0, parent, 0);
         m.deserialize(object);
@@ -43,7 +40,7 @@ public class Deserialize {
     }
   }
 
-  public static void deserializeAndAdd(byte[] object, Pane parent) {
+  public static void deserializeAndAdd(String object, Pane parent) {
     Serializable serializable = deserialize(object, parent);
     if (serializable instanceof Ray) {
       rayTabController.createRay((Ray) serializable);

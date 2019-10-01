@@ -31,14 +31,14 @@ public class NetworkingClient {
             switch (data.getType()) {
               case "create": {
                 Platform.runLater(() -> {
-                  Deserialize.deserializeAndAdd(data.getData().getBytes(), parent);
+                  Deserialize.deserializeAndAdd(data.getData(), parent);
                   Storage.reRenderAll();
                 });
                 break;
               }
               case "update": {
                 Platform.runLater(() -> {
-                  Serializable serializable = Deserialize.deserialize(data.getData().getBytes(), parent);
+                  Serializable serializable = Deserialize.deserialize(data.getData(), parent);
                   System.out.println(serializable);
                   if (serializable instanceof OpticalRectangle) {
                     Storage.replaceOpticalRectangle((OpticalRectangle) serializable, data.getIndex() + 1);
@@ -52,7 +52,12 @@ public class NetworkingClient {
           } else {
             //  Sync
             DataSync data = new Gson().fromJson(message, DataSync.class);
-            System.out.println(data.getObjects());
+            Platform.runLater(() -> {
+              for (String object : data.getObjects()) {
+                Deserialize.deserializeAndAdd(object, parent);
+              }
+              Storage.reRenderAll();
+            });
           }
         }
         return null;
@@ -71,8 +76,7 @@ public class NetworkingClient {
   }
 
   public static void addObject(Serializable serializable) {
-    client.send(new TextData("updateObjects", new UpdateRequest("create", new String(serializable.serialize()), 0)
-            .toString()));
+    client.send(new TextData("updateObjects", new UpdateRequest("create", serializable.serialize(), 0).toString()));
   }
 
   public static void removeObject(int index) {
@@ -80,8 +84,11 @@ public class NetworkingClient {
   }
 
   public static void updateObject(Serializable serializable, int index) {
-    client.send(new TextData("updateObjects", new UpdateRequest("update", new String(serializable
-            .serialize()), index - 1).toString()));
+    client.send(new TextData("updateObjects", new UpdateRequest("update", serializable.serialize(), index - 1)
+            .toString()));
   }
 
+  public static void shutdown() {
+    client.close();
+  }
 }

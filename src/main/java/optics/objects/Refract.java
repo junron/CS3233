@@ -17,7 +17,6 @@ import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -135,18 +134,15 @@ public class Refract extends OpticalRectangle {
 
 
   @Override
-  public byte[] serialize() {
+  public String serialize() {
     //    x,y,width,height,rotation,ref index
-    ByteBuffer byteBuffer = super.serialize('e', Character.BYTES + Double.BYTES * 6);
-    byteBuffer.putDouble(this.refractiveIndex);
-    return byteBuffer.array();
+    return super.serialize('e') + "|" + this.refractiveIndex;
   }
 
   @Override
-  public void deserialize(byte[] serialized) {
+  public void deserialize(String serialized) {
     super.deserialize(serialized);
-    ByteBuffer buffer = ByteBuffer.wrap(serialized);
-    this.refractiveIndex = buffer.getDouble(Character.BYTES + Double.BYTES * 5);
+    this.refractiveIndex = Double.parseDouble(serialized.split("\\|")[5]);
   }
 
   @Override
