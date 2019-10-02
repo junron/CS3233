@@ -80,6 +80,7 @@ public class Translate {
         return null;
       }, resourceBundle);
     }
+    rateLimited.set(false);
   }
 
   public void translateAll(Locale locale) {

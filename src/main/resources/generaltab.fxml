@@ -13,8 +13,9 @@
     <Button fx:id="clearAll" focusTraversable="false" layoutX="795.0" layoutY="139.0" mnemonicParsing="false" text="Clear all" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="95.0" />
     <Label layoutX="97.0" layoutY="77.0" prefHeight="45.0" prefWidth="106.0" text="Maximum number of interactions:" wrapText="true" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="97.0" />
     <TextField fx:id="maxInteract" focusTraversable="false" layoutX="235.0" layoutY="87.0" text="1000" AnchorPane.bottomAnchor="68.0" AnchorPane.leftAnchor="235.0" />
-    <CheckBox fx:id="showAngles" layoutX="97.0" layoutY="130.0" mnemonicParsing="false" onAction="#triggerShowAnglesChange" selected="true" text="Show angles on hover" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="97.0" />
-    <CheckBox fx:id="darkTheme" layoutX="290.0" layoutY="130.0" mnemonicParsing="false" onAction="#triggerThemeChange" text="Dark theme" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="290.0" />
+    <CheckBox fx:id="showAngles" layoutX="97.0" layoutY="140.0" mnemonicParsing="false" onAction="#triggerShowAnglesChange" selected="true" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="97.0" />
+    <CheckBox fx:id="darkTheme" layoutX="291.0" layoutY="140.0" mnemonicParsing="false" onAction="#triggerThemeChange" text="Dark theme" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="291.0" />
     <Label layoutX="423.0" layoutY="91.0" text="Language:" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="423.0" />
     <ComboBox fx:id="languageSelect" layoutX="490.0" layoutY="86.0" prefWidth="150.0" promptText="Select language" AnchorPane.bottomAnchor="69.0" AnchorPane.leftAnchor="490.0" />
+    <Label layoutX="122.0" layoutY="130.0" maxHeight="150.0" prefHeight="37.0" prefWidth="150.0" text="Show angles on hover" wrapText="true" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="122.0" />
 </AnchorPane>

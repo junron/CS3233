@@ -38,7 +38,8 @@ public class GeneralTabController {
           .ofEntries(entry("English", "en"), entry("Chinese (Simplified)", "zh"), entry("Chinese (Traditional)",
                   "zh" + "-TW"), entry("Malay", "ms"), entry("Tamil", "ta"), entry("French", "fr"), entry("Hindi",
                   "hi"), entry("Tagalog", "tl"), entry("Spanish", "es"), entry("Korean", "ko"), entry("Japanese", "ja"
-          ), entry("German", "de"), entry("Greek", "el"));
+          ), entry("German", "de"), entry("Greek", "el"), entry("Telugu", "te"), entry("Russian", "ru"), entry(
+                  "Polish", "pl"), entry("Norwegian", "no"));
   private Map<String, Locale> resourceBundlesLanguages = Map
           .ofEntries(entry("en", new Locale("en", "US")), entry("fr", new Locale("fr", "FR")), entry("zh-TW",
                   new Locale("zh-tw", "TW")), entry("zh", new Locale("zh", "CN")));
@@ -51,10 +52,10 @@ public class GeneralTabController {
     languageSelect.setOnAction(action -> {
       String langId = languageIdMapping.get(languageSelect.getSelectionModel().getSelectedItem());
       Locale locale = resourceBundlesLanguages.get(langId);
-      if(locale!=null){
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("languages",locale);
-        translate.translateAll(locale,resourceBundle);
-      }else{
+      if (locale != null) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("languages", locale);
+        translate.translateAll(locale, resourceBundle);
+      } else {
         translate.translateAll(new Locale(langId));
       }
     });
@@ -78,7 +79,7 @@ public class GeneralTabController {
       }
       if (data == null) return;
       for (String object : data) {
-        Deserialize.deserializeAndAdd(object,parent);
+        Deserialize.deserializeAndAdd(object, parent);
       }
     });
     clearAll.setOnMouseClicked(event -> {

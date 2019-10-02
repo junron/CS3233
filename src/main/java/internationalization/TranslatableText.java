@@ -5,10 +5,7 @@ import javafx.scene.control.Labeled;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class TranslatableText {
   private Labeled labeled;
@@ -60,11 +57,16 @@ public class TranslatableText {
     }
     if (resourceBundle != null) {
       String id = getEnglishText().replaceAll(" ", "-").replaceAll(":", "");
-      String result = resourceBundle.getString(id);
-      cache.put(locale,result);
-      this.labeled.setText(result);
-      if(callback!=null) callback.call(result);
-      return;
+      if (id.equals("")) return;
+      try {
+        String result = resourceBundle.getString(id);
+        cache.put(locale, result);
+        this.labeled.setText(result);
+        if (callback != null) callback.call(result);
+        return;
+      } catch (MissingResourceException e) {
+        //        Not found in resource bundle, continue
+      }
     }
     new Thread(() -> {
       try {
@@ -72,6 +74,7 @@ public class TranslatableText {
         if (result.contains("html")) {
           if (result.contains("block")) {
             System.out.println("Rate limited by google");
+            callback.call("Error: Rate limited");
             return;
           }
           //  Something is wrong
