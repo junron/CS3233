@@ -30,14 +30,14 @@ public class Storage {
     handleRender(future);
   }
 
-  public static void addRay(Ray r) {
-    rays.add(r);
+  public static void updateRay(Ray r, int index) {
+    Ray old = rays.get(index);
+    r.clone(old);
   }
 
-  public static void replaceOpticalRectangle(OpticalRectangle rectangle, int index) {
+  public static void updateOpticalRectangle(OpticalRectangle rectangle, int index) {
     OpticalRectangle outGoing = opticalRectangles.get(index);
-    opticalRectangles.set(index, rectangle);
-    parent.getChildren().set(parent.getChildren().indexOf(outGoing), rectangle);
+    rectangle.clone(outGoing);
   }
 
   public static void reRenderAll() {
@@ -83,5 +83,17 @@ public class Storage {
     //  Add nodes
     parent.getChildren().addAll(result);
     return false;
+  }
+
+  public static void removeOptical(int i) {
+    OpticalRectangle old = opticalRectangles.get(i);
+    parent.getChildren().remove(old);
+    opticalRectangles.remove(i);
+  }
+
+  public static void removeRay(int i) {
+    Ray old = rays.get(i);
+    old.destroy();
+    rays.remove(i);
   }
 }

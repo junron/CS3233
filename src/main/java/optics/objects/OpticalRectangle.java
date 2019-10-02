@@ -55,5 +55,14 @@ abstract public class OpticalRectangle extends Rectangle implements Interactive,
     this.setY(Double.parseDouble(parts[2]));
     this.setWidth(Double.parseDouble(parts[3]));
     this.setHeight(Double.parseDouble(parts[4]));
+    this.setRotate(Double.parseDouble(parts[5]));
+  }
+
+  public void clone(OpticalRectangle opticalRectangle) {
+    opticalRectangle.setX(this.getX());
+    opticalRectangle.setY(this.getY());
+    opticalRectangle.setRotate(this.getRotate());
+    opticalRectangle.setHeight(this.getHeight());
+    opticalRectangle.setWidth(this.getWidth());
   }
 }

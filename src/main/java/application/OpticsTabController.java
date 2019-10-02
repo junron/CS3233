@@ -33,19 +33,19 @@ public class OpticsTabController {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
       Mirror m = new Mirror(parent.getWidth() / 2, parent.getHeight() / 2 - 100, 20, 200, parent, 0);
-      addObject(m, parent, true);
+      addObject(m, parent);
     });
     newWall.setOnMouseClicked(event -> {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
       Wall w = new Wall(parent.getWidth() / 2, parent.getHeight() / 2 - 25, 20, 50, parent, 0);
-      addObject(w, parent, true);
+      addObject(w, parent);
     });
     newRefractor.setOnMouseClicked(event -> {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
       Refract re = new Refract(parent.getWidth() / 2, parent.getHeight() / 2 - 50, 20, 100, parent, 0, 1);
-      addObject(re, parent, true);
+      addObject(re, parent);
     });
 
     rotation.textProperty().addListener((o, ol, val) -> {
@@ -115,8 +115,7 @@ public class OpticsTabController {
   public void addObject(OpticalRectangle object, Pane parent, boolean syncToServer) {
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
-      System.out.println("Change");
-      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object));
+      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object) - 1);
       changeFocus(object);
       reRenderAll();
     });
@@ -126,7 +125,7 @@ public class OpticsTabController {
       height.setText("-");
       width.setText("-");
       refractiveIndex.setText("-");
-      NetworkingClient.removeObject(opticalRectangles.indexOf(object));
+      NetworkingClient.removeObject("", opticalRectangles.indexOf(object) - 1);
       opticalRectangles.remove(object);
       reRenderAll();
       return null;
@@ -141,8 +140,8 @@ public class OpticsTabController {
     changeFocus(object);
   }
 
-  public void addObject(OpticalRectangle object, Pane parent) {
-    addObject(object, parent, false);
+  private void addObject(OpticalRectangle object, Pane parent) {
+    addObject(object, parent, true);
   }
 
   private void changeFocus(OpticalRectangle object) {

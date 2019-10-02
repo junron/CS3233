@@ -6,6 +6,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import networking.NetworkingClient;
 import optics.PreciseLine;
 import optics.light.Ray;
 
@@ -68,10 +69,12 @@ public class RayTabController {
     changeFocus(r);
     rays.add(r);
     r.setOnDestroy(e -> {
+      NetworkingClient.removeObject("r", rays.indexOf(r));
       rays.remove(r);
       return null;
     });
     r.addOnStateChange(e -> {
+      NetworkingClient.updateObject(r, rays.indexOf(r));
       changeFocus(r);
       rerenderRay(r);
     });
@@ -79,6 +82,7 @@ public class RayTabController {
       if (state) changeFocus(r);
       return null;
     });
+    if (syncToServer) NetworkingClient.addObject(r);
     rerenderRay(r);
     this.expectedText = fixAngle(r.getAngle());
     this.focusedRay = r;
@@ -88,8 +92,8 @@ public class RayTabController {
     r.requestFocus();
   }
 
-  public void createRay(Ray r) {
-    createRay(r, false);
+  private void createRay(Ray r) {
+    createRay(r, true);
   }
 
   private void changeFocus(Ray r) {

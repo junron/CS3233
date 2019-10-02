@@ -43,9 +43,9 @@ public class Deserialize {
   public static void deserializeAndAdd(String object, Pane parent) {
     Serializable serializable = deserialize(object, parent);
     if (serializable instanceof Ray) {
-      rayTabController.createRay((Ray) serializable);
+      rayTabController.createRay((Ray) serializable, false);
     } else if (serializable instanceof OpticalRectangle) {
-      opticsTabController.addObject((OpticalRectangle) serializable, parent);
+      opticsTabController.addObject((OpticalRectangle) serializable, parent, false);
     }
   }
 }

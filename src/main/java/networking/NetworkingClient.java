@@ -27,7 +27,6 @@ public class NetworkingClient {
           if (message.contains("type")) {
             //  Update
             UpdateRequest data = new Gson().fromJson(message, UpdateRequest.class);
-            System.out.println(data.getType());
             switch (data.getType()) {
               case "create": {
                 Platform.runLater(() -> {
@@ -39,14 +38,25 @@ public class NetworkingClient {
               case "update": {
                 Platform.runLater(() -> {
                   Serializable serializable = Deserialize.deserialize(data.getData(), parent);
-                  System.out.println(serializable);
                   if (serializable instanceof OpticalRectangle) {
-                    Storage.replaceOpticalRectangle((OpticalRectangle) serializable, data.getIndex() + 1);
+                    Storage.updateOpticalRectangle((OpticalRectangle) serializable, data.getIndex() + 1);
                   } else if (serializable instanceof Ray) {
-                    Storage.addRay((Ray) serializable);
+                    Storage.updateRay((Ray) serializable, data.getIndex());
                   }
                   Storage.reRenderAll();
                 });
+                break;
+              }
+              case "delete": {
+                Platform.runLater(() -> {
+                  if (data.getData().equals("r")) {
+                    Storage.removeRay(data.getIndex());
+                  } else {
+                    Storage.removeOptical(data.getIndex() + 1);
+                  }
+                  Storage.reRenderAll();
+                });
+                break;
               }
             }
           } else {
@@ -79,13 +89,12 @@ public class NetworkingClient {
     client.send(new TextData("updateObjects", new UpdateRequest("create", serializable.serialize(), 0).toString()));
   }
 
-  public static void removeObject(int index) {
-    client.send(new TextData("updateObjects", new UpdateRequest("delete", "", index - 1).toString()));
+  public static void removeObject(String type, int index) {
+    client.send(new TextData("updateObjects", new UpdateRequest("delete", type, index).toString()));
   }
 
   public static void updateObject(Serializable serializable, int index) {
-    client.send(new TextData("updateObjects", new UpdateRequest("update", serializable.serialize(), index - 1)
-            .toString()));
+    client.send(new TextData("updateObjects", new UpdateRequest("update", serializable.serialize(), index).toString()));
   }
 
   public static void shutdown() {

@@ -272,8 +272,8 @@ public class Ray implements LightSource, Serializable {
   @Override
   public String serialize() {
     //    x,y,rotation,r,g,b
-    return this.originalOrigin.getX() + "|" + this.originalOrigin.getY() + "|" + this.color.getRed() + "|" + this.color
-            .getGreen() + "|" + this.color.getBlue();
+    return "r|" + this.originalOrigin.getX() + "|" + this.originalOrigin.getY() + "|" + this.color
+            .getRed() + "|" + this.color.getGreen() + "|" + this.color.getBlue()+"|"+this.angle;
   }
 
   @Override
@@ -281,9 +281,11 @@ public class Ray implements LightSource, Serializable {
     String[] parts = string.split("\\|");
     double x = Double.parseDouble(parts[1]);
     double y = Double.parseDouble(parts[2]);
-    double red =(Double.parseDouble(parts[3]));
+    double red = (Double.parseDouble(parts[3]));
     double green = Double.parseDouble(parts[4]);
     double blue = Double.parseDouble(parts[5]);
+    double angle = Double.parseDouble(parts[6]);
+    this.angle = angle;
     updateLine(angle, new Point2D(x, y));
     parent.getChildren().removeAll(this.circle);
     addCircle();
@@ -298,5 +300,14 @@ public class Ray implements LightSource, Serializable {
     Ray res = new Ray(l, parent);
     res.setColor(this.color);
     return res;
+  }
+
+  public void clone(Ray ray) {
+    parent.getChildren().removeAll(ray.circle);
+    parent.getChildren().removeAll(this.circle);
+    ray.originalOrigin =  this.originalOrigin;
+    ray.setAngle(this.angle);
+    ray.addCircle();
+    ray.setColor(this.color);
   }
 }

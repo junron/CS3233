@@ -9,6 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import networking.NetworkingClient;
 import optics.light.Ray;
 import optics.objects.Wall;
 import serialize.Deserialize;
@@ -85,9 +86,15 @@ public class GeneralTabController {
     clearAll.setOnMouseClicked(event -> {
       Wall border = (Wall) opticalRectangles.get(0);
       parent.getChildren().removeAll(opticalRectangles);
+      for (int i = 0; i < opticalRectangles.size() - 1; i++) {
+        NetworkingClient.removeObject("", i);
+      }
       opticalRectangles.clear();
+      int i = 0;
       for (Ray r : rays) {
+        NetworkingClient.removeObject("r", i);
         r.destroy();
+        i++;
       }
       rays.clear();
       opticalRectangles.add(border);

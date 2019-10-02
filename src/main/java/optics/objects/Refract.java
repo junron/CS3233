@@ -142,12 +142,19 @@ public class Refract extends OpticalRectangle {
   @Override
   public void deserialize(String serialized) {
     super.deserialize(serialized);
-    this.refractiveIndex = Double.parseDouble(serialized.split("\\|")[5]);
+    this.refractiveIndex = Double.parseDouble(serialized.split("\\|")[6]);
   }
 
   @Override
   public OpticalRectangle clone(boolean shiftPositions) {
     return new Refract(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
             .getWidth(), this.getHeight(), this.parent, this.getRotate(), this.refractiveIndex);
+  }
+
+  public void clone(OpticalRectangle opticalRectangle) {
+    super.clone(opticalRectangle);
+    if (opticalRectangle instanceof Refract) {
+      ((Refract) opticalRectangle).setRefractiveIndex(this.refractiveIndex);
+    }
   }
 }
