@@ -86,7 +86,7 @@ public class GeneralTabController {
     clearAll.setOnMouseClicked(event -> {
       Wall border = (Wall) opticalRectangles.get(0);
       parent.getChildren().removeAll(opticalRectangles);
-      for (int i = 0; i < opticalRectangles.size() - 1; i++) {
+      for (int i = 0; i < opticalRectangles.size(); i++) {
         NetworkingClient.removeObject("", i);
       }
       opticalRectangles.clear();

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import networking.NetworkingClient;
+import utils.Minified;
 import utils.ThreadPool;
 
 public class Main extends Application {
@@ -19,7 +20,7 @@ public class Main extends Application {
     try {
       boolean usePreloader = false;
       ThreadPool.initialize(100);
-      // Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
+      Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
 
       AnchorPane root = FXMLLoader.load(getClass().getResource("/main.fxml"));
       Scene mainScene = new Scene(root, 600, 400);

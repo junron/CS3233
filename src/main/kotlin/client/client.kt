@@ -3,7 +3,7 @@ package client
 import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.WebSockets
-import io.ktor.client.features.websocket.webSocket
+import io.ktor.client.features.websocket.wss
 import io.ktor.http.HttpMethod
 import io.ktor.http.cio.websocket.Frame.Text
 import io.ktor.http.cio.websocket.WebSocketSession
@@ -49,10 +49,10 @@ class Client(
 
   fun init() {
     runBlocking {
-      client.webSocket(
+      client.wss(
               method = HttpMethod.Get,
-              host = "localhost",
-              port = 8080,
+              host = "raysim.latency-check.nushhwboard.tk",
+              port = 443,
               path = "/websockets"
       ) {
         socket = this
