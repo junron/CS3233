@@ -2,6 +2,7 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import networking.NetworkingClient;
 import optics.objects.Wall;
@@ -16,6 +17,8 @@ public class MainController implements Initializable {
 
   @FXML
   private AnchorPane parent;
+  @FXML
+  private Label latency;
 
   @FXML
   private RayTabController rayTabController;
@@ -43,7 +46,11 @@ public class MainController implements Initializable {
       wall.setY((double) val - 160);
       reRenderAll();
     });
-    NetworkingClient.init(parent);
+    NetworkingClient.init(parent,this);
+  }
+
+  public void setLatency(long latency){
+    this.latency.setText("Latency: "+latency+"ms");
   }
 }
 

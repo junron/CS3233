@@ -2,10 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/10.0.1" fx:controller="application.MainController">
+<AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
     <TabPane focusTraversable="false" layoutY="645.0" prefHeight="159.0" prefWidth="1280.0"
              tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
              AnchorPane.rightAnchor="0.0">
@@ -22,9 +19,8 @@
             <fx:include fx:id="opticsTab" source="opticstab.fxml"/>
         </Tab>
     </TabPane>
-    <Pane styleClass="dark" layoutX="840.0" layoutY="90.0" prefHeight="82.0" prefWidth="82.0"
-          style="-fx-background-color: #dfdfdf;"
-          AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
-        <Label layoutX="30.0" layoutY="46.0" text="Trash"/>
+    <Pane layoutX="840.0" layoutY="90.0" prefHeight="82.0" prefWidth="82.0" style="-fx-background-color: #dfdfdf;" styleClass="dark" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Label layoutX="30.0" layoutY="46.0" text="Trash" />
     </Pane>
+   <Label fx:id="latency" layoutX="1211.0" layoutY="14.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="14.0" />
 </AnchorPane>
