@@ -17,27 +17,26 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeoutException
 
-private data class GenericResponse(val error: Boolean, val broadcast: Boolean, val message: String) {
-  fun getErrorResponse() = ErrorResponse(message)
-  fun getSuccessResponse() = SuccessResponse(message, broadcast)
-}
 
-
-data class ErrorResponse(val message: String)
-data class SuccessResponse(val message: String, val broadcast: Boolean)
 data class UpdateRequest(val type: String, val data: String, val index: Int = -1) {
   override fun toString(): String = Gson().toJson(this)
 }
 
-data class DataSync(val objects: MutableList<String>)
+open class GenericData(val error: Boolean)
+data class TextData(val type: String, val data: String,val broadcast: Boolean = false): GenericData(false){
+  constructor(type: String, data: String) : this(type,data,false)
 
-data class TextData(val type: String, val data: String) {
+  override fun toString(): String = Gson().toJson(this)
+}
+
+data class ErrorResponse(val message: String): GenericData(true) {
+  val broadcast = false
   override fun toString(): String = Gson().toJson(this)
 }
 
 
 class Client(
-        val onResponse: (success: SuccessResponse) -> Unit,
+        val onResponse: (success: TextData) -> Unit,
         val onError: (failure: ErrorResponse) -> Unit,
         val onException: (exception: Exception) -> Unit,
         val onConnected: () -> Unit = { Unit },
@@ -45,6 +44,7 @@ class Client(
 ) {
   private val secure = true
   private var pingActive = false
+  private var stop = false
   private val client = HttpClient {
     install(WebSockets)
   }
@@ -61,7 +61,7 @@ class Client(
     }
   }
 
-  fun init() {
+  private fun init() {
     runBlocking {
       try {
         if (!secure) {
@@ -91,10 +91,11 @@ class Client(
     socket = this
     onConnected()
     if (ping != null) launch {
-      while (client.isActive) {
+      while (socket.isActive) {
         if (pingActive){
           onException(TimeoutException("Connection timeout"))
-          socket.terminate()
+          terminate()
+          reconnect()
         }
         send(TextData("ping", System.currentTimeMillis().toString()))
         pingActive = true
@@ -103,17 +104,27 @@ class Client(
     }
     for (frame in incoming) {
       if (frame !is Text) continue
-      val response = Gson().fromJson(frame.readText(), GenericResponse::class.java)
-      if (response.error) {
-        onError(response.getErrorResponse())
+      val response = Gson().fromJson(frame.readText(), GenericData::class.java)
+      if(response.error){
+        onError(Gson().fromJson(frame.readText(), ErrorResponse::class.java))
         continue
       }
-      if (response.message.startsWith("pong:") && !response.broadcast) {
-        ping?.invoke(response.message.substringAfter("pong:").toLong())
+      val successResponse = Gson().fromJson(frame.readText(), TextData::class.java)
+      if (successResponse.type=="pong") {
+        ping?.invoke(successResponse.data.toLong())
         pingActive = false
         continue
       }
-      onResponse(response.getSuccessResponse())
+      onResponse(successResponse)
+    }
+  }
+
+  fun reconnect(){
+    while(!(::socket.isInitialized && socket.isActive) && !stop){
+      runBlocking {
+        init()
+        delay(1000)
+      }
     }
   }
 
@@ -121,6 +132,7 @@ class Client(
     runBlocking {
       if (::socket.isInitialized) socket.close()
     }
+    stop = true
     client.close()
   }
 }

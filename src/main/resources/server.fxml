@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ServerTabController">
+   <children>
+      <Button layoutX="44.0" layoutY="65.0" mnemonicParsing="false" onAction="#connect" text="Connect" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="44.0" />
+      <TextField fx:id="roomCode" layoutX="43.0" layoutY="130.0" promptText="Enter room code" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="43.0" />
+      <Label fx:id="latency" layoutX="290.0" layoutY="101.0" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="290.0" />
+      <Label fx:id="status" layoutX="44.0" layoutY="101.0" text="Status: Not connected" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="44.0" />
+      <TextArea fx:id="messages" layoutX="392.0" layoutY="98.0" prefHeight="68.0" prefWidth="338.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="392.0" />
+      <Label layoutX="392.0" layoutY="82.0" text="Messages:" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="392.0" />
+      <AnchorPane fx:id="buttons" disable="true" layoutX="212.0" layoutY="130.0" prefHeight="25.0" prefWidth="156.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="212.0">
+         <children>
+            <Button layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#join" text="Join" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Button layoutX="71.0" layoutY="9.0" mnemonicParsing="false" onAction="#create" text="Create" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

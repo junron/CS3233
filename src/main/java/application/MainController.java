@@ -2,9 +2,7 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import networking.NetworkingClient;
 import optics.objects.Wall;
 
 import java.net.URL;
@@ -17,8 +15,6 @@ public class MainController implements Initializable {
 
   @FXML
   private AnchorPane parent;
-  @FXML
-  private Label latency;
 
   @FXML
   private RayTabController rayTabController;
@@ -28,7 +24,8 @@ public class MainController implements Initializable {
   private OpticsTabController opticsTabController;
   @FXML
   private AnimationTabController animationTabController;
-
+  @FXML
+  private ServerTabController collabTabController;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -36,6 +33,7 @@ public class MainController implements Initializable {
     generalTabController.initialize(parent, opticsTabController, rayTabController);
     opticsTabController.initialize(parent);
     animationTabController.initialize(parent);
+    collabTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;
@@ -46,11 +44,7 @@ public class MainController implements Initializable {
       wall.setY((double) val - 160);
       reRenderAll();
     });
-    NetworkingClient.init(parent,this);
   }
 
-  public void setLatency(long latency){
-    this.latency.setText("Latency: "+latency+"ms");
-  }
 }
 

@@ -3,8 +3,10 @@ package application;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
+import networking.NetworkingClient;
 import optics.light.Ray;
 import optics.objects.OpticalRectangle;
+import optics.objects.Wall;
 import utils.OpticsList;
 
 import java.util.ArrayList;
@@ -96,4 +98,26 @@ public class Storage {
     old.destroy();
     rays.remove(i);
   }
+
+  static void clearAll(boolean sync) {
+    Wall border = (Wall) opticalRectangles.get(0);
+    parent.getChildren().removeAll(opticalRectangles);
+    if (sync) {
+      for (int i = 0; i < opticalRectangles.size() - 1; i++) {
+        NetworkingClient.removeObject("", 0);
+      }
+      for (Ray r : rays) {
+        NetworkingClient.removeObject("r", 0);
+        r.destroy();
+      }
+    }
+    opticalRectangles.clear();
+    rays.clear();
+    opticalRectangles.add(border);
+    reRenderAll();
+  }
+  static void clearAll(){
+    clearAll(true);
+  }
 }
+

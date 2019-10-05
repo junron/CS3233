@@ -9,9 +9,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import networking.NetworkingClient;
-import optics.light.Ray;
-import optics.objects.Wall;
 import serialize.Deserialize;
 import serialize.FileOps;
 
@@ -37,7 +34,7 @@ public class GeneralTabController {
 
   private Map<String, String> languageIdMapping = Map
           .ofEntries(entry("English", "en"), entry("Chinese (Simplified)", "zh"), entry("Chinese (Traditional)",
-                  "zh" + "-TW"), entry("Malay", "ms"), entry("Tamil", "ta"), entry("French", "fr"), entry("Hindi",
+                  "zh" + "-TW"), entry("Malay", "ms"), entry("Tamil", "ta"), entry("French", "fr"), entry("Hindi", 
                   "hi"), entry("Tagalog", "tl"), entry("Spanish", "es"), entry("Korean", "ko"), entry("Japanese", "ja"
           ), entry("German", "de"), entry("Greek", "el"), entry("Telugu", "te"), entry("Russian", "ru"), entry(
                   "Polish", "pl"), entry("Norwegian", "no"));
@@ -83,23 +80,7 @@ public class GeneralTabController {
         Deserialize.deserializeAndAdd(object, parent);
       }
     });
-    clearAll.setOnMouseClicked(event -> {
-      Wall border = (Wall) opticalRectangles.get(0);
-      parent.getChildren().removeAll(opticalRectangles);
-      for (int i = 0; i < opticalRectangles.size(); i++) {
-        NetworkingClient.removeObject("", i);
-      }
-      opticalRectangles.clear();
-      int i = 0;
-      for (Ray r : rays) {
-        NetworkingClient.removeObject("r", i);
-        r.destroy();
-        i++;
-      }
-      rays.clear();
-      opticalRectangles.add(border);
-      reRenderAll();
-    });
+    clearAll.setOnMouseClicked(event -> clearAll());
 
     maxInteract.setOnKeyPressed(event -> {
       int maxInts;
@@ -130,5 +111,6 @@ public class GeneralTabController {
       parent.getStylesheets().remove(getClass().getResource("/css/dark.css").toExternalForm());
     }
   }
+
 }
 
