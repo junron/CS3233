@@ -28,7 +28,7 @@ public class MainController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     rayTabController.initialize(parent);
-    generalTabController.initialize(parent, opticsTabController, rayTabController);
+    generalTabController.initialize(parent);
     opticsTabController.initialize(parent);
     animationTabController.initialize(parent);
     collabTabController.initialize(parent);

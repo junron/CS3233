@@ -23,7 +23,6 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
-      boolean usePreloader = true;
       ThreadPool.initialize(100);
       Minified.start("https://latency-check.nushhwboard.tk", "lightproject", "DWzgVAgG0bDyqb18BKA5IO6mriA_");
 
@@ -31,12 +30,6 @@ public class Main extends Application {
       Scene mainScene = new Scene(root, 600, 400);
       mainScene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
       primaryStage.setTitle("Ray Simulator");
-      if (!usePreloader) {
-        primaryStage.setScene(mainScene);
-        primaryStage.setMaximized(true);
-        primaryStage.show();
-        return;
-      }
       Scene preloader = new Scene(FXMLLoader.load(getClass().getResource("/splash.fxml")), 529, 294);
       primaryStage.setScene(preloader);
       primaryStage.show();

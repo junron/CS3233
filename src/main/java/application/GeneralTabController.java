@@ -41,10 +41,10 @@ public class GeneralTabController {
                   "Polish", "pl"), entry("Norwegian", "no"));
   private Map<String, Locale> resourceBundlesLanguages = Map
           .ofEntries(entry("en", new Locale("en", "US")), entry("fr", new Locale("fr", "FR")), entry("zh-TW",
-                  new Locale("zh-tw", "TW")), entry("zh", new Locale("zh", "CN")));
+                  new Locale("zh-tw", "TW")), entry("zh", new Locale("zh", "CN")),entry("ms",new Locale("ms", "MY")));
 
 
-  void initialize(Pane parent, OpticsTabController optics, RayTabController rayController) {
+  void initialize(Pane parent) {
     // Translation
     Translate translate = new Translate(parent);
     languageSelect.setItems(FXCollections.observableArrayList(languageIdMapping.keySet()));

@@ -60,6 +60,7 @@ public class OpticsTabController {
       Double value = validate(val, false);
       if (value == null) return;
       this.focusedObject.setRotate(Double.parseDouble(fixAngle(value)));
+      NetworkingClient.updateObject(this.focusedObject, opticalRectangles.indexOf(this.focusedObject));
       reRenderAll();
     });
 
@@ -75,6 +76,7 @@ public class OpticsTabController {
       Double value = validate(val, true);
       if (value == null) return;
       this.focusedObject.setWidthChecked(value);
+      NetworkingClient.updateObject(this.focusedObject, opticalRectangles.indexOf(this.focusedObject));
       reRenderAll();
     });
 
@@ -90,6 +92,7 @@ public class OpticsTabController {
       Double value = validate(val, true);
       if (value == null) return;
       this.focusedObject.setHeightChecked(value);
+      NetworkingClient.updateObject(this.focusedObject, opticalRectangles.indexOf(this.focusedObject));
       reRenderAll();
     });
 
@@ -108,6 +111,7 @@ public class OpticsTabController {
       if (value == null) return;
       if (value < 1) return;
       object.setRefractiveIndex(value);
+      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object));
       reRenderAll();
     });
   }

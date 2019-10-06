@@ -53,6 +53,8 @@ public class RayTabController {
       }
       if (this.focusedRay == null) return;
       this.focusedRay.setAngle(Double.parseDouble(fixAngle(value)));
+      NetworkingClient.updateObject(this.focusedRay, rays.indexOf(this.focusedRay));
+      changeFocus(this.focusedRay);
       rerenderRay(this.focusedRay);
     });
     rayColor.valueProperty().addListener((o, ol, color) -> {
@@ -61,7 +63,9 @@ public class RayTabController {
       if (this.focusedRay == null) return;
       if (color.equals(expectedColor)) return;
       this.focusedRay.setColor(color);
-      this.focusedRay.renderRays(opticalRectangles);
+      NetworkingClient.updateObject(this.focusedRay, rays.indexOf(this.focusedRay));
+      changeFocus(this.focusedRay);
+      reRenderAll();
     });
   }
 
