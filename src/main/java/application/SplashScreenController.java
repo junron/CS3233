@@ -18,6 +18,7 @@ import serialize.FileOps;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,8 +61,8 @@ public class SplashScreenController implements Initializable {
     }
     ArrayList<String> data;
     try {
-      data = FileOps.load(new File(getClass().getResource("/logo.raysim").getFile()));
-    } catch (IOException ex) {
+      data = FileOps.load(new File(getClass().getResource("/logo.raysim").toURI()));
+    } catch (IOException | URISyntaxException ex) {
       ex.printStackTrace();
       return;
     }
