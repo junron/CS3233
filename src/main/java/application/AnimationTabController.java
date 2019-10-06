@@ -46,7 +46,7 @@ public class AnimationTabController {
       alert.showAndWait();
       return;
     }
-    CompletableFuture<ArrayList<Node>> future = r.renderRays(Storage.opticalRectangles);
+    CompletableFuture<ArrayList<Node>> future = r.renderRays(Storage.opticalRectangles.deepClone());
     ArrayList<Point2D> points;
     try {
       ArrayList<Node> nodes = future.get();
@@ -76,10 +76,9 @@ public class AnimationTabController {
     Storage.isAnimating = true;
     currentAnimation = lineAnimation;
     lineAnimation.start();
-
   }
 
-  private ArrayList<Point2D> convertLineToPoints(ArrayList<Node> lines) {
+  static ArrayList<Point2D> convertLineToPoints(ArrayList<Node> lines) {
     ArrayList<Point2D> result = new ArrayList<>();
     for (Node line : lines) {
       if (!(line instanceof PreciseLine)) continue;

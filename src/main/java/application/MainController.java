@@ -8,8 +8,6 @@ import javafx.scene.layout.AnchorPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static application.Storage.opticalRectangles;
-
 public class MainController implements Initializable {
 
   @FXML
@@ -37,7 +35,6 @@ public class MainController implements Initializable {
     Storage.opticsTabController = opticsTabController;
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;
-    parent.getChildren().addAll(opticalRectangles);
     parent.setOnMousePressed(event -> {
       if (!Storage.isAnimating) movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
     });

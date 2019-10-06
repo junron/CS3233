@@ -120,10 +120,10 @@ public class Storage {
       for (int i = 0; i < opticalRectangles.size(); i++) {
         NetworkingClient.removeObject("", 0);
       }
-      for (Ray r : rays) {
-        NetworkingClient.removeObject("r", 0);
-        r.destroy();
-      }
+    }
+    for (Ray r : rays) {
+      if (sync) NetworkingClient.removeObject("r", 0);
+      r.destroy();
     }
     opticalRectangles.clear();
     rays.clear();

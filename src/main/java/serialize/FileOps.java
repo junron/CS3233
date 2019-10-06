@@ -33,6 +33,10 @@ public class FileOps {
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
     File file = fileChooser.showOpenDialog(stage);
     if (file == null) return null;
+    return load(file);
+  }
+
+  public static ArrayList<String> load(File file) throws IOException {
     byte[] data = Files.readAllBytes(Paths.get(file.getPath()));
     ArrayList<String> res = new ArrayList<>();
     int lastVal = 0;
@@ -49,3 +53,4 @@ public class FileOps {
     return res;
   }
 }
+

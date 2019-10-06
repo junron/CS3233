@@ -228,9 +228,9 @@ public class Ray implements LightSource, Serializable {
       }
       //      Let next optical object be current optical object
       opticalObject = nextOpticalObject;
-      nodes.addAll(this.currentLine, normal);
+      nodes.addAll(this.currentLine);
       // Only show labels if option enabled
-      if (Storage.showLabels) nodes.addAll(angleDisplay, activeArea);
+      if (Storage.showLabels) nodes.addAll(angleDisplay, activeArea, normal);
       this.currentLine = transform.getPreciseLine();
       this.origin = iPoint;
       refNum++;
@@ -280,8 +280,8 @@ public class Ray implements LightSource, Serializable {
   @Override
   public String serialize() {
     //    x,y,rotation,r,g,b
-    return "r|" + this.realX + "|" + this.realY + "|" + this.color
-            .getRed() + "|" + this.color.getGreen() + "|" + this.color.getBlue() + "|" + this.angle;
+    return "r|" + this.realX + "|" + this.realY + "|" + this.color.getRed() + "|" + this.color
+            .getGreen() + "|" + this.color.getBlue() + "|" + this.angle;
   }
 
   @Override
