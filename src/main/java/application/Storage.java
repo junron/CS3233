@@ -1,12 +1,12 @@
 package application;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import networking.NetworkingClient;
 import optics.light.Ray;
 import optics.objects.OpticalRectangle;
-import optics.objects.Wall;
 import utils.OpticsList;
 
 import java.util.ArrayList;
@@ -24,6 +24,20 @@ public class Storage {
   static boolean darkTheme = false;
   static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
+  private static Point2D offset = new Point2D(0, 0);
+
+  static void setOffset(Point2D offset) {
+    Storage.offset = offset;
+    opticalRectangles.forEach(OpticalRectangle::reposition);
+    rays.forEach(ray -> {
+      ray.reposition();
+      rerenderRay(ray);
+    });
+  }
+
+  public static Point2D getOffset() {
+    return offset;
+  }
 
   static void rerenderRay(Ray ray) {
     CompletableFuture<ArrayList<Node>> future = ray.renderRays(opticalRectangles.deepClone());
@@ -100,10 +114,10 @@ public class Storage {
   }
 
   static void clearAll(boolean sync) {
-    Wall border = (Wall) opticalRectangles.get(0);
+    offset = new Point2D(0, 0);
     parent.getChildren().removeAll(opticalRectangles);
     if (sync) {
-      for (int i = 0; i < opticalRectangles.size() - 1; i++) {
+      for (int i = 0; i < opticalRectangles.size(); i++) {
         NetworkingClient.removeObject("", 0);
       }
       for (Ray r : rays) {
@@ -113,10 +127,10 @@ public class Storage {
     }
     opticalRectangles.clear();
     rays.clear();
-    opticalRectangles.add(border);
     reRenderAll();
   }
-  static void clearAll(){
+
+  static void clearAll() {
     clearAll(true);
   }
 }

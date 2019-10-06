@@ -80,19 +80,22 @@ public class Mirror extends OpticalRectangle {
       normalAngle = iData.normalAngle;
       intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
       Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
-              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500)));
+              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 25000)));
       preciseLine = new PreciseLine(newLine);
       preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
 
       // Ray is going through the mirror
       // Something is wrong, abort
       if (Intersection.hasExitPoint(Shape.intersect(preciseLine, this), iPoint)) {
-        failedAngles.add(iData.normalAngle);
-        iData = Intersection
-                .getIntersectionSide(r, iPoint, this, new Point2D(l.getStartX(), l.getStartY()), false, failedAngles);
-        System.out.println("Cancelled");
-        if (i == 4) return null;
-        continue;
+        System.out.println("Null");
+        return null;
+        // failedAngles.add(iData.normalAngle);
+        // iData = Intersection
+        //         .getIntersectionSide(r, iPoint, this, new Point2D(l.getStartX(), l.getStartY()), false,
+        //         failedAngles);
+        // System.out.println("Cancelled");
+        // if (i == 4) return null;
+        // continue;
       }
       break;
     }

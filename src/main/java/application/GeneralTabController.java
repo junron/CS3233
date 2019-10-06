@@ -3,6 +3,7 @@ package application;
 import internationalization.Translate;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -59,7 +60,6 @@ public class GeneralTabController {
     });
     save.setOnMouseClicked(event -> {
       ArrayList<Object> allObjects = new ArrayList<>(opticalRectangles);
-      allObjects.remove(0);
       allObjects.addAll(rays);
       try {
         FileOps.save(allObjects, (Stage) parent.getScene().getWindow());
@@ -112,5 +112,9 @@ public class GeneralTabController {
     }
   }
 
+  @FXML
+  private void resetOffset() {
+    Storage.setOffset(new Point2D(0,0));
+  }
 }
 

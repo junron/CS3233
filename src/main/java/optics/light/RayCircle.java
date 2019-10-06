@@ -11,6 +11,11 @@ public class RayCircle extends Circle {
     this.setRotate(angle);
     this.setStroke(Color.BLACK);
     this.r = r;
+    this.setViewOrder(100);
+  }
+
+  public Ray getRay() {
+    return r;
   }
 
   public Ray clone() {

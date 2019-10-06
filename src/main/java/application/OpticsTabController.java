@@ -115,7 +115,7 @@ public class OpticsTabController {
   public void addObject(OpticalRectangle object, Pane parent, boolean syncToServer) {
     opticalRectangles.add(object);
     object.addOnStateChange(event1 -> {
-      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object) - 1);
+      NetworkingClient.updateObject(object, opticalRectangles.indexOf(object));
       changeFocus(object);
       reRenderAll();
     });
@@ -125,7 +125,7 @@ public class OpticsTabController {
       height.setText("-");
       width.setText("-");
       refractiveIndex.setText("-");
-      NetworkingClient.removeObject("", opticalRectangles.indexOf(object) - 1);
+      NetworkingClient.removeObject("", opticalRectangles.indexOf(object));
       opticalRectangles.remove(object);
       reRenderAll();
       return null;

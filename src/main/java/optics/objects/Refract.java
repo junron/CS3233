@@ -110,7 +110,7 @@ public class Refract extends OpticalRectangle {
     double normalAngle = iData.normalAngle;
     double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, r.getCurrentLine());
     PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 2500))));
+            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 25000))));
     pLine.setPreciseAngle(normalAngle - intersectionAngle);
     r.setInRefractiveMaterial(true);
     //    Angle display

@@ -19,7 +19,7 @@ import java.util.Random;
 public class NetworkingClient {
   private static Client client;
   private static ServerTabController controller;
-  private static boolean connected;
+  private static boolean connected = false;
 
 
   public static void init(Pane parent, ServerTabController controller) {
@@ -42,7 +42,7 @@ public class NetworkingClient {
                 Platform.runLater(() -> {
                   Serializable serializable = Deserialize.deserialize(data.getData(), parent);
                   if (serializable instanceof OpticalRectangle) {
-                    Storage.updateOpticalRectangle((OpticalRectangle) serializable, data.getIndex() + 1);
+                    Storage.updateOpticalRectangle((OpticalRectangle) serializable, data.getIndex());
                   } else if (serializable instanceof Ray) {
                     Storage.updateRay((Ray) serializable, data.getIndex());
                   }
@@ -55,7 +55,7 @@ public class NetworkingClient {
                   if (data.getData().equals("r")) {
                     Storage.removeRay(data.getIndex());
                   } else {
-                    Storage.removeOptical(data.getIndex() + 1);
+                    Storage.removeOptical(data.getIndex());
                   }
                   Storage.reRenderAll();
                 });
@@ -167,6 +167,6 @@ public class NetworkingClient {
   }
 
   public static void shutdown() {
-    client.close();
+    if (client != null) client.close();
   }
 }

@@ -9,6 +9,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.*;
 import math.Intersection;
+import optics.light.Ray;
+import optics.light.RayCircle;
+import optics.objects.OpticalRectangle;
 
 import java.util.ArrayList;
 
@@ -25,32 +28,40 @@ public class Draggable {
     this.onDestroy = onDestroy;
     this.parent = parent;
     if (this.shape instanceof Rectangle) {
-      this.shape.setOnMousePressed(event -> movementDelta = new Point2D(((Rectangle) this.shape).getX() - event
-              .getSceneX(), ((Rectangle) this.shape).getY() - event.getSceneY()));
-    } else if (this.shape instanceof Circle) {
-      this.shape.setOnMousePressed(event -> movementDelta = new Point2D(((Circle) this.shape).getCenterX() - event
-              .getSceneX(), ((Circle) this.shape).getCenterY() - event.getSceneY()));
+      this.shape.setOnMousePressed(event -> {
+        movementDelta = new Point2D(((Rectangle) this.shape).getX() - event.getSceneX(), ((Rectangle) this.shape)
+                .getY() - event.getSceneY());
+        event.consume();
+      });
+    } else if (this.shape instanceof RayCircle) {
+      this.shape.setOnMousePressed(event -> {
+        movementDelta = new Point2D(((Circle) this.shape).getCenterX() - event.getSceneX(), ((Circle) this.shape)
+                .getCenterY() - event.getSceneY());
+        event.consume();
+      });
     }
 
     shape.setOnMouseDragged(event -> {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
+      event.consume();
       // Prevent object from entering UI area
       double prevY = 0;
-      if (this.shape instanceof Rectangle) {
-        prevY = ((Rectangle) this.shape).getY();
-        ((Rectangle) this.shape).setX(event.getSceneX() + movementDelta.getX());
-        ((Rectangle) this.shape).setY(event.getSceneY() + movementDelta.getY());
+      if (this.shape instanceof OpticalRectangle) {
+        prevY = ((OpticalRectangle) this.shape).getY();
+        ((OpticalRectangle) this.shape).setScreenX(event.getSceneX() + movementDelta.getX());
+        ((OpticalRectangle) this.shape).setScreenY(event.getSceneY() + movementDelta.getY());
       } else if (this.shape instanceof Circle) {
         prevY = ((Circle) this.shape).getCenterY();
-        ((Circle) this.shape).setCenterX(event.getSceneX() + movementDelta.getX());
-        ((Circle) this.shape).setCenterY(event.getSceneY() + movementDelta.getY());
+        Ray r = ((RayCircle) this.shape).getRay();
+        r.setScreenX(event.getSceneX() + movementDelta.getX());
+        r.setScreenY(event.getSceneY() + movementDelta.getY());
       }
       if (isInUIArea(event) &&
               //        Except when moving object to trash
               !(event.getSceneX() > (parent.getWidth() - 82))) {
-        if (this.shape instanceof Rectangle) ((Rectangle) this.shape).setY(prevY);
-        else if (this.shape instanceof Circle) ((Circle) this.shape).setCenterY(prevY);
+        if (this.shape instanceof OpticalRectangle) ((OpticalRectangle) this.shape).setScreenY(prevY);
+        else if (this.shape instanceof RayCircle) ((RayCircle) this.shape).getRay().setScreenY(prevY);
       }
       if (this.onDrag == null) return;
       this.onDrag.handle(event);

@@ -43,9 +43,11 @@ public class Ray implements LightSource, Serializable {
   private Point2D endPoint;
   private Pane parent;
   private double angle;
-  private Circle circle;
+  private RayCircle circle;
   private Color color;
   private boolean inRefractiveMaterial;
+  private double realX;
+  private double realY;
 
 
   public Ray(PreciseLine l, Pane parent) {
@@ -58,6 +60,8 @@ public class Ray implements LightSource, Serializable {
     this.angle = Math.toDegrees(l.getPreciseAngle());
     this.parent = parent;
     this.color = Color.BLACK;
+    this.realX = l.getStartX() - Storage.getOffset().getX();
+    this.realY = l.getStartY() - Storage.getOffset().getY();
     addCircle();
   }
 
@@ -96,7 +100,7 @@ public class Ray implements LightSource, Serializable {
     this.color = color;
   }
 
-  public Circle getCircle() {
+  public RayCircle getCircle() {
     return circle;
   }
 
@@ -151,7 +155,7 @@ public class Ray implements LightSource, Serializable {
     this.originalOrigin = startPoint;
     PreciseLine l = new PreciseLine(startPoint.getX(), startPoint.getY(), 0, 0);
     l.setPreciseAngle(Math.toRadians(rotation));
-    Vectors lineVec = Vectors.constructWithMagnitude(l.getPreciseAngle(), 2500);
+    Vectors lineVec = Vectors.constructWithMagnitude(l.getPreciseAngle(), 25000);
     Point2D endpoint = startPoint.add(lineVec);
     l.setEndX(endpoint.getX());
     l.setEndY(endpoint.getY());
@@ -252,7 +256,11 @@ public class Ray implements LightSource, Serializable {
       ObservableList<Node> nodes;
       try {
         nodes = this.renderRaysThreaded(objects);
+        if (nodes != null) {
+          nodes.forEach(node -> node.setViewOrder(100));
+        }
       } catch (Exception e) {
+        System.out.println("Error");
         e.printStackTrace();
         completableFuture.completeExceptionally(e);
         return;
@@ -272,8 +280,8 @@ public class Ray implements LightSource, Serializable {
   @Override
   public String serialize() {
     //    x,y,rotation,r,g,b
-    return "r|" + this.originalOrigin.getX() + "|" + this.originalOrigin.getY() + "|" + this.color
-            .getRed() + "|" + this.color.getGreen() + "|" + this.color.getBlue()+"|"+this.angle;
+    return "r|" + this.realX + "|" + this.realY + "|" + this.color
+            .getRed() + "|" + this.color.getGreen() + "|" + this.color.getBlue() + "|" + this.angle;
   }
 
   @Override
@@ -285,17 +293,19 @@ public class Ray implements LightSource, Serializable {
     double green = Double.parseDouble(parts[4]);
     double blue = Double.parseDouble(parts[5]);
     double angle = Double.parseDouble(parts[6]);
+    this.realX = x;
+    this.realY = y;
     this.angle = angle;
-    updateLine(angle, new Point2D(x, y));
     parent.getChildren().removeAll(this.circle);
     addCircle();
+    this.reposition();
     this.setColor(Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
   }
 
   Ray clone(boolean move) {
     Point2D add = move ? new Point2D(10, 10) : new Point2D(0, 0);
     PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add), Vectors
-            .constructWithMagnitude(this.originalLine.getPreciseAngle(), 2500).add(this.originalOrigin).add(add)));
+            .constructWithMagnitude(this.originalLine.getPreciseAngle(), 25000).add(this.originalOrigin).add(add)));
     l.setPreciseAngle(this.originalLine.getPreciseAngle());
     Ray res = new Ray(l, parent);
     res.setColor(this.color);
@@ -305,9 +315,27 @@ public class Ray implements LightSource, Serializable {
   public void clone(Ray ray) {
     parent.getChildren().removeAll(ray.circle);
     parent.getChildren().removeAll(this.circle);
-    ray.originalOrigin =  this.originalOrigin;
+    ray.realX = this.realX;
+    ray.realY = this.realY;
     ray.setAngle(this.angle);
     ray.addCircle();
     ray.setColor(this.color);
+    ray.reposition();
+  }
+
+  public void setScreenX(double x) {
+    this.circle.setCenterX(x);
+    this.realX = x - Storage.getOffset().getX();
+  }
+
+  public void setScreenY(double y) {
+    this.circle.setCenterY(y);
+    this.realY = y - Storage.getOffset().getY();
+  }
+
+  public void reposition() {
+    this.circle.setCenterX(this.realX + Storage.getOffset().getX());
+    this.circle.setCenterY(this.realY + Storage.getOffset().getY());
+    updateLine(circle.getRotate(), new Point2D(circle.getCenterX(), circle.getCenterY()));
   }
 }

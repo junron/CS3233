@@ -2,14 +2,13 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.layout.AnchorPane;
-import optics.objects.Wall;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static application.Storage.opticalRectangles;
-import static application.Storage.reRenderAll;
 
 public class MainController implements Initializable {
 
@@ -26,6 +25,7 @@ public class MainController implements Initializable {
   private AnimationTabController animationTabController;
   @FXML
   private ServerTabController collabTabController;
+  private Point2D movementDelta;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -38,13 +38,15 @@ public class MainController implements Initializable {
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;
     parent.getChildren().addAll(opticalRectangles);
-    Wall wall = new Wall(0, 0, 2500, 10, parent, 0);
-    opticalRectangles.add(wall);
-    parent.heightProperty().addListener((o, e, val) -> {
-      wall.setY((double) val - 160);
-      reRenderAll();
+    parent.setOnMousePressed(event -> {
+      if (!Storage.isAnimating) movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
+    });
+    parent.setOnMouseDragged(event -> {
+      if (Storage.isAnimating) return;
+      Point2D newOffset = new Point2D(event.getSceneX(), event.getSceneY()).subtract(movementDelta);
+      Storage.setOffset(Storage.getOffset().add(newOffset));
+      movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
     });
   }
-
 }
 

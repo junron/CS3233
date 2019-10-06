@@ -5,8 +5,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import optics.light.Ray;
 import optics.light.RayCircle;
@@ -35,7 +33,7 @@ public class KeyActions {
             Storage.opticsTabController.addObject(newRectangle, ((OpticalRectangle) shape).getRealParent(), true);
           } else if (shape instanceof RayCircle) {
             Ray newRay = ((RayCircle) shape).clone();
-            Storage.rayTabController.createRay(newRay,true);
+            Storage.rayTabController.createRay(newRay, true);
           }
         }
       }
@@ -55,34 +53,38 @@ public class KeyActions {
         //        Move object instead of rotating it
         switch (eventCode) {
           case ("LEFT"): {
-            if (this.shape instanceof Circle) {
-              ((Circle) this.shape).setCenterX(((Circle) this.shape).getCenterX() - 1);
-            } else if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setX(((Rectangle) this.shape).getX() - 1);
+            if (this.shape instanceof RayCircle) {
+              Ray r = ((RayCircle) this.shape).getRay();
+              r.setScreenX(((RayCircle) this.shape).getCenterX() - 1);
+            } else if (this.shape instanceof OpticalRectangle) {
+              ((OpticalRectangle) this.shape).setScreenX(((OpticalRectangle) this.shape).getX() - 1);
             }
             break;
           }
           case ("RIGHT"): {
-            if (this.shape instanceof Circle) {
-              ((Circle) this.shape).setCenterX(((Circle) this.shape).getCenterX() + 1);
-            } else if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setX(((Rectangle) this.shape).getX() + 1);
+            if (this.shape instanceof RayCircle) {
+              Ray r = ((RayCircle) this.shape).getRay();
+              r.setScreenX(((RayCircle) this.shape).getCenterX() + 1);
+            } else if (this.shape instanceof OpticalRectangle) {
+              ((OpticalRectangle) this.shape).setScreenX(((OpticalRectangle) this.shape).getX() + 1);
             }
             break;
           }
           case ("UP"): {
-            if (this.shape instanceof Circle) {
-              ((Circle) this.shape).setCenterY(((Circle) this.shape).getCenterY() - 1);
-            } else if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setY(((Rectangle) this.shape).getY() - 1);
+            if (this.shape instanceof RayCircle) {
+              Ray r = ((RayCircle) this.shape).getRay();
+              r.setScreenY(((RayCircle) this.shape).getCenterY() - 1);
+            } else if (this.shape instanceof OpticalRectangle) {
+              ((OpticalRectangle) this.shape).setScreenY(((OpticalRectangle) this.shape).getY() - 1);
             }
             break;
           }
           case ("DOWN"): {
-            if (this.shape instanceof Circle) {
-              ((Circle) this.shape).setCenterY(((Circle) this.shape).getCenterY() + 1);
-            } else if (this.shape instanceof Rectangle) {
-              ((Rectangle) this.shape).setY(((Rectangle) this.shape).getY() + 1);
+            if (this.shape instanceof RayCircle) {
+              Ray r = ((RayCircle) this.shape).getRay();
+              r.setScreenY(((RayCircle) this.shape).getCenterY() + 1);
+            } else if (this.shape instanceof OpticalRectangle) {
+              ((OpticalRectangle) this.shape).setScreenY(((OpticalRectangle) this.shape).getY() + 1);
             }
             break;
           }

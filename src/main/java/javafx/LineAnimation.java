@@ -79,6 +79,13 @@ public class LineAnimation extends AnimationTimer {
             .add(points[currentPointIndex]);
     l.setEndY(endPoint.getY());
     l.setEndX(endPoint.getX());
+    // if (endPoint.getX() < 0 || endPoint.getX() > parent.getWidth() || endPoint.getY() < 0 || endPoint.getY() > parent
+    //         .getHeight()) {
+    //   System.out.println("Sucpecc");
+    //   currentPointIndex = points.length - 2;
+    //   nextPoint();
+    //   return;
+    // }
     if (timeDelta > duration) {
       l.setEndY(points[currentPointIndex + 1].getY());
       l.setEndX(points[currentPointIndex + 1].getX());
