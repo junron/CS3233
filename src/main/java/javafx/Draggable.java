@@ -44,7 +44,6 @@ public class Draggable {
     shape.setOnMouseDragged(event -> {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
-      event.consume();
       // Prevent object from entering UI area
       double prevY = 0;
       if (this.shape instanceof OpticalRectangle) {
@@ -63,8 +62,12 @@ public class Draggable {
         if (this.shape instanceof OpticalRectangle) ((OpticalRectangle) this.shape).setScreenY(prevY);
         else if (this.shape instanceof RayCircle) ((RayCircle) this.shape).getRay().setScreenY(prevY);
       }
-      if (this.onDrag == null) return;
+      if (this.onDrag == null) {
+        event.consume();
+        return;
+      }
       this.onDrag.handle(event);
+      event.consume();
     });
     shape.setOnMouseReleased(e -> {
       if (e.getSceneY() > (parent.getHeight() - 165) && e.getSceneX() > (parent.getWidth() - 82)) {
