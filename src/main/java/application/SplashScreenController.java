@@ -16,9 +16,7 @@ import optics.light.Ray;
 import serialize.Deserialize;
 import serialize.FileOps;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,8 +59,8 @@ public class SplashScreenController implements Initializable {
     }
     ArrayList<String> data;
     try {
-      data = FileOps.load(new File(getClass().getResource("/logo.raysim").toURI()));
-    } catch (IOException | URISyntaxException ex) {
+      data = FileOps.load(getClass().getResourceAsStream("/logo.raysim"));
+    } catch (IOException ex) {
       ex.printStackTrace();
       return;
     }
@@ -70,8 +68,8 @@ public class SplashScreenController implements Initializable {
       Deserialize.deserializeAndAdd(object, main);
     }
     ArrayList<Node> remove = new ArrayList<>();
-    Storage.parent.getChildren().forEach(child->{
-      if(child instanceof Line || child instanceof GridPane){
+    Storage.parent.getChildren().forEach(child -> {
+      if (child instanceof Line || child instanceof GridPane) {
         remove.add(child);
       }
     });
@@ -129,7 +127,7 @@ public class SplashScreenController implements Initializable {
       Storage.showLabels = false;
       Storage.rerenderRay(r);
       Storage.showLabels = true;
-      if(!Storage.isAnimating){
+      if (!Storage.isAnimating) {
         Storage.parent = prev;
       }
       Storage.isAnimating = false;

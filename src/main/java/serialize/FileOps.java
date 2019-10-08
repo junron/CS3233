@@ -2,10 +2,12 @@ package serialize;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,6 +40,15 @@ public class FileOps {
 
   public static ArrayList<String> load(File file) throws IOException {
     byte[] data = Files.readAllBytes(Paths.get(file.getPath()));
+    return getStrings(data);
+  }
+  public static ArrayList<String> load(InputStream inputStream) throws IOException {
+    byte[] data = inputStream.readAllBytes();
+    return getStrings(data);
+  }
+
+  @NotNull
+  private static ArrayList<String> getStrings(byte[] data) {
     ArrayList<String> res = new ArrayList<>();
     int lastVal = 0;
     int currIndex = 0;
