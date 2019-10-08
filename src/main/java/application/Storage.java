@@ -1,15 +1,19 @@
 package application;
 
+import javafx.AngleDisplay;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import networking.NetworkingClient;
 import optics.light.Ray;
 import optics.objects.OpticalRectangle;
 import utils.OpticsList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -25,6 +29,7 @@ public class Storage {
   static Pane parent;
   private static boolean isMaximumDepthExceeded = false;
   private static Point2D offset = new Point2D(0, 0);
+  static Map<Point2D, AngleDisplay> intersectionPoints = new HashMap<>();
 
   static void setOffset(Point2D offset) {
     Storage.offset = offset;
@@ -94,10 +99,21 @@ public class Storage {
       alert.showAndWait();
       return true;
     }
+    ArrayList<Node> finalResults = new ArrayList<>();
+    Node prev = null;
+    for (Node node : result) {
+      if (node instanceof Circle && prev instanceof AngleDisplay) {
+        intersectionPoints
+                .put(new Point2D(((Circle) node).getCenterX(), ((Circle) node).getCenterY()), (AngleDisplay) prev);
+      } else {
+        node.setMouseTransparent(true);
+        finalResults.add(node);
+      }
+      prev = node;
+    }
     isMaximumDepthExceeded = false;
-    parent.getChildren().removeAll(result);
     //  Add nodes
-    parent.getChildren().addAll(result);
+    parent.getChildren().addAll(finalResults);
     return false;
   }
 

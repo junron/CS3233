@@ -57,6 +57,7 @@ public class SplashScreenController implements Initializable {
     for (int i = 0; i < 7; i++) {
       out[i] = messages.get(i);
     }
+    Storage.showLabels = false;
     ArrayList<String> data;
     try {
       data = FileOps.load(getClass().getResourceAsStream("/logo.raysim"));
@@ -78,7 +79,6 @@ public class SplashScreenController implements Initializable {
     prev = Storage.parent;
     Storage.parent = main;
     startAnimation();
-    Storage.showLabels = true;
     new Thread(() -> {
       for (int i = 0; i < 7; i++) {
         int finalI = i;
@@ -124,10 +124,9 @@ public class SplashScreenController implements Initializable {
   private LineAnimation animateRay(Ray r, ArrayList<Point2D> points2) {
     return new LineAnimation(points2.toArray(Point2D[]::new), 300, r.getColor(), main, lineAnimation1 -> {
       main.getChildren().removeAll(lineAnimation1.getLines());
-      Storage.showLabels = false;
       Storage.rerenderRay(r);
-      Storage.showLabels = true;
       if (!Storage.isAnimating) {
+        Storage.showLabels = true;
         Storage.parent = prev;
       }
       Storage.isAnimating = false;

@@ -10,6 +10,7 @@ public class AngleDisplay extends GridPane {
   private ArrayList<Pair> data = new ArrayList<>();
 
   public AngleDisplay(String... data) {
+    this.setViewOrder(100);
     int i = 0;
     String key = "";
     for (String s : data) {

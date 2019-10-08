@@ -1,11 +1,15 @@
 package application;
 
+import javafx.AngleDisplay;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.AnchorPane;
+import math.Vectors;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -44,6 +48,25 @@ public class MainController implements Initializable {
       Storage.setOffset(Storage.getOffset().add(newOffset));
       movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
     });
+    parent.setOnMouseMoved(event -> {
+      Point2D coords = new Point2D(event.getSceneX(), event.getSceneY());
+      ArrayList<Point2D> remove = new ArrayList<>();
+      for (Map.Entry<Point2D, AngleDisplay> entry : Storage.intersectionPoints.entrySet()) {
+        if (!parent.getChildren().contains(entry.getValue())) {
+          remove.add(entry.getKey());
+          continue;
+        }
+        if (Vectors.distanceSquared(entry.getKey(), coords) < 400) {
+          entry.getValue().setVisible(true);
+          entry.getValue().setLayoutX(event.getSceneX() + 7);
+          entry.getValue().setLayoutY(event.getSceneY() + 7);
+        } else {
+          entry.getValue().setVisible(false);
+        }
+      }
+      remove.forEach(point2D -> Storage.intersectionPoints.remove(point2D));
+    });
+
   }
 }
 

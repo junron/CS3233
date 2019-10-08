@@ -188,19 +188,9 @@ public class Ray implements LightSource, Serializable {
       if (transform == null) break;
 
       Line normal = opticalObject.drawNormal(transform.getIntersectionSideData(), iPoint);
-      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20, Color.color(0, 0, 0, 0));
+      Circle activeArea = new Circle(iPoint.getX(), iPoint.getY(), 20);
       AngleDisplay angleDisplay = transform.getAngleDisplay();
       angleDisplay.setVisible(false);
-      activeArea.setOnMouseEntered(event -> {
-        angleDisplay.setLayoutX(event.getSceneX() + 7);
-        angleDisplay.setLayoutY(event.getSceneY() + 7);
-        angleDisplay.setVisible(true);
-      });
-      activeArea.setOnMouseMoved(event -> {
-        angleDisplay.setLayoutX(event.getSceneX() + 7);
-        angleDisplay.setLayoutY(event.getSceneY() + 7);
-      });
-      activeArea.setOnMouseExited(event -> angleDisplay.setVisible(false));
       //      Find next optical object for light to interact with
       //Can interact with current object if currently inside object and is refractor
       OpticalRectangle nextOpticalObject = opticalObject instanceof Refract && this.isInRefractiveMaterial() ? Geometry
