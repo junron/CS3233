@@ -17,6 +17,8 @@ public class Main extends Application {
       root.getChildren().add(webView);
       webView.getEngine().documentProperty().addListener(observable -> {
         System.out.println("load");
+        // Call this function
+        webView.getEngine().executeScript("addMarker(1.3068198,103.7679341,'NUSH')");
       });
       Scene scene = new Scene(root, 800, 400);
       primaryStage.setTitle("Title");

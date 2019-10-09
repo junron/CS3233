@@ -18,21 +18,33 @@
         }
     </style>
     <script type="text/javascript"
-            src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyDN8Qf313S8l6W94zPPUo-84aok2QZujkE">
+            src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyA8brN4wvrYeARVOUub8YfBeFTOsbH4BeU">
     </script>
     <script type="text/javascript">
+        var uninit = [];
+      function addMarker(lat, long, title) {
+        var coords = {lat, lng: long};
+        if(!document.map){
+          uninit.push([title,coords]);
+        }
+        new google.maps.Marker({
+          position: coords,
+          map: document.map,
+          title
+        })
+      }
+
       function initialize() {
         window.console.log = function (message) {
-          document.getElementById("errors").innerHTML += "Log: " + message.toString()+"<br>";
+          document.getElementById("errors").innerHTML += "Log: " + message.toString() + "<br>";
         };
         window.console.error = function (message) {
-          document.getElementById("errors").innerHTML += "Error: " + message.toString()+"<br>";
+          document.getElementById("errors").innerHTML += "Error: " + message.toString() + "<br>";
         };
-        console.log("Load ok");
         try {
-          var latlng = new google.maps.LatLng(37.39822, -121.9643936);
+          var latlng = new google.maps.LatLng(1.221, 103.8198);
           var myOptions = {
-            zoom: 14,
+            zoom: 10,
             center: latlng,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapTypeControl: false,
@@ -46,6 +58,14 @@
           document.map.onerror = alert
         } catch (e) {
           document.getElementById("errors").innerHTML += e.toString();
+        }
+        console.log("load ok")
+        for(var item of uninit){
+          new google.maps.Marker({
+            position: item[1],
+            map: document.map,
+            title:item[0]
+          })
         }
 
         document.zoomIn = function zoomIn() {
@@ -84,7 +104,7 @@
     </script>
 </head>
 <body onload="initialize()">
-<div id="errors" style="width:100%; height:25%"></div>
-<div id="map_canvas" style="width:100%; height:75%"></div>
+<div id="errors" style="width:100%; height:10%"></div>
+<div id="map_canvas" style="width:100%; height:90%"></div>
 </body>
 </html>
