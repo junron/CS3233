@@ -30,9 +30,14 @@ public class Storage {
   private static boolean isMaximumDepthExceeded = false;
   private static Point2D offset = new Point2D(0, 0);
   static Map<Point2D, AngleDisplay> intersectionPoints = new HashMap<>();
+  private static long prevRender = 0;
 
   static void setOffset(Point2D offset) {
     Storage.offset = offset;
+    if ((System.currentTimeMillis() - prevRender <= 100)) {
+      return;
+    }
+    prevRender = System.currentTimeMillis();
     opticalRectangles.forEach(OpticalRectangle::reposition);
     rays.forEach(ray -> {
       ray.reposition();
@@ -62,6 +67,10 @@ public class Storage {
   }
 
   public static void reRenderAll() {
+    if ((System.currentTimeMillis() - prevRender <= 10)) {
+      return;
+    }
+    prevRender = System.currentTimeMillis();
     ArrayList<CompletableFuture<ArrayList<Node>>> futures = new ArrayList<>();
     ArrayList<Node> lines = new ArrayList<>();
     for (Ray r : rays) {

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.client.features.websocket.WebSockets
-import io.ktor.client.features.websocket.webSocket
 import io.ktor.client.features.websocket.wss
 import io.ktor.http.HttpMethod
 import io.ktor.http.cio.websocket.Frame.Text
@@ -23,13 +22,13 @@ data class UpdateRequest(val type: String, val data: String, val index: Int = -1
 }
 
 open class GenericData(val error: Boolean)
-data class TextData(val type: String, val data: String,val broadcast: Boolean = false): GenericData(false){
-  constructor(type: String, data: String) : this(type,data,false)
+data class TextData(val type: String, val data: String, val broadcast: Boolean = false) : GenericData(false) {
+  constructor(type: String, data: String) : this(type, data, false)
 
   override fun toString(): String = Gson().toJson(this)
 }
 
-data class ErrorResponse(val message: String): GenericData(true) {
+data class ErrorResponse(val message: String) : GenericData(true) {
   val broadcast = false
   override fun toString(): String = Gson().toJson(this)
 }
@@ -42,11 +41,14 @@ class Client(
         val onConnected: () -> Unit = { Unit },
         private val ping: ((pingStart: Long) -> Unit)?
 ) {
-  private val secure = true
   private var pingActive = false
   private var stop = false
-  private val client = HttpClient {
+  private var client = HttpClient {
     install(WebSockets)
+  }
+
+  companion object {
+    var room: String? = null
   }
 
   private lateinit var socket: WebSocketSession
@@ -61,26 +63,26 @@ class Client(
     }
   }
 
+  fun join(roomName: String) {
+    send(TextData("setRoom", roomName))
+  }
+
   private fun init() {
     runBlocking {
       try {
-        if (!secure) {
-          client.webSocket(
-                  method = HttpMethod.Get,
-                  host = "localhost",
-                  port = 8080,
-                  path = "/websockets",
-                  block = ::handler
-          )
-        } else {
-          client.wss(
-                  method = HttpMethod.Get,
-                  host = "raysim.latency-check.nushhwboard.tk",
-                  port = 443,
-                  path = "/websockets",
-                  block = ::handler
-          )
+        client = HttpClient {
+          install(WebSockets)
         }
+        println("try")
+        client.wss(
+                method = HttpMethod.Get,
+                host = "raysim.latency-check.nushhwboard.tk",
+                port = 443,
+                path = "/websockets",
+                block = ::handler
+        )
+        println("Succede")
+        pingActive = false
       } catch (e: Exception) {
         onException(e)
       }
@@ -89,38 +91,45 @@ class Client(
 
   private suspend fun handler(connection: DefaultClientWebSocketSession) = with(connection) {
     socket = this
+    room?.let {
+      join(room!!)
+    }
     onConnected()
     if (ping != null) launch {
       while (socket.isActive) {
-        if (pingActive){
+        if (pingActive) {
           onException(TimeoutException("Connection timeout"))
-          terminate()
-          reconnect()
+          if (::socket.isInitialized) socket.close()
+          stop = true
+          client.close()
         }
         send(TextData("ping", System.currentTimeMillis().toString()))
         pingActive = true
-        delay(1000)
+        delay(2000)
       }
     }
     for (frame in incoming) {
       if (frame !is Text) continue
       val response = Gson().fromJson(frame.readText(), GenericData::class.java)
-      if(response.error){
+      if (response.error) {
         onError(Gson().fromJson(frame.readText(), ErrorResponse::class.java))
         continue
       }
       val successResponse = Gson().fromJson(frame.readText(), TextData::class.java)
-      if (successResponse.type=="pong") {
+      if (successResponse.type == "pong") {
         ping?.invoke(successResponse.data.toLong())
         pingActive = false
         continue
+      }
+      if (successResponse.type == "roomCreate" || successResponse.type == "setRoom") {
+        room = successResponse.data
       }
       onResponse(successResponse)
     }
   }
 
-  fun reconnect(){
-    while(!(::socket.isInitialized && socket.isActive) && !stop){
+  fun reconnect() {
+    while (!(::socket.isInitialized && socket.isActive) && !stop) {
       runBlocking {
         init()
         delay(1000)

@@ -54,7 +54,6 @@ public class RayTabController {
       if (this.focusedRay == null) return;
       this.focusedRay.setAngle(Double.parseDouble(fixAngle(value)));
       NetworkingClient.updateObject(this.focusedRay, rays.indexOf(this.focusedRay));
-      changeFocus(this.focusedRay);
       rerenderRay(this.focusedRay);
     });
     rayColor.valueProperty().addListener((o, ol, color) -> {

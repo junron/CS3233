@@ -18,11 +18,13 @@ import java.util.Random;
 
 public class NetworkingClient {
   private static Client client;
+  private static Pane parent;
   private static ServerTabController controller;
   private static boolean connected = false;
 
 
   public static void init(Pane parent, ServerTabController controller) {
+    NetworkingClient.parent = parent;
     NetworkingClient.controller = controller;
     new Thread(() -> {
       client = new Client(successResponse -> {
@@ -102,6 +104,7 @@ public class NetworkingClient {
         showException(exception);
         return null;
       }, () -> {
+        System.out.println("Reconnected");
         // On connect
         sendHandleException(new TextData("setId", System.getProperty("user.name") + ":" + Math
                 .abs(new Random().nextInt()), false));
@@ -123,6 +126,7 @@ public class NetworkingClient {
     switch (e.getClass().getName().substring(e.getClass().getName().lastIndexOf(".") + 1)) {
       case "TimeoutException": {
         controller.setServerStatus("Connection timeout");
+        init(parent,controller);
         break;
       }
       case "CancellationException": {
@@ -152,7 +156,7 @@ public class NetworkingClient {
   }
 
   public static void join(String roomName) {
-    sendHandleException(new TextData("setRoom", roomName));
+    client.join(roomName);
   }
 
   public static void create(String roomName) {
