@@ -21,17 +21,28 @@
             src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyA8brN4wvrYeARVOUub8YfBeFTOsbH4BeU">
     </script>
     <script type="text/javascript">
-        var uninit = [];
+      var markers = [];
+
       function addMarker(lat, long, title) {
         var coords = {lat, lng: long};
-        if(!document.map){
-          uninit.push([title,coords]);
-        }
-        new google.maps.Marker({
+        markers.push(new google.maps.Marker({
           position: coords,
           map: document.map,
           title
-        })
+        }));
+      }
+
+      function showMarkers(title) {
+        for (const marker of markers) {
+          if (marker.getTitle() === title) marker.setMap(document.map);
+          else marker.setMap(null)
+        }
+      }
+      function hideMarkers(title) {
+        for (const marker of markers) {
+          if (!(marker.getTitle() === title)) marker.setMap(document.map);
+          else marker.setMap(null)
+        }
       }
 
       function initialize() {
@@ -44,7 +55,7 @@
         try {
           var latlng = new google.maps.LatLng(1.221, 103.8198);
           var myOptions = {
-            zoom: 10,
+            zoom: 11,
             center: latlng,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapTypeControl: false,
@@ -60,12 +71,10 @@
           document.getElementById("errors").innerHTML += e.toString();
         }
         console.log("load ok")
-        for(var item of uninit){
-          new google.maps.Marker({
-            position: item[1],
-            map: document.map,
-            title:item[0]
-          })
+        var trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(document.map);
+        for (const marker of markers) {
+          marker.setMap(document.map)
         }
 
         document.zoomIn = function zoomIn() {
