@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="764.0" prefWidth="1206.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+   <top>
+      <FlowPane alignment="CENTER" prefHeight="57.0" prefWidth="794.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="titleLBL" text="Wiki Search">
+               <font>
+                  <Font size="40.0" />
+               </font>
+            </Label>
+         </children></FlowPane>
+   </top>
+   <center>
+      <TabPane fx:id="mainTAB" maxWidth="1.7976931348623157E308" prefHeight="632.0" prefWidth="1193.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab>
+            <content>
+              <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0">
+                     <center>
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="588.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="488.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <VBox maxWidth="1.7976931348623157E308" prefHeight="488.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="addBlocksLBL" text="Add blocks">
+                                             <font>
+                                                <Font size="25.0" />
+                                             </font>
+                                          </Label>
+                                          <ScrollPane fitToHeight="true" maxWidth="1.7976931348623157E308" prefHeight="106.0" prefWidth="795.0" VBox.vgrow="NEVER">
+                                             <content>
+                                                <HBox fx:id="blockAddPANE" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="20.0" prefHeight="54.0" spacing="20.0" />
+                                             </content>
+                                          </ScrollPane>
+                                          <Label fx:id="addedBlocksLBL" layoutX="10.0" layoutY="10.0" text="Added blocks">
+                                             <font>
+                                                <Font size="25.0" />
+                                             </font>
+                                          </Label>
+                                          <ScrollPane fitToHeight="true" layoutX="10.0" layoutY="46.0" prefHeight="131.0" prefWidth="795.0" VBox.vgrow="NEVER">
+                                             <content>
+                                                <HBox fx:id="blocksPANE" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="20.0" prefHeight="54.0" spacing="20.0" />
+                                             </content>
+                                          </ScrollPane>
+                                          <Label fx:id="editBlocksLBL" layoutX="10.0" layoutY="119.0" text="Edit block variables">
+                                             <font>
+                                                <Font size="25.0" />
+                                             </font>
+                                          </Label>
+                                          <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="155.0" maxHeight="1.7976931348623157E308" prefHeight="151.0" prefWidth="774.0" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                                             <content>
+                                                <VBox fx:id="editBlockPANE" prefHeight="66.0" prefWidth="818.0" spacing="30.0">
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                </VBox>
+                                             </content>
+                                          </ScrollPane>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets right="20.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox fx:id="buttonHBOX" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                                 <children>
+                                    <Button fx:id="startSearchBTN" alignment="CENTER" mnemonicParsing="false" onAction="#handleStartSearch" text="Start search">
+                                       <font>
+                                          <Font size="26.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="exportSearchBTN" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleExportSearch" text="Export search">
+                                       <font>
+                                          <Font size="26.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="importSearchBTN" alignment="CENTER" layoutX="201.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleImportSearch" text="Import search">
+                                       <font>
+                                          <Font size="26.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets top="20.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </center>
+                     <right>
+                        <VBox maxWidth="1.7976931348623157E308" minWidth="250.0" prefHeight="488.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label fx:id="startPagesLBL" text="Start Pages">
+                                 <font>
+                                    <Font size="30.0" />
+                                 </font>
+                              </Label>
+                              <TextArea fx:id="startPagesTXT" prefHeight="532.0" prefWidth="351.0" promptText="Newline to split pages" VBox.vgrow="ALWAYS">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </TextArea>
+                              <HBox fx:id="buttonHBOX1" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                                 <padding>
+                                    <Insets top="20.0" />
+                                 </padding>
+                                 <children>
+                                    <ImageView fx:id="cornerIMG" fitHeight="222.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@wikisearch.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </right></BorderPane>
+            </content>
+               <graphic>
+                  <Label fx:id="editSearchTabLBL" text="Edit search" />
+               </graphic>
+          </Tab>
+          <Tab>
+	          <VBox>
+                  <Label fx:id="instructionLBL" text="Click on any title to open&#10;Results: ">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
+	          	<ScrollPane fitToWidth="true" maxWidth="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
+	                  <content>
+	                     <GridPane fx:id="resultGRID" prefHeight="59.0" prefWidth="860.0">
+	                       <columnConstraints>
+	                         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+	                       </columnConstraints>
+	                       <rowConstraints>
+	                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+	                       </rowConstraints>
+	                     </GridPane>
+	                  </content>
+	             </ScrollPane>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="exportResultsBTN" mnemonicParsing="false" onAction="#handleExport" text="Export to .txt">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+          	</VBox>
+               <graphic>
+                  <Label fx:id="searchResultsTabLBL" text="Search results" />
+               </graphic>        
+          </Tab>
+          <Tab>
+	          <VBox>
+	          	  <TabPane fx:id="viewerTAB">
+	          	  		
+	          	  </TabPane>
+	          </VBox>
+	          <graphic>
+                  <Label fx:id="viewerTitleLBL" text="Viewer" />
+               </graphic>
+          </Tab>
+        </tabs>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </TabPane>
+   </center>
+</BorderPane>

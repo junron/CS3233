@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="492.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.splashScreenController">
+   <center>
+      <StackPane prefHeight="353.0" prefWidth="668.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="logoIMG" fitHeight="297.0" fitWidth="356.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@wikipedialogo.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="magIMG" fitHeight="100.0" fitWidth="113.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@magnifyingglass.png" />
+               </image>
+            </ImageView>
+         </children>
+      </StackPane>
+   </center>
+   <top>
+      <Label text="Loading..." BorderPane.alignment="CENTER">
+         <font>
+            <Font size="37.0" />
+         </font>
+      </Label>
+   </top>
+   <bottom>
+      <VBox alignment="CENTER" prefWidth="668.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="statusLBL" text="Label">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <ProgressBar fx:id="progressBAR" prefHeight="24.0" prefWidth="516.0" progress="0.0" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </bottom>
+</BorderPane>
