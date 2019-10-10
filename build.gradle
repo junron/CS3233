@@ -46,7 +46,7 @@ shadowJar {
 }
 
 
-mainClassName = "application.Main"
+mainClassName = "application.MainMain"
 
 test {
     scanForTestClasses = false

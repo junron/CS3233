@@ -16,8 +16,6 @@ jobs:
       - name: Build shadowJar
         run: |
           chmod +x ./gradlew
-          mv MainMain.txt src/main/java/application/MainMain.java
-          sed -i 's/application.Main/application.MainMain/g' build.gradle
           ./gradlew clean
           ./gradlew shadowJar
           mv build/libs/*.jar ./output.jar
