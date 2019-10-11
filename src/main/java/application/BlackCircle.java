@@ -18,7 +18,6 @@ class BlackCircle extends Circle implements CanvasNode {
 
   @Override
   public void reposition(Point2D prevOffset, Point2D offset) {
-    System.out.println(movable.getCoords().subtract(prevOffset).add(offset));
     movable.setCoords(movable.getCoords().subtract(prevOffset).add(offset));
   }
 }
