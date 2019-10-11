@@ -80,7 +80,7 @@ public class Mirror extends OpticalRectangle {
       normalAngle = iData.normalAngle;
       intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
       Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
-              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 25000)));
+              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 250000)));
       preciseLine = new PreciseLine(newLine);
       preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
 

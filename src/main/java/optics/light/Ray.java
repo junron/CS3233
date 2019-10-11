@@ -155,7 +155,7 @@ public class Ray implements LightSource, Serializable {
     this.originalOrigin = startPoint;
     PreciseLine l = new PreciseLine(startPoint.getX(), startPoint.getY(), 0, 0);
     l.setPreciseAngle(Math.toRadians(rotation));
-    Vectors lineVec = Vectors.constructWithMagnitude(l.getPreciseAngle(), 25000);
+    Vectors lineVec = Vectors.constructWithMagnitude(l.getPreciseAngle(), 250000);
     Point2D endpoint = startPoint.add(lineVec);
     l.setEndX(endpoint.getX());
     l.setEndY(endpoint.getY());
@@ -295,7 +295,7 @@ public class Ray implements LightSource, Serializable {
   Ray clone(boolean move) {
     Point2D add = move ? new Point2D(10, 10) : new Point2D(0, 0);
     PreciseLine l = new PreciseLine(Geometry.createLineFromPoints(this.originalOrigin.add(add), Vectors
-            .constructWithMagnitude(this.originalLine.getPreciseAngle(), 25000).add(this.originalOrigin).add(add)));
+            .constructWithMagnitude(this.originalLine.getPreciseAngle(), 250000).add(this.originalOrigin).add(add)));
     l.setPreciseAngle(this.originalLine.getPreciseAngle());
     Ray res = new Ray(l, parent);
     res.setColor(this.color);
