@@ -1,95 +1,78 @@
-package javafx;
+package javafx
 
-import javafx.animation.AnimationTimer;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.util.Callback;
-import math.Vectors;
+import javafx.animation.AnimationTimer
+import javafx.geometry.Point2D
+import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import javafx.scene.shape.Line
+import javafx.util.Callback
+import math.Vectors
 
-import java.util.ArrayList;
-
-public class LineAnimation extends AnimationTimer {
-  private final Pane parent;
-  private long startNanoTime;
-  private boolean started;
-  private double distanceToNextPoint;
-  private double lineDirection;
-  private int currentPointIndex = -1;
-  private int pxRate;
-  private ArrayList<Line> lines = new ArrayList<>();
-  private Color color;
-  private Line l;
-  private Point2D[] points;
-  private Callback<LineAnimation, Void> onComplete;
-
-
-  public LineAnimation(Point2D[] points, int pxRate, Color color, Pane parent,
-                       Callback<LineAnimation, Void> onComplete) {
-    this.points = points;
-    this.pxRate = pxRate;
-    this.color = color;
-    this.parent = parent;
-    this.onComplete = onComplete;
-  }
-
-  public ArrayList<Line> getLines() {
-    return lines;
-  }
-
-  public void setPxRate(int pxRate) {
-    this.pxRate = pxRate;
-  }
-
-  private void nextPoint() {
-    currentPointIndex++;
-    if (currentPointIndex == points.length - 1) {
-      onComplete.call(this);
-      this.stop();
-      return;
+class LineAnimation(
+    private val points: List<Point2D>,
+    private var pxRate: Int,
+    private val color: Color,
+    private val parent: Pane,
+    private val onComplete: (LineAnimation)->Unit
+) : AnimationTimer() {
+    private var startNanoTime: Long = 0
+    private var started = false
+    private var distanceToNextPoint = 0.0
+    private var lineDirection = 0.0
+    private var currentPointIndex = -1
+    val lines = mutableListOf<Line>()
+    private var l: Line? = null
+    fun setPxRate(pxRate: Int) {
+        this.pxRate = pxRate
     }
-    Point2D currentPoint = points[currentPointIndex];
-    Vectors pointVector = new Vectors(points[currentPointIndex + 1].subtract(currentPoint));
-    distanceToNextPoint = pointVector.magnitude();
-    lineDirection = pointVector.getAngle();
-    this.l = new Line(currentPoint.getX(), currentPoint.getY(), currentPoint.getX(), currentPoint.getY());
-    this.l.setStroke(color);
-    lines.add(l);
-    parent.getChildren().add(l);
-    started = false;
-  }
 
-  @Override
-  public void start() {
-    nextPoint();
-    super.start();
-  }
-
-
-  @Override
-  public void handle(long now) {
-    if (!started) {
-      startNanoTime = now;
-      started = true;
+    private fun nextPoint() {
+        currentPointIndex++
+        if (currentPointIndex == points.size - 1) {
+            onComplete(this)
+            stop()
+            return
+        }
+        val currentPoint = points[currentPointIndex]
+        val pointVector =
+            Vectors(points[currentPointIndex + 1].subtract(currentPoint))
+        distanceToNextPoint = pointVector.magnitude()
+        lineDirection = pointVector.angle
+        l = Line(currentPoint.x, currentPoint.y, currentPoint.x, currentPoint.y)
+        l!!.stroke = color
+        lines.add(l!!)
+        parent.children.add(l)
+        started = false
     }
-    double timeDelta = (now - startNanoTime) / 1E9;
-    double duration = distanceToNextPoint / pxRate;
-    Point2D endPoint = Vectors.constructWithMagnitude(lineDirection, (timeDelta / duration) * distanceToNextPoint)
-            .add(points[currentPointIndex]);
-    l.setEndY(endPoint.getY());
-    l.setEndX(endPoint.getX());
-    if (parent.getHeight() > 300 && (endPoint.getX() < 0 || endPoint.getX() > parent.getWidth() || endPoint
-            .getY() < 0 || endPoint.getY() > parent.getHeight() - 165)) {
-      currentPointIndex = points.length - 2;
-      nextPoint();
-      return;
-    }
-    if (timeDelta > duration) {
-      l.setEndY(points[currentPointIndex + 1].getY());
-      l.setEndX(points[currentPointIndex + 1].getX());
-      nextPoint();
-    }
-  }
 
+    override fun start() {
+        nextPoint()
+        super.start()
+    }
+
+    override fun handle(now: Long) {
+        if (!started) {
+            startNanoTime = now
+            started = true
+        }
+        val timeDelta = (now - startNanoTime) / 1E9
+        val duration = distanceToNextPoint / pxRate
+        val endPoint = Vectors.constructWithMagnitude(lineDirection,
+            timeDelta / duration * distanceToNextPoint)
+            .add(points[currentPointIndex])
+        l!!.endY = endPoint.y
+        l!!.endX = endPoint.x
+        if (parent.height > 300 && (endPoint.x < 0 || endPoint.x > parent.width || endPoint
+                .y < 0 || endPoint.y > parent.height - 165)
+        ) {
+            currentPointIndex = points.size - 2
+            nextPoint()
+            return
+        }
+        if (timeDelta > duration) {
+            l!!.endY = points[currentPointIndex + 1].y
+            l!!.endX = points[currentPointIndex + 1].x
+            nextPoint()
+        }
+    }
 }

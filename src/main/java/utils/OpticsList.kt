@@ -1,33 +1,23 @@
-package utils;
+package utils
 
-import optics.objects.Interactive;
+import optics.objects.Interactive
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.Collections;
+class OpticsList<T : Interactive<T>> : ArrayList<T>() {
 
-public class OpticsList<T extends Interactive> extends ArrayList<T> {
-
-  public <T> OpticsList() {
-    super();
-  }
-
-  public void addAll(T... args) {
-    Collections.addAll(this, args);
-  }
-
-  public OpticsList<T> getAllExcept(T exclude) {
-    OpticsList<T> result = new OpticsList<>();
-    for (T elem : this) {
-      if (!elem.equals(exclude)) result.add(elem);
+    fun getAllExcept(exclude: T): OpticsList<T> {
+        val result: OpticsList<T> = OpticsList()
+        for (elem in this) {
+            if (elem != exclude) result.add(elem)
+        }
+        return result
     }
-    return result;
-  }
 
-  public OpticsList<T> deepClone() {
-    OpticsList<T> result = new OpticsList<>();
-    for (T elem : this) {
-      result.add((T) elem.cloneObject());
+    fun deepClone(): OpticsList<T> {
+        val result: OpticsList<T> = OpticsList()
+        for (elem in this) {
+            result.add(elem.cloneObject())
+        }
+        return result
     }
-    return result;
-  }
 }

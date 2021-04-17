@@ -1,134 +1,155 @@
-package optics.objects;
+package optics.objects
 
-import javafx.AngleDisplay;
-import javafx.Draggable;
-import javafx.KeyActions;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Shape;
-import math.Intersection;
-import math.IntersectionSideData;
-import math.Vectors;
-import optics.PreciseJavaFXLine;
-import optics.TransformData;
-import optics.light.Ray;
-import utils.Geometry;
+import javafx.AngleDisplay
+import javafx.Draggable
+import javafx.KeyActions
+import javafx.event.Event
+import javafx.event.EventHandler
+import javafx.geometry.Point2D
+import javafx.scene.input.KeyEvent
+import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import javafx.scene.shape.Line
+import math.Intersection
+import math.IntersectionSideData
+import math.Vectors
+import optics.InteractiveOpticalRectangle
+import optics.PreciseJavaFXLine
+import optics.TransformData
+import optics.light.Ray
+import utils.Geometry
+import java.util.function.Function
 
-import java.util.ArrayList;
-import java.util.function.Function;
-
-public class Mirror extends OpticalRectangle {
-  private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
-  private Function<Event, Void> onDestroy;
-
-  public Mirror(double x, double y, double width, double height, Pane parent, double rotation) {
-    super(x, y, width, height);
-    this.setRotate(rotation);
-    this.setArcHeight(0);
-    this.setArcWidth(0);
-    this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28));
-    this.setStrokeWidth(1);
-    this.setStroke(Color.BLACK);
-    this.parent = parent;
-    new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
-    new KeyActions(this, this::triggerStateChange, this::triggerDestroy, parent);
-  }
-
-  public void addOnStateChange(EventHandler<Event> handler) {
-    this.onStateChange.add(handler);
-  }
-
-  private void triggerStateChange(Event e) {
-    for (EventHandler<Event> handler : this.onStateChange) {
-      handler.handle(e);
+class Mirror(
+    x: Double,
+    y: Double,
+    width: Double,
+    height: Double,
+    val parent: Pane,
+    rotation: Double
+) : InteractiveOpticalRectangle(x, y, width, height) {
+    private val onStateChange = mutableListOf<((Event)->Unit)>()
+    private var onDestroy: ((Event)->Unit)? = null
+    override fun addOnStateChange(handler: (Event)->Unit) {
+        onStateChange += handler
     }
-  }
 
-  private void triggerDestroy(Event e) {
-    this.onDestroy.apply(e);
-  }
-
-  public void setOnDestroy(Function<Event, Void> onDestroy) {
-    this.onDestroy = onDestroy;
-  }
-
-  @Override
-  public Interactive cloneObject() {
-    return this.clone(false);
-  }
-
-  @Override
-  public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
-    l.setEndX(iPoint.getX());
-    l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), r);
-    ArrayList<Double> failedAngles = new ArrayList<>();
-    double normalAngle;
-    double intersectionAngle = 0;
-    PreciseJavaFXLine preciseJavaFXLine = null;
-
-    for (int i = 0; i < 5; i++) {
-      if (iData == null || iData.normalVector == null) {
-        System.out.println("ERRORORROOROR: iData is null");
-        return null;
-      }
-      normalAngle = iData.normalAngle;
-      intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
-      Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
-              .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 250000)));
-      preciseJavaFXLine = new PreciseJavaFXLine(newLine);
-      preciseJavaFXLine.setPreciseAngle(normalAngle - intersectionAngle);
-
-      // Ray is going through the mirror
-      // Something is wrong, abort
-      if (Intersection.hasExitPoint(Shape.intersect(preciseJavaFXLine, this), iPoint)) {
-        System.out.println("Null");
-        return null;
-        // failedAngles.add(iData.normalAngle);
-        // iData = Intersection
-        //         .getIntersectionSide(r, iPoint, this, new Point2D(l.getStartX(), l.getStartY()), false,
-        //         failedAngles);
-        // System.out.println("Cancelled");
-        // if (i == 4) return null;
-        // continue;
-      }
-      break;
+    private fun triggerStateChange(e: Event) {
+        for (handler in onStateChange) {
+            handler(e)
+        }
     }
-    double angle = Math.toDegrees(intersectionAngle) % 360;
-    if (angle > 180) angle = 360 - angle;
-    else if (angle < -180) angle += 360;
-    AngleDisplay angleDisplay = new AngleDisplay("Incidence", String.format("%.1f", -angle), "Reflection", String
-            .format("%.1f", angle));
-    return new TransformData(preciseJavaFXLine, angleDisplay, iData);
-  }
 
-  @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
-    return Intersection.getIntersectionSide(r, iPoint, this, origin, false);
-  }
+    private fun triggerDestroy(e: Event) {
+        onDestroy?.invoke(e)
+    }
 
-  @Override
-  public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
-    double normalLength = 50;
-    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(-normalLength / 2)));
-    l.getStrokeDashArray().addAll(4d);
-    return l;
-  }
+    override fun setOnDestroy(onDestroy: (Event)->Unit) {
+        this.onDestroy = onDestroy
+    }
 
+    override fun cloneObject(): Mirror {
+        return this.clone(false)
+    }
 
-  @Override
-  public String serialize() {
-    return super.serialize('m');
-  }
+    override fun transform(r: Ray, iPoint: Point2D): TransformData? {
+        val l = r.currentJavaFXLine
+        l.endX = iPoint.x
+        l.endY = iPoint.y
+        val iData =
+            this.getIntersectionSideData(iPoint, Point2D(l.startX, l.startY), r) ?: return null
+        val failedAngles = ArrayList<Double>()
+        val normalAngle: Double
+        var intersectionAngle = 0.0
+        var preciseJavaFXLine: PreciseJavaFXLine? = null
+        for (i in 0..4) {
+            if (iData.normalVector == null) {
+                println("ERRORORROOROR: iData is null")
+                return null
+            }
+            normalAngle = iData.normalAngle
+            intersectionAngle =
+                Intersection.getObjectIntersectionAngle(iData, l)
+            val newLine = Geometry.createLineFromPoints(iPoint, iPoint
+                .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle,
+                    250000.0)))
+            preciseJavaFXLine = PreciseJavaFXLine(newLine)
+            preciseJavaFXLine.preciseAngle = normalAngle - intersectionAngle
 
-  @Override
-  public OpticalRectangle clone(boolean shiftPositions) {
-    return new Mirror(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
-            .getWidth(), this.getHeight(), parent, this.getRotate());
-  }
+            // Ray is going through the mirror
+            // Something is wrong, abort
+            if (Intersection.hasExitPoint(intersect(preciseJavaFXLine, this),
+                    iPoint)
+            ) {
+                println("Null")
+                return null
+                // failedAngles.add(iData.normalAngle);
+                // iData = Intersection
+                //         .getIntersectionSide(r, iPoint, this, new Point2D(l.getStartX(), l.getStartY()), false,
+                //         failedAngles);
+                // System.out.println("Cancelled");
+                // if (i == 4) return null;
+                // continue;
+            }
+            break
+        }
+        var angle = Math.toDegrees(intersectionAngle) % 360
+        if (angle > 180) angle =
+            360 - angle else if (angle < -180) angle += 360.0
+        val angleDisplay = AngleDisplay("Incidence",
+            String.format("%.1f", -angle),
+            "Reflection",
+            String.format("%.1f", angle))
+        return TransformData(preciseJavaFXLine!!, angleDisplay, iData)
+    }
+
+    override fun getIntersectionSideData(
+        iPoint: Point2D,
+        origin: Point2D,
+        r: Ray
+    ): IntersectionSideData? {
+        return Intersection.getIntersectionSide(r, iPoint, this, origin, false)
+    }
+
+    override fun drawNormal(
+        iData: IntersectionSideData,
+        iPoint: Point2D
+    ): Line {
+        val normalLength = 50.0
+        val l = Geometry.createLineFromPoints(iPoint,
+            iPoint.add(iData.normalVector.multiply(-normalLength / 2)))
+        l.strokeDashArray.addAll(4.0)
+        return l
+    }
+
+    override fun serialize(): String {
+        return super.serialize('m')
+    }
+
+    override fun clone(shiftPositions: Boolean): Mirror {
+        return Mirror(x + if (shiftPositions) 10 else 0,
+            y + if (shiftPositions) 10 else 0,
+            width,
+            height,
+            parent,
+            this.rotate)
+    }
+
+    init {
+        this.rotate = rotation
+        arcHeight = 0.0
+        arcWidth = 0.0
+        fill = Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.28)
+        this.strokeWidth = 1.0
+        stroke = Color.BLACK
+        realParent = parent
+        Draggable(this,
+            { e: Event -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+        KeyActions(this,
+            { e: KeyEvent -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+    }
 }

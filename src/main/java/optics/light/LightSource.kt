@@ -1,12 +1,11 @@
-package optics.light;
+package optics.light
 
-import optics.objects.OpticalRectangle;
-import utils.OpticsList;
+import optics.InteractiveOpticalRectangle
+import optics.objects.OpticalRectangle
+import utils.OpticsList
+import java.util.concurrent.CompletableFuture
 
-import java.util.concurrent.CompletableFuture;
-
-public interface LightSource {
-  CompletableFuture renderRays(OpticsList<OpticalRectangle> objects);
-
-  void removeAllLines();
+interface LightSource {
+    fun renderRays(objects: OpticsList<InteractiveOpticalRectangle>): CompletableFuture<*>
+    fun removeAllLines()
 }

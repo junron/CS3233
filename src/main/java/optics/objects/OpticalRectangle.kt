@@ -1,92 +1,99 @@
-package optics.objects;
+package optics.objects
 
-import application.Storage;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import serialize.Serializable;
+import application.Storage
+import javafx.geometry.Point2D
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Line
+import javafx.scene.shape.Rectangle
+import math.IntersectionSideData
+import optics.TransformData
+import optics.light.Ray
+import serialize.Serializable
 
-abstract public class OpticalRectangle extends Rectangle implements Interactive, Serializable {
-  private final int maxSize = 10_00;
-  private final int minSize = 5;
-  private double realX;
-  private double realY;
-  protected Pane parent;
+abstract class OpticalRectangle(
+    x: Double,
+    y: Double,
+    width: Double,
+    height: Double
+) : Rectangle(x, y, width, height), Serializable {
+    private val maxSize = 1000
+    private val minSize = 5
+    private var realX: Double
+    private var realY: Double
+    var realParent: Pane? = null
+        protected set
 
-  public OpticalRectangle(double x, double y, double width, double height) {
-    super(x, y, width, height);
-    this.realX = x - Storage.getOffset().getX();
-    this.realY = y - Storage.getOffset().getY();
-    this.setViewOrder(100);
-  }
-
-  public void setWidthChecked(double width) {
-    if (width > maxSize) {
-      this.setWidth(maxSize);
-      return;
+    fun setWidthChecked(width: Double) {
+        if (width > maxSize) {
+            this.width = maxSize.toDouble()
+            return
+        }
+        if (width < minSize) {
+            this.width = minSize.toDouble()
+            return
+        }
+        this.width = width
     }
-    if (width < minSize) {
-      this.setWidth(minSize);
-      return;
+
+    fun setHeightChecked(height: Double) {
+        if (height > maxSize) {
+            this.height = maxSize.toDouble()
+            return
+        }
+        if (height < minSize) {
+            this.height = minSize.toDouble()
+            return
+        }
+        this.height = height
     }
-    this.setWidth(width);
-  }
 
-  public void setHeightChecked(double height) {
-    if (height > maxSize) {
-      this.setHeight(maxSize);
-      return;
+    abstract fun clone(shiftPositions: Boolean): OpticalRectangle
+    abstract fun transform(r: Ray, iPoint: Point2D): TransformData?
+    abstract fun drawNormal(iData: IntersectionSideData, iPoint: Point2D): Line?
+
+
+    fun serialize(id: Char): String {
+        return "$id|$realX|$realY|$width|$height|$rotate"
     }
-    if (height < minSize) {
-      this.setHeight(minSize);
-      return;
+
+    override fun deserialize(string: String) {
+        val parts = string.split("\\|").toTypedArray()
+        realX = parts[1].toDouble()
+        realY = parts[2].toDouble()
+        reposition()
+        width = parts[3].toDouble()
+        height = parts[4].toDouble()
+        this.rotate = parts[5].toDouble()
     }
-    this.setHeight(height);
-  }
 
-  public abstract OpticalRectangle clone(boolean shiftPositions);
+    open fun clone(opticalRectangle: OpticalRectangle) {
+        opticalRectangle.x = x
+        opticalRectangle.y = y
+        opticalRectangle.realY = realY
+        opticalRectangle.realX = realX
+        opticalRectangle.rotate = this.rotate
+        opticalRectangle.height = height
+        opticalRectangle.width = width
+    }
 
-  public Pane getRealParent() {
-    return parent;
-  }
+    fun setScreenX(x: Double) {
+        this.x = x
+        realX = x - Storage.offset.x
+    }
 
-  public String serialize(char id) {
-    return id + "|" + this.realX + "|" + this.realY + "|" + this.getWidth() + "|" + this.getHeight() + "|" + this
-            .getRotate();
-  }
+    fun setScreenY(y: Double) {
+        this.y = y
+        realY = y - Storage.offset.y
+    }
 
-  @Override
-  public void deserialize(String string) {
-    String[] parts = string.split("\\|");
-    this.realX = Double.parseDouble(parts[1]);
-    this.realY = Double.parseDouble(parts[2]);
-    this.reposition();
-    this.setWidth(Double.parseDouble(parts[3]));
-    this.setHeight(Double.parseDouble(parts[4]));
-    this.setRotate(Double.parseDouble(parts[5]));
-  }
+    fun reposition() {
+        x = realX + Storage.offset.x
+        y = realY + Storage.offset.y
+    }
 
-  public void clone(OpticalRectangle opticalRectangle) {
-    opticalRectangle.setX(this.getX());
-    opticalRectangle.setY(this.getY());
-    opticalRectangle.realY = this.realY;
-    opticalRectangle.realX = this.realX;
-    opticalRectangle.setRotate(this.getRotate());
-    opticalRectangle.setHeight(this.getHeight());
-    opticalRectangle.setWidth(this.getWidth());
-  }
-
-  public void setScreenX(double x) {
-    this.setX(x);
-    this.realX = x - Storage.getOffset().getX();
-  }
-
-  public void setScreenY(double y) {
-    this.setY(y);
-    this.realY = y - Storage.getOffset().getY();
-  }
-
-  public void reposition() {
-    this.setX(this.realX + Storage.getOffset().getX());
-    this.setY(this.realY + Storage.getOffset().getY());
-  }
+    init {
+        realX = x - Storage.offset.x
+        realY = y - Storage.offset.y
+        this.viewOrder = 100.0
+    }
 }

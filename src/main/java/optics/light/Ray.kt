@@ -19,6 +19,7 @@ import javafx.scene.shape.Path
 import javafx.scene.shape.Shape
 import math.Intersection
 import math.Vectors
+import optics.InteractiveOpticalRectangle
 import optics.PreciseJavaFXLine
 import optics.objects.OpticalRectangle
 import optics.objects.Refract
@@ -29,11 +30,12 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import java.util.function.Function
 
-class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSource,
+class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) :
+    LightSource,
     Serializable {
-    private val onStateChange = ArrayList<EventHandler<Event>>()
-    private var onDestroy: Function<Event, Void>? = null
-    private var onFocusStateChanged: Function<Boolean, Void>? = null
+    private val onStateChange = mutableListOf<(Event)->Unit>()
+    private var onDestroy: ((Event)->Unit)? = null
+    private var onFocusStateChanged: ((Boolean)->Unit)? = null
     val lines = ArrayList<Node>()
     private var originalJavaFXLine: PreciseJavaFXLine
     private var origin: Point2D
@@ -57,18 +59,19 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
             currentJavaFXLine.endY)
         originalJavaFXLine.preciseAngle = currentJavaFXLine.preciseAngle
         origin = Point2D(currentJavaFXLine.startX, currentJavaFXLine.startY)
-        originalOrigin = Point2D(currentJavaFXLine.startX, currentJavaFXLine.startY)
+        originalOrigin =
+            Point2D(currentJavaFXLine.startX, currentJavaFXLine.startY)
         endPoint = Point2D(currentJavaFXLine.endX, currentJavaFXLine.endY)
         addCircle()
         angle = Math.toDegrees(currentJavaFXLine.preciseAngle)
         color = Color.BLACK
-        realX = currentJavaFXLine.startX - Storage.getOffset().x
-        realY = currentJavaFXLine.startY - Storage.getOffset().y
-        println(Storage.getOffset())
+        realX = currentJavaFXLine.startX - Storage.offset.x
+        realY = currentJavaFXLine.startY - Storage.offset.y
+        println(Storage.offset)
         addCircle()
     }
 
-    fun setOnFocusStateChanged(onFocusStateChanged: Function<Boolean, Void>?) {
+    fun setOnFocusStateChanged(onFocusStateChanged: ((Boolean)->Unit)?) {
         this.onFocusStateChanged = onFocusStateChanged
     }
 
@@ -78,7 +81,7 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         circle = RayCircle(origin.x, origin.y, angle, this)
         circle.focusedProperty()
             .addListener { _: ObservableValue<out Boolean>?, _: Boolean?, state: Boolean ->
-                onFocusStateChanged!!.apply(state)
+                onFocusStateChanged?.invoke(state)
             }
         KeyActions(circle, { e: KeyEvent ->
             angle = circle.rotate
@@ -95,13 +98,13 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         parent.children.add(circle)
     }
 
-    fun addOnStateChange(handler: EventHandler<Event>) {
+    fun addOnStateChange(handler: (Event)->Unit) {
         onStateChange.add(handler)
     }
 
     private fun triggerStateChange(e: Event) {
         for (handler in onStateChange) {
-            handler.handle(e)
+            handler(e)
         }
     }
 
@@ -110,13 +113,13 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         removeAllLines()
     }
 
-    fun setOnDestroy(onDestroy: Function<Event, Void>?) {
+    fun setOnDestroy(onDestroy: ((Event)->Unit)?) {
         this.onDestroy = onDestroy
     }
 
     private fun triggerDestroy(e: Event) {
         removeAllLines()
-        onDestroy!!.apply(e)
+        onDestroy?.invoke(e)
     }
 
     private fun updateLine(rotation: Double, startPoint: Point2D) {
@@ -137,7 +140,7 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         circle.requestFocus()
     }
 
-    private fun renderRaysThreaded(objects: OpticsList<OpticalRectangle>): ObservableList<Node>? {
+    private fun renderRaysThreaded(objects: OpticsList<InteractiveOpticalRectangle>): ObservableList<Node>? {
         val nodes = FXCollections.observableArrayList<Node>()
         resetCurrentLine()
         var opticalObject =
@@ -154,7 +157,7 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
                 Vectors(origin),
                 !Intersection
                     .hasIntersectionPoint(origin, opticalObject))
-            val transform = opticalObject.transform(this, iPoint)
+            val transform = opticalObject.transform(this, iPoint) ?: break
             //        End of line
             val normal =
                 opticalObject.drawNormal(transform.intersectionSideData, iPoint)
@@ -178,7 +181,8 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
                     if (obj === opticalObject) continue
                     if (Intersection.hasExitPoint(Shape.intersect(transform.preciseJavaFXLine,
                             obj), Point2D(transform
-                            .preciseJavaFXLine.startX, transform.preciseJavaFXLine.startY))
+                            .preciseJavaFXLine.startX,
+                            transform.preciseJavaFXLine.startY))
                     ) {
                         if (nodes.size == 0) {
                             //              Ensure that there is at least 1 line
@@ -196,9 +200,13 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
             opticalObject = nextOpticalObject
             nodes.addAll(currentJavaFXLine)
             // Only show labels if option enabled
-            if (Storage.showLabels) nodes.addAll(angleDisplay,
-                activeArea,
-                normal)
+            if (Storage.showLabels) {
+                nodes.addAll(angleDisplay,
+                    activeArea)
+                if(normal != null){
+                    nodes.add(normal)
+                }
+            }
             currentJavaFXLine = transform.preciseJavaFXLine
             origin = iPoint
             refNum++
@@ -217,7 +225,7 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         currentJavaFXLine = originalJavaFXLine
     }
 
-    override fun renderRays(objects: OpticsList<OpticalRectangle>): CompletableFuture<ArrayList<Node>> {
+    override fun renderRays(objects: OpticsList<InteractiveOpticalRectangle>): CompletableFuture<ArrayList<Node>> {
         val completableFuture = CompletableFuture<ArrayList<Node>>()
         Thread(Runnable {
             val nodes: ObservableList<Node>?
@@ -273,7 +281,8 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
         val add = if (move) Point2D(10.0, 10.0) else Point2D(0.0, 0.0)
         val l = PreciseJavaFXLine(Geometry.createLineFromPoints(
             originalOrigin.add(add), Vectors
-                .constructWithMagnitude(originalJavaFXLine.preciseAngle, 250000.0)
+                .constructWithMagnitude(originalJavaFXLine.preciseAngle,
+                    250000.0)
                 .add(
                     originalOrigin).add(add)))
         l.preciseAngle = originalJavaFXLine.preciseAngle
@@ -284,17 +293,19 @@ class Ray(var currentJavaFXLine: PreciseJavaFXLine, val parent: Pane) : LightSou
 
     fun setScreenX(x: Double) {
         circle.centerX = x
-        realX = x - Storage.getOffset().x
+        realX = x - Storage.offset.x
+        println("$realX, $realY")
     }
 
     fun setScreenY(y: Double) {
         circle.centerY = y
-        realY = y - Storage.getOffset().y
+        realY = y - Storage.offset.y
+        println("$realX, $realY")
     }
 
     fun reposition() {
-        circle.centerX = realX + Storage.getOffset().x
-        circle.centerY = realY + Storage.getOffset().y
+        circle.centerX = realX + Storage.offset.x
+        circle.centerY = realY + Storage.offset.y
         updateLine(circle.rotate, Point2D(circle.centerX, circle.centerY))
     }
 

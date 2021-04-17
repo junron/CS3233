@@ -11,7 +11,7 @@ class PreciseJavaFXLine(startX: Double, startY: Double, endX: Double, endY: Doub
         println("${l.startX}, ${l.startY}, ${l.endX}, ${l.endY}")
     }
 
-    init {
-        println("$startX, $startY, $endX, $endY")
-    }
+//    init {
+//        println("$startX, $startY, $endX, $endY")
+//    }
 }

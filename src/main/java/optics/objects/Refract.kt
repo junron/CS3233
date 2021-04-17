@@ -1,160 +1,190 @@
-package optics.objects;
+package optics.objects
 
-import javafx.AngleDisplay;
-import javafx.Draggable;
-import javafx.KeyActions;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import math.Intersection;
-import math.IntersectionSideData;
-import math.Vectors;
-import optics.PreciseJavaFXLine;
-import optics.TransformData;
-import optics.light.Ray;
-import utils.Geometry;
+import javafx.AngleDisplay
+import javafx.Draggable
+import javafx.KeyActions
+import javafx.event.Event
+import javafx.event.EventHandler
+import javafx.geometry.Point2D
+import javafx.scene.input.KeyEvent
+import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import javafx.scene.shape.Line
+import math.Intersection
+import math.IntersectionSideData
+import math.Vectors
+import optics.InteractiveOpticalRectangle
+import optics.PreciseJavaFXLine
+import optics.TransformData
+import optics.light.Ray
+import utils.Geometry.createLineFromPoints
+import java.util.function.Function
+import kotlin.math.roundToInt
 
-import java.util.ArrayList;
-import java.util.function.Function;
+class Refract(
+    x: Double,
+    y: Double,
+    width: Double,
+    height: Double,
+    val parent: Pane,
+    rotation: Double,
+    refractiveIndex: Double
+) : InteractiveOpticalRectangle(x, y, width, height) {
+    private val onStateChange = mutableListOf<(Event) -> Unit>()
+    private var onDestroy: ((Event) -> Unit)? = null
+    var refractiveIndex: Double = refractiveIndex
+        set(value) {
+            field = (value.coerceAtLeast(1.0) * 100).roundToInt() / 100.0
+        }
 
-public class Refract extends OpticalRectangle {
-  private double refractiveIndex;
-  private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
-  private Function<Event, Void> onDestroy;
-
-  public Refract(double x, double y, double width, double height, Pane parent, double rotation,
-                 double refractiveIndex) {
-    super(x, y, width, height);
-    this.refractiveIndex = refractiveIndex;
-    this.setRotate(rotation);
-    this.setArcHeight(0);
-    this.setArcWidth(0);
-    this.setFill(Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.50));
-    this.setStrokeWidth(1);
-    this.setStroke(Color.BLACK);
-    this.parent = parent;
-    new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
-    new KeyActions(this, this::triggerStateChange, this::triggerDestroy, parent);
-  }
-
-  public void addOnStateChange(EventHandler<Event> handler) {
-    this.onStateChange.add(handler);
-  }
-
-  private void triggerStateChange(Event e) {
-    for (EventHandler<Event> handler : this.onStateChange) {
-      handler.handle(e);
+    override fun addOnStateChange(handler: (Event) -> Unit) {
+        onStateChange.add(handler)
     }
-  }
 
-  private void triggerDestroy(Event e) {
-    this.onDestroy.apply(e);
-  }
-
-  public void setOnDestroy(Function<Event, Void> onDestroy) {
-    this.onDestroy = onDestroy;
-  }
-
-  public double getRefractiveIndex() {
-    return refractiveIndex;
-  }
-
-  public void setRefractiveIndex(double refractiveIndex) {
-    this.refractiveIndex = Math.round(Math.max(1.0, refractiveIndex) * 100) / 100.0;
-  }
-
-  @Override
-  public Interactive cloneObject() {
-    return this.clone(false);
-  }
-
-  @Override
-  public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
-    //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
-    l.setEndX(iPoint.getX());
-    l.setEndY(iPoint.getY());
-    IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), r);
-    double intersectionAngle = Math.PI * 2 - l.getPreciseAngle();
-    double normalAngle = iData.normalAngle;
-    double incidence = Math.PI - intersectionAngle - normalAngle;
-    double refAngle = Math.asin(Math.sin(incidence) / this.refractiveIndex);
-    if (r.isInRefractiveMaterial()) {
-      r.setInRefractiveMaterial(false);
-      refAngle = Math.asin(this.refractiveIndex * Math.sin(incidence));
-      //      Total internal reflection can only occur when light exits an object
-      if (Double.isNaN(refAngle)) {
-        return totalInternalReflection(iPoint, r, iData);
-      }
-    } else {
-      r.setInRefractiveMaterial(true);
+    private fun triggerStateChange(e: Event) {
+        for (handler in onStateChange) {
+            handler(e)
+        }
     }
-    Vectors vect = Vectors.constructWithMagnitude(refAngle + normalAngle - Math.PI, 250000);
-    PreciseJavaFXLine pLine = new PreciseJavaFXLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
-    pLine.setPreciseAngle(refAngle + normalAngle - Math.PI);
-    double iAngle = Math.toDegrees(incidence) % 360;
-    if (iAngle > 180) iAngle = 360 - iAngle;
-    else if (iAngle < -180) iAngle += 360;
-    String angle = String.format("%.1f", Math.toDegrees(refAngle));
-    String iAngleStr = String.format("%.1f", iAngle);
-    AngleDisplay angleDisplay = new AngleDisplay("Incidence", iAngleStr, "Refraction", angle);
-    return new TransformData(pLine, angleDisplay, iData);
-  }
 
-  //  Total internal reflection occurs when a ray travels from inside a high refractive index
-  //  object to the air. The ray is internally reflected within the object
-  private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
-    double normalAngle = iData.normalAngle;
-    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, r.getCurrentJavaFXLine());
-    PreciseJavaFXLine pLine = new PreciseJavaFXLine(Geometry.createLineFromPoints(iPoint, iPoint
-            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 250000))));
-    pLine.setPreciseAngle(normalAngle - intersectionAngle);
-    r.setInRefractiveMaterial(true);
-    //    Angle display
-    AngleDisplay angleDisplay = new AngleDisplay("TIR", String
-            .format("%.1f", Math.toDegrees(normalAngle - intersectionAngle)));
-    return new TransformData(pLine, angleDisplay, iData);
-  }
-
-  @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
-    return Intersection.getIntersectionSide(r, iPoint, this, origin, r.isInRefractiveMaterial());
-  }
-
-  @Override
-  public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
-    double normalLength = 50;
-    Line l = Geometry.createLineFromPoints(iPoint, iPoint.add(iData.normalVector.multiply(-normalLength / 2)));
-    l.getStrokeDashArray().addAll(4d);
-    return l;
-  }
-
-
-  @Override
-  public String serialize() {
-    //    x,y,width,height,rotation,ref index
-    return super.serialize('e') + "|" + this.refractiveIndex;
-  }
-
-  @Override
-  public void deserialize(String serialized) {
-    super.deserialize(serialized);
-    this.refractiveIndex = Double.parseDouble(serialized.split("\\|")[6]);
-  }
-
-  @Override
-  public OpticalRectangle clone(boolean shiftPositions) {
-    return new Refract(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
-            .getWidth(), this.getHeight(), this.parent, this.getRotate(), this.refractiveIndex);
-  }
-
-  public void clone(OpticalRectangle opticalRectangle) {
-    super.clone(opticalRectangle);
-    if (opticalRectangle instanceof Refract) {
-      ((Refract) opticalRectangle).setRefractiveIndex(this.refractiveIndex);
+    private fun triggerDestroy(e: Event) {
+        onDestroy?.invoke(e)
     }
-  }
+
+    override fun setOnDestroy(onDestroy: (Event) -> Unit) {
+        this.onDestroy = onDestroy
+    }
+
+
+    override fun cloneObject(): Refract {
+        return this.clone(false)
+    }
+
+    override fun transform(r: Ray, iPoint: Point2D): TransformData? {
+        val l = r.currentJavaFXLine
+        //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
+        l.endX = iPoint.x
+        l.endY = iPoint.y
+        val iData =
+            getIntersectionSideData(iPoint, Point2D(l.startX, l.startY), r)
+        val intersectionAngle = Math.PI * 2 - l.preciseAngle
+        val normalAngle = iData.normalAngle
+        val incidence = Math.PI - intersectionAngle - normalAngle
+        var refAngle = Math.asin(Math.sin(incidence) / refractiveIndex)
+        if (r.isInRefractiveMaterial) {
+            r.isInRefractiveMaterial = false
+            refAngle = Math.asin(refractiveIndex * Math.sin(incidence))
+            //      Total internal reflection can only occur when light exits an object
+            if (java.lang.Double.isNaN(refAngle)) {
+                return totalInternalReflection(iPoint, r, iData)
+            }
+        } else {
+            r.isInRefractiveMaterial = true
+        }
+        val vect =
+            Vectors.constructWithMagnitude(refAngle + normalAngle - Math.PI,
+                250000.0)
+        val pLine =
+            PreciseJavaFXLine(createLineFromPoints(iPoint, iPoint.add(vect)))
+        pLine.preciseAngle = refAngle + normalAngle - Math.PI
+        var iAngle = Math.toDegrees(incidence) % 360
+        if (iAngle > 180) iAngle =
+            360 - iAngle else if (iAngle < -180) iAngle += 360.0
+        val angle = String.format("%.1f", Math.toDegrees(refAngle))
+        val iAngleStr = String.format("%.1f", iAngle)
+        val angleDisplay =
+            AngleDisplay("Incidence", iAngleStr, "Refraction", angle)
+        return TransformData(pLine, angleDisplay, iData)
+    }
+
+    //  Total internal reflection occurs when a ray travels from inside a high refractive index
+    //  object to the air. The ray is internally reflected within the object
+    private fun totalInternalReflection(
+        iPoint: Point2D,
+        r: Ray,
+        iData: IntersectionSideData
+    ): TransformData {
+        val normalAngle = iData.normalAngle
+        val intersectionAngle =
+            Intersection.getObjectIntersectionAngle(iData, r.currentJavaFXLine)
+        val pLine = PreciseJavaFXLine(createLineFromPoints(iPoint, iPoint
+            .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle,
+                250000.0))))
+        pLine.preciseAngle = normalAngle - intersectionAngle
+        r.isInRefractiveMaterial = true
+        //    Angle display
+        val angleDisplay = AngleDisplay("TIR",
+            String.format("%.1f",
+                Math.toDegrees(normalAngle - intersectionAngle)))
+        return TransformData(pLine, angleDisplay, iData)
+    }
+
+    override fun getIntersectionSideData(
+        iPoint: Point2D,
+        origin: Point2D,
+        r: Ray
+    ): IntersectionSideData {
+        return Intersection.getIntersectionSide(r,
+            iPoint,
+            this,
+            origin,
+            r.isInRefractiveMaterial)
+    }
+
+    override fun drawNormal(
+        iData: IntersectionSideData,
+        iPoint: Point2D
+    ): Line {
+        val normalLength = 50.0
+        val l = createLineFromPoints(iPoint,
+            iPoint.add(iData.normalVector.multiply(-normalLength / 2)))
+        l.strokeDashArray.addAll(4.0)
+        return l
+    }
+
+    override fun serialize(): String {
+        //    x,y,width,height,rotation,ref index
+        return super.serialize('e') + "|" + refractiveIndex
+    }
+
+    override fun deserialize(serialized: String) {
+        super.deserialize(serialized)
+        refractiveIndex = serialized.split("\\|").toTypedArray()[6].toDouble()
+    }
+
+
+    override fun clone(shiftPositions: Boolean): Refract {
+        return Refract(x + if (shiftPositions) 10 else 0,
+            y + if (shiftPositions) 10 else 0,
+            width,
+            height,
+            parent,
+            this.rotate,
+            refractiveIndex)
+    }
+
+    override fun clone(opticalRectangle: OpticalRectangle) {
+        super.clone(opticalRectangle)
+        if (opticalRectangle is Refract) {
+            opticalRectangle.refractiveIndex = refractiveIndex
+        }
+    }
+
+    init {
+        this.rotate = rotation
+        arcHeight = 0.0
+        arcWidth = 0.0
+        fill = Color.color(5 / 255.0, 213 / 255.0, 255 / 255.0, 0.50)
+        this.strokeWidth = 1.0
+        stroke = Color.BLACK
+        realParent = parent
+        Draggable(this,
+            { e: Event -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+        KeyActions(this,
+            { e: KeyEvent -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+    }
 }

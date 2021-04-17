@@ -1,86 +1,99 @@
-package optics.objects;
+package optics.objects
 
-import javafx.Draggable;
-import javafx.KeyActions;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import math.IntersectionSideData;
-import optics.PreciseJavaFXLine;
-import optics.TransformData;
-import optics.light.Ray;
+import javafx.Draggable
+import javafx.KeyActions
+import javafx.event.Event
+import javafx.event.EventHandler
+import javafx.geometry.Point2D
+import javafx.scene.input.KeyEvent
+import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import javafx.scene.shape.Line
+import math.IntersectionSideData
+import optics.InteractiveOpticalRectangle
+import optics.TransformData
+import optics.light.Ray
+import java.util.function.Function
 
-import java.util.ArrayList;
-import java.util.function.Function;
-
-public class Wall extends OpticalRectangle {
-  private ArrayList<EventHandler<Event>> onStateChange = new ArrayList<>();
-  private Function<Event, Void> onDestroy;
-
-  public Wall(double x, double y, double width, double height, Pane parent, double rotation) {
-    super(x, y, width, height);
-    this.setRotate(rotation);
-    this.setFill(Color.rgb(180, 179, 176));
-    this.setStroke(Color.BLACK);
-    this.parent = parent;
-    new Draggable(this, this::triggerStateChange, this::triggerDestroy, parent);
-    new KeyActions(this, this::triggerStateChange, this::triggerDestroy, parent);
-  }
-
-  private void triggerStateChange(Event e) {
-    for (EventHandler<Event> handler : this.onStateChange) {
-      handler.handle(e);
+class Wall(
+    x: Double,
+    y: Double,
+    width: Double,
+    height: Double,
+    val parent: Pane,
+    rotation: Double
+) : InteractiveOpticalRectangle(x, y, width, height) {
+    private val onStateChange = mutableListOf<(Event)->Unit>()
+    private var onDestroy: ((Event)->Unit)? = null
+    private fun triggerStateChange(e: Event) {
+        for (handler in onStateChange) {
+            handler(e)
+        }
     }
-  }
 
-  private void triggerDestroy(Event e) {
-    this.onDestroy.apply(e);
-  }
+    private fun triggerDestroy(e: Event) {
+        onDestroy?.invoke(e)
+    }
 
-  @Override
-  public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
-    l.setEndX(iPoint.getX());
-    l.setEndY(iPoint.getY());
-    return null;
-  }
+    override fun transform(r: Ray, iPoint: Point2D): TransformData? {
+        val l = r.currentJavaFXLine
+        l.endX = iPoint.x
+        l.endY = iPoint.y
+        return null
+    }
 
-  @Override
-  public IntersectionSideData getIntersectionSideData(Point2D iPoint, Point2D origin, Ray r) {
-    return null;
-  }
+    override fun getIntersectionSideData(
+        iPoint: Point2D,
+        origin: Point2D,
+        r: Ray
+    ): IntersectionSideData? {
+        return null
+    }
 
-  @Override
-  public Line drawNormal(IntersectionSideData iData, Point2D iPoint) {
-    return null;
-  }
+    override fun drawNormal(
+        iData: IntersectionSideData,
+        iPoint: Point2D
+    ): Line? {
+        return null
+    }
 
-  @Override
-  public void addOnStateChange(EventHandler<Event> handler) {
-    this.onStateChange.add(handler);
-  }
+    override fun addOnStateChange(handler: (Event)->Unit) {
+        onStateChange.add(handler)
+    }
 
-  @Override
-  public void setOnDestroy(Function<Event, Void> onDestroy) {
-    this.onDestroy = onDestroy;
-  }
+    override fun setOnDestroy(onDestroy: (Event)->Unit) {
+        this.onDestroy = onDestroy
+    }
 
-  @Override
-  public Interactive cloneObject() {
-    return this.clone(false);
-  }
+    override fun cloneObject(): Wall {
+        return this.clone(false)
+    }
 
-  @Override
-  public String serialize() {
-    return super.serialize('w');
-  }
+    override fun serialize(): String {
+        return super.serialize('w')
+    }
 
-  @Override
-  public OpticalRectangle clone(boolean shiftPositions) {
-    return new Wall(this.getX() + (shiftPositions ? 10 : 0), this.getY() + (shiftPositions ? 10 : 0), this
-            .getWidth(), this.getHeight(), parent, this.getRotate());
-  }
+    override fun clone(shiftPositions: Boolean): Wall {
+        return Wall(x + if (shiftPositions) 10 else 0,
+            y + if (shiftPositions) 10 else 0,
+            width,
+            height,
+            parent,
+            this.rotate)
+    }
+
+    init {
+        this.rotate = rotation
+        fill = Color.rgb(180, 179, 176)
+        stroke = Color.BLACK
+        realParent = parent
+        Draggable(this,
+            { e: Event -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+        KeyActions(this,
+            { e: KeyEvent -> triggerStateChange(e) },
+            { e: Event -> triggerDestroy(e) },
+            parent)
+    }
 }

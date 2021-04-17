@@ -1,166 +1,185 @@
-package application;
+package application
 
-import javafx.SettableTextField;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import optics.objects.Mirror;
-import optics.objects.OpticalRectangle;
-import optics.objects.Refract;
-import optics.objects.Wall;
+import application.Storage.opticalRectangles
+import application.Storage.reRenderAll
+import javafx.SettableTextField
+import javafx.beans.value.ObservableValue
+import javafx.event.EventHandler
+import javafx.fxml.FXML
+import javafx.scene.control.Button
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import optics.InteractiveOpticalRectangle
+import optics.objects.Mirror
+import optics.objects.OpticalRectangle
+import optics.objects.Refract
+import optics.objects.Wall
+import utils.Geometry.fixAngle
 
-import static application.Storage.opticalRectangles;
-import static application.Storage.reRenderAll;
-import static utils.Geometry.fixAngle;
+class OpticsTabController {
+    @FXML
+    private var newWall: Button? = null
 
-public class OpticsTabController {
+    @FXML
+    private var newMirror: Button? = null
 
-  @FXML
-  private Button newWall;
-  @FXML
-  private Button newMirror;
-  @FXML
-  private Button newRefractor;
-  @FXML
-  private SettableTextField refractiveIndex, width, rotation, height;
+    @FXML
+    private var newRefractor: Button? = null
 
-  private OpticalRectangle focusedObject;
+    @FXML
+    private var refractiveIndex: SettableTextField? = null
 
-  void initialize(Pane parent) {
-    newMirror.setOnMouseClicked(event -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      Mirror m = new Mirror(parent.getWidth() / 2, parent.getHeight() / 2 - 100, 20, 200, parent, 0);
-      addObject(m, parent);
-    });
-    newWall.setOnMouseClicked(event -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      Wall w = new Wall(parent.getWidth() / 2, parent.getHeight() / 2 - 25, 20, 50, parent, 0);
-      addObject(w, parent);
-    });
-    newRefractor.setOnMouseClicked(event -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      Refract re = new Refract(parent.getWidth() / 2, parent.getHeight() / 2 - 50, 20, 100, parent, 0, 1);
-      addObject(re, parent);
-    });
+    @FXML
+    private var width: SettableTextField? = null
 
-    rotation.textProperty().addListener((o, ol, val) -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      if (this.focusedObject == null) return;
-      if (val.length() == 0) {
-        this.focusedObject.setRotate(0);
-        reRenderAll();
-        return;
-      }
-      Double value = validate(val, false);
-      if (value == null) return;
-      this.focusedObject.setRotate(Double.parseDouble(fixAngle(value)));
-      reRenderAll();
-    });
+    @FXML
+    private var rotation: SettableTextField? = null
 
-    width.setChangeListener((o, ol, val) -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      if (this.focusedObject == null) return;
-      if (val.length() == 0) {
-        this.focusedObject.setWidth(5);
-        reRenderAll();
-        return;
-      }
-      Double value = validate(val, true);
-      if (value == null) return;
-      this.focusedObject.setWidthChecked(value);
-      reRenderAll();
-    });
-
-    height.textProperty().addListener((o, ol, val) -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      if (this.focusedObject == null) return;
-      if (val.length() == 0) {
-        this.focusedObject.setHeight(5);
-        reRenderAll();
-        return;
-      }
-      Double value = validate(val, true);
-      if (value == null) return;
-      this.focusedObject.setHeightChecked(value);
-      reRenderAll();
-    });
-
-    refractiveIndex.setChangeListener((o, ol, val) -> {
-      // Prevent changes when animating
-      if (Storage.isAnimating) return;
-      if (this.focusedObject == null) return;
-      if (!(this.focusedObject instanceof Refract)) return;
-      Refract object = (Refract) this.focusedObject;
-      if (val.length() == 0) {
-        object.setRefractiveIndex(1);
-        reRenderAll();
-        return;
-      }
-      Double value = validate(val, true);
-      if (value == null) return;
-      if (value < 1) return;
-      object.setRefractiveIndex(value);
-      reRenderAll();
-    });
-  }
-
-  public void addObject(OpticalRectangle object, Pane parent) {
-    opticalRectangles.add(object);
-    object.addOnStateChange(event1 -> {
-      changeFocus(object);
-      reRenderAll();
-    });
-    object.setOnDestroy(e -> {
-      if (this.focusedObject == object) this.focusedObject = null;
-      rotation.setText("-");
-      height.setText("-");
-      width.setText("-");
-      refractiveIndex.setText("-");
-      opticalRectangles.remove(object);
-      reRenderAll();
-      return null;
-    });
-    object.focusedProperty().addListener((o, ol, state) -> {
-      if (state) changeFocus(object);
-    });
-    reRenderAll();
-    parent.getChildren().add(object);
-    object.requestFocus();
-    changeFocus(object);
-  }
-
-
-  private void changeFocus(OpticalRectangle object) {
-    if (this.focusedObject != null) {
-      this.focusedObject.setStroke(Color.BLACK);
-      this.focusedObject.setStrokeWidth(1);
+    @FXML
+    private var height: SettableTextField? = null
+    private var focusedObject: OpticalRectangle? = null
+    fun initialize(parent: Pane) {
+        newMirror!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@EventHandler
+            val m = Mirror(parent.width / 2,
+                parent.height / 2 - 100,
+                20.0,
+                200.0,
+                parent,
+                0.0)
+            addObject(m, parent)
+        }
+        newWall!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@EventHandler
+            val w = Wall(parent.width / 2,
+                parent.height / 2 - 25,
+                20.0,
+                50.0,
+                parent,
+                0.0)
+            addObject(w, parent)
+        }
+        newRefractor!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@EventHandler
+            val re = Refract(parent.width / 2,
+                parent.height / 2 - 50,
+                20.0,
+                100.0,
+                parent,
+                0.0,
+                1.0)
+            addObject(re, parent)
+        }
+        rotation!!.textProperty()
+            .addListener { o: ObservableValue<out String>?, ol: String?, `val`: String ->
+                // Prevent changes when animating
+                if (Storage.isAnimating) return@addListener
+                if (focusedObject == null) return@addListener
+                if (`val`.length == 0) {
+                    focusedObject!!.rotate = 0.0
+                    reRenderAll()
+                    return@addListener
+                }
+                val value = validate(`val`, false) ?: return@addListener
+                focusedObject!!.rotate = fixAngle(value).toDouble()
+                reRenderAll()
+            }
+        width!!.setChangeListener { o: ObservableValue<out String>?, ol: String?, `val`: String ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@setChangeListener
+            if (focusedObject == null) return@setChangeListener
+            if (`val`.length == 0) {
+                focusedObject!!.width = 5.0
+                reRenderAll()
+                return@setChangeListener
+            }
+            val value = validate(`val`, true) ?: return@setChangeListener
+            focusedObject!!.setWidthChecked(value)
+            reRenderAll()
+        }
+        height!!.textProperty()
+            .addListener { o: ObservableValue<out String>?, ol: String?, `val`: String ->
+                // Prevent changes when animating
+                if (Storage.isAnimating) return@addListener
+                if (focusedObject == null) return@addListener
+                if (`val`.length == 0) {
+                    focusedObject!!.height = 5.0
+                    reRenderAll()
+                    return@addListener
+                }
+                val value = validate(`val`, true) ?: return@addListener
+                focusedObject!!.setHeightChecked(value)
+                reRenderAll()
+            }
+        refractiveIndex!!.setChangeListener { o: ObservableValue<out String>?, ol: String?, value: String ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@setChangeListener
+            if (focusedObject == null) return@setChangeListener
+            if (focusedObject !is Refract) return@setChangeListener
+            val obj = focusedObject as Refract
+            if (value.isEmpty()) {
+                obj.refractiveIndex = 1.0
+                reRenderAll()
+                return@setChangeListener
+            }
+            val value = validate(value, true) ?: return@setChangeListener
+            if (value < 1) return@setChangeListener
+            obj!!.refractiveIndex = value
+            reRenderAll()
+        }
     }
-    this.focusedObject = object;
-    this.focusedObject.setStroke(Color.BLUE);
-    this.focusedObject.setStrokeWidth(2);
-    rotation.setText(fixAngle(object.getRotate()));
-    width.setText(String.valueOf(object.getWidth()));
-    height.setText(String.valueOf(object.getHeight()));
-    if (object instanceof Refract) refractiveIndex.setText(String.valueOf(((Refract) object).getRefractiveIndex()));
-  }
 
-  private Double validate(String value, boolean positive) {
-    double res;
-    try {
-      res = Double.parseDouble(value);
-    } catch (NumberFormatException e) {
-      return null;
+    fun addObject(obj: InteractiveOpticalRectangle, parent: Pane) {
+        opticalRectangles.add(obj)
+        obj.addOnStateChange {
+            changeFocus(obj)
+            reRenderAll()
+        }
+        obj.setOnDestroy {
+            if (focusedObject === obj) focusedObject = null
+            rotation!!.text = "-"
+            height!!.text = "-"
+            width!!.text = "-"
+            refractiveIndex!!.text = "-"
+            opticalRectangles.remove(obj)
+            reRenderAll()
+        }
+        obj.focusedProperty()
+            .addListener { o: ObservableValue<out Boolean>?, ol: Boolean?, state: Boolean ->
+                if (state) changeFocus(obj)
+            }
+        reRenderAll()
+        parent.children.add(obj)
+        obj.requestFocus()
+        changeFocus(obj)
     }
-    if (positive && res < 0) return null;
-    return res;
-  }
+
+    private fun changeFocus(`object`: OpticalRectangle) {
+        if (focusedObject != null) {
+            focusedObject!!.stroke = Color.BLACK
+            focusedObject!!.strokeWidth = 1.0
+        }
+        focusedObject = `object`
+        focusedObject!!.stroke = Color.BLUE
+        focusedObject!!.strokeWidth = 2.0
+        rotation!!.text = fixAngle(`object`.rotate)
+        width!!.text = `object`.width.toString()
+        height!!.text = `object`.height.toString()
+        if (`object` is Refract) refractiveIndex!!.text =
+            `object`.refractiveIndex.toString()
+    }
+
+    private fun validate(value: String, positive: Boolean): Double? {
+        val res: Double
+        res = try {
+            value.toDouble()
+        } catch (e: NumberFormatException) {
+            return null
+        }
+        return if (positive && res < 0) null else res
+    }
 }
-
-

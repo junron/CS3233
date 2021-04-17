@@ -1,90 +1,95 @@
-package application;
+package application
 
-import javafx.LineAnimation;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
-import optics.PreciseJavaFXLine;
-import optics.light.Ray;
+import application.Storage.rerenderRay
+import javafx.LineAnimation
+import javafx.beans.value.ObservableValue
+import javafx.fxml.FXML
+import javafx.geometry.Point2D
+import javafx.scene.Node
+import javafx.scene.control.Alert
+import javafx.scene.control.TextField
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Line
+import optics.PreciseJavaFXLine
+import java.util.concurrent.ExecutionException
 
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
-public class AnimationTabController {
-  public TextField pixelsPerSecond;
-  private int pxRate = 300;
-  private Pane parent;
-  private LineAnimation currentAnimation;
-
-  public void initialize(Pane parent) {
-    this.parent = parent;
-    pixelsPerSecond.textProperty().addListener((o, k, val) -> {
-      int pxRate;
-      try {
-        pxRate = Integer.parseInt(val);
-      } catch (NumberFormatException e) {
-        return;
-      }
-      this.pxRate = pxRate;
-      if (this.currentAnimation != null) {
-        this.currentAnimation.setPxRate(this.pxRate);
-      }
-    });
-  }
-
-  public void startAnimation() {
-    Ray r = Storage.rayTabController.getFocusedRay();
-    if (r == null) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Animation error");
-      alert.setHeaderText("No ray selected");
-      alert.setContentText("Please select a ray to animate");
-      alert.showAndWait();
-      return;
+class AnimationTabController {
+    @FXML
+    var pixelsPerSecond: TextField? = null
+    private var pxRate = 300
+    lateinit var parent: Pane
+    private var currentAnimation: LineAnimation? = null
+    fun initialize(parent: Pane) {
+        this.parent = parent
+        pixelsPerSecond!!.textProperty()
+            .addListener { _: ObservableValue<out String>?, _: String?, value: String ->
+                val pxRate: Int = try {
+                    value.toInt()
+                } catch (e: NumberFormatException) {
+                    return@addListener
+                }
+                this.pxRate = pxRate
+                if (currentAnimation != null) {
+                    currentAnimation!!.setPxRate(this.pxRate)
+                }
+            }
     }
-    CompletableFuture<ArrayList<Node>> future = r.renderRays(Storage.opticalRectangles.deepClone());
-    ArrayList<Point2D> points;
-    try {
-      ArrayList<Node> nodes = future.get();
-      if (nodes == null) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Animation error");
-        alert.setHeaderText("Cannot animate to infinite");
-        alert.setContentText("Please resolve maximum reflection depth exceeded errors\n before animating");
-        alert.showAndWait();
-        return;
-      }
-      points = convertLineToPoints(nodes);
-    } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
-      return;
-    }
-    r.removeAllLines();
-    LineAnimation lineAnimation = new LineAnimation(points.toArray(Point2D[]::new), pxRate, r
-            .getColor(), parent, lineAnimation1 -> {
-      parent.getChildren().removeAll(lineAnimation1.getLines());
-      Storage.isAnimating = false;
-      currentAnimation = null;
-      Storage.rerenderRay(r);
-      return null;
-    });
-    //Lock movement while animating
-    Storage.isAnimating = true;
-    currentAnimation = lineAnimation;
-    lineAnimation.start();
-  }
 
-  static ArrayList<Point2D> convertLineToPoints(ArrayList<Node> lines) {
-    ArrayList<Point2D> result = new ArrayList<>();
-    for (Node line : lines) {
-      if (!(line instanceof PreciseJavaFXLine)) continue;
-      result.add(new Point2D(((Line) line).getStartX(), ((Line) line).getStartY()));
-      result.add(new Point2D(((Line) line).getEndX(), ((Line) line).getEndY()));
+    fun startAnimation() {
+        val r = Storage.rayTabController!!.focusedRay
+        if (r == null) {
+            val alert = Alert(Alert.AlertType.ERROR)
+            alert.title = "Animation error"
+            alert.headerText = "No ray selected"
+            alert.contentText = "Please select a ray to animate"
+            alert.showAndWait()
+            return
+        }
+        val future = r.renderRays(Storage.opticalRectangles.deepClone())
+        var points = mutableListOf<Point2D>()
+        try {
+            val nodes = future.get()
+            if (nodes == null) {
+                val alert = Alert(Alert.AlertType.ERROR)
+                alert.title = "Animation error"
+                alert.headerText = "Cannot animate to infinite"
+                alert.contentText =
+                    "Please resolve maximum reflection depth exceeded errors\n before animating"
+                alert.showAndWait()
+                return
+            }
+            points = convertLineToPoints(nodes)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            return
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+            return
+        }
+        r.removeAllLines()
+        val lineAnimation = LineAnimation(points, pxRate, r
+            .color, parent) { lineAnimation1: LineAnimation ->
+            parent.children.removeAll(lineAnimation1.lines)
+            Storage.isAnimating = false
+            currentAnimation = null
+            rerenderRay(r)
+        }
+        //Lock movement while animating
+        Storage.isAnimating = true
+        currentAnimation = lineAnimation
+        lineAnimation.start()
     }
-    return result;
-  }
+
+    companion object {
+        fun convertLineToPoints(lines: ArrayList<Node>): ArrayList<Point2D> {
+            val result = ArrayList<Point2D>()
+            for (line in lines) {
+                if (line !is PreciseJavaFXLine) continue
+                result.add(Point2D((line as Line).startX,
+                    (line as Line).startY))
+                result.add(Point2D((line as Line).endX, (line as Line).endY))
+            }
+            return result
+        }
+    }
 }

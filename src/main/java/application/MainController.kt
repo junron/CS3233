@@ -1,70 +1,74 @@
-package application;
+package application
 
-import javafx.AngleDisplay;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.AnchorPane;
-import math.Vectors;
+import application.Storage.offset
+import javafx.event.EventHandler
+import javafx.fxml.FXML
+import javafx.fxml.Initializable
+import javafx.geometry.Point2D
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.AnchorPane
+import math.Vectors
+import java.net.URL
+import java.util.*
+import java.util.function.Consumer
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.ResourceBundle;
+class MainController : Initializable {
+    @FXML
+    private var parent: AnchorPane? = null
 
-public class MainController implements Initializable {
+    @FXML
+    private var rayTabController: RayTabController? = null
 
-  @FXML
-  private AnchorPane parent;
+    @FXML
+    private var generalTabController: GeneralTabController? = null
 
-  @FXML
-  private RayTabController rayTabController;
-  @FXML
-  private GeneralTabController generalTabController;
-  @FXML
-  private OpticsTabController opticsTabController;
-  @FXML
-  private AnimationTabController animationTabController;
-  @FXML
-  private Point2D movementDelta;
+    @FXML
+    private var opticsTabController: OpticsTabController? = null
 
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    rayTabController.initialize(parent);
-    generalTabController.initialize(parent);
-    opticsTabController.initialize(parent);
-    animationTabController.initialize(parent);
-    Storage.opticsTabController = opticsTabController;
-    Storage.rayTabController = rayTabController;
-    Storage.parent = parent;
-    parent.setOnMousePressed(event -> {
-      if (!Storage.isAnimating) movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
-    });
-    parent.setOnMouseDragged(event -> {
-      if (Storage.isAnimating) return;
-      Point2D newOffset = new Point2D(event.getSceneX(), event.getSceneY()).subtract(movementDelta);
-      Storage.setOffset(Storage.getOffset().add(newOffset));
-      movementDelta = new Point2D(event.getSceneX(), event.getSceneY());
-    });
-    parent.setOnMouseMoved(event -> {
-      Point2D coords = new Point2D(event.getSceneX(), event.getSceneY());
-      ArrayList<Point2D> remove = new ArrayList<>();
-      for (Map.Entry<Point2D, AngleDisplay> entry : Storage.intersectionPoints.entrySet()) {
-        if (!parent.getChildren().contains(entry.getValue())) {
-          remove.add(entry.getKey());
-          continue;
+    @FXML
+    private var animationTabController: AnimationTabController? = null
+
+    @FXML
+    private var movementDelta: Point2D? = null
+    override fun initialize(location: URL, resources: ResourceBundle?) {
+        val parent = parent ?: return
+        rayTabController!!.initialize(parent)
+        generalTabController!!.initialize(parent)
+        opticsTabController!!.initialize(parent)
+        animationTabController!!.initialize(parent)
+        Storage.opticsTabController = opticsTabController
+        Storage.rayTabController = rayTabController
+        Storage.parent = parent
+        parent.onMousePressed = EventHandler { event: MouseEvent ->
+            if (!Storage.isAnimating) movementDelta =
+                Point2D(event.sceneX, event.sceneY)
         }
-        if (Vectors.distanceSquared(entry.getKey(), coords) < 400) {
-          entry.getValue().setVisible(true);
-          entry.getValue().setLayoutX(event.getSceneX() + 7);
-          entry.getValue().setLayoutY(event.getSceneY() + 7);
-        } else {
-          entry.getValue().setVisible(false);
+        parent.onMouseDragged = EventHandler { event: MouseEvent ->
+            if (Storage.isAnimating) return@EventHandler
+            val newOffset =
+                Point2D(event.sceneX, event.sceneY).subtract(movementDelta)
+            offset = offset.add(newOffset)
+            movementDelta = Point2D(event.sceneX, event.sceneY)
         }
-      }
-      remove.forEach(point2D -> Storage.intersectionPoints.remove(point2D));
-    });
-
-  }
+        parent.onMouseMoved = EventHandler { event: MouseEvent ->
+            val coords = Point2D(event.sceneX, event.sceneY)
+            val remove = ArrayList<Point2D>()
+            for ((key, value) in Storage.intersectionPoints) {
+                if (!parent.children.contains(value)) {
+                    remove.add(key)
+                    continue
+                }
+                if (Vectors.distanceSquared(key, coords) < 400) {
+                    value.isVisible = true
+                    value.layoutX = event.sceneX + 7
+                    value.layoutY = event.sceneY + 7
+                } else {
+                    value.isVisible = false
+                }
+            }
+            remove.forEach(Consumer { point2D: Point2D? ->
+                Storage.intersectionPoints.remove(point2D)
+            })
+        }
+    }
 }
-
