@@ -1,6 +1,7 @@
 package application
 
 import application.Storage.offset
+import application.Storage.rays
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -8,6 +9,9 @@ import javafx.geometry.Point2D
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import math.Vectors
+import utils.minus
+import utils.plus
+import utils.times
 import java.net.URL
 import java.util.*
 import java.util.function.Consumer
@@ -28,8 +32,7 @@ class MainController : Initializable {
     @FXML
     private var animationTabController: AnimationTabController? = null
 
-    @FXML
-    private var movementDelta: Point2D? = null
+    private var prevLocation: Point2D = Point2D(0.0, 0.0)
     override fun initialize(location: URL, resources: ResourceBundle?) {
         val parent = parent ?: return
         rayTabController!!.initialize(parent)
@@ -40,15 +43,18 @@ class MainController : Initializable {
         Storage.rayTabController = rayTabController
         Storage.parent = parent
         parent.onMousePressed = EventHandler { event: MouseEvent ->
-            if (!Storage.isAnimating) movementDelta =
+            if (!Storage.isAnimating) prevLocation =
                 Point2D(event.sceneX, event.sceneY)
         }
         parent.onMouseDragged = EventHandler { event: MouseEvent ->
             if (Storage.isAnimating) return@EventHandler
             val newOffset =
-                Point2D(event.sceneX, event.sceneY).subtract(movementDelta)
-            offset = offset.add(newOffset)
-            movementDelta = Point2D(event.sceneX, event.sceneY)
+                (Point2D(event.sceneX, event.sceneY) - prevLocation) * 5.0
+            offset += newOffset
+            prevLocation = Point2D(event.sceneX, event.sceneY)
+            rays.forEach { 
+                it.update(it.realLine.copy(), it.color)
+            }
         }
         parent.onMouseMoved = EventHandler { event: MouseEvent ->
             val coords = Point2D(event.sceneX, event.sceneY)

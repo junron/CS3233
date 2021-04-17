@@ -135,10 +135,6 @@ class OpticsTabController {
 
     fun addObject(obj: InteractiveOpticalRectangle, parent: Pane) {
         opticalRectangles.add(obj)
-        obj.addOnStateChange {
-            changeFocus(obj)
-            reRenderAll()
-        }
         obj.setOnDestroy {
             if (focusedObject === obj) focusedObject = null
             rotation!!.text = "-"

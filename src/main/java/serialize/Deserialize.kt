@@ -31,9 +31,7 @@ object Deserialize {
                 re
             }
             'r' -> {
-                val r = Ray(PreciseJavaFXLine(Line()), parent!!)
-                r.deserialize(obj)
-                r
+                return Ray.deserialize(obj, parent)
             }
             else -> null
         }

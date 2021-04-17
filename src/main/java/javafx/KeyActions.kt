@@ -3,6 +3,7 @@ package javafx
 import application.Storage
 import javafx.event.Event
 import javafx.event.EventHandler
+import javafx.geometry.Point2D
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
@@ -11,23 +12,24 @@ import optics.InteractiveOpticalRectangle
 import optics.light.RayCircle
 import optics.objects.OpticalRectangle
 import optics.objects.Refract
+import utils.plus
+import utils.toRadians
 
 class KeyActions(
     private val shape: Shape,
-    onRotate: (KeyEvent)->Unit,
-    onDestroy: (Event)->Unit,
-    parent: Pane
+    parent: Pane,
+    onDestroy: () -> Unit,
 ) {
     init {
         shape.onMouseClicked =
-            EventHandler { event: MouseEvent? -> shape.requestFocus() }
+            EventHandler { shape.requestFocus() }
         shape.onKeyPressed = EventHandler { event: KeyEvent ->
             // Prevent changes when animating
             if (Storage.isAnimating) return@EventHandler
             val eventCode = event.code.toString()
             if (eventCode == "DELETE") {
                 parent.children.remove(shape)
-                onDestroy(event)
+                onDestroy()
             }
             if (event.isControlDown) {
                 if (eventCode == "D") {
@@ -45,21 +47,25 @@ class KeyActions(
                 val obj = shape
                 if (eventCode == "ADD" || event.isShiftDown && eventCode == "EQUALS") {
                     obj.refractiveIndex = obj.refractiveIndex + 0.01
-                    onRotate(event)
+                    Storage.reRenderAll()
                     return@EventHandler
                 } else if (eventCode == "SUBTRACT" || eventCode == "MINUS") {
                     obj.refractiveIndex = obj.refractiveIndex - 0.01
-                    onRotate(event)
+                    Storage.reRenderAll()
                     return@EventHandler
                 }
             }
             if (event.isShiftDown) {
-                //        Move object instead of rotating it
+                // Move object instead of rotating it
                 when (eventCode) {
                     "LEFT" -> {
                         if (shape is RayCircle) {
                             val r = shape.ray
-                            r.setScreenX(shape.centerX - 1)
+                            val newRealLine =
+                                r.realLine.copy(start = r.realLine.start + Point2D(
+                                    -1.0,
+                                    0.0))
+                            r.update(newRealLine)
                         } else if (shape is OpticalRectangle) {
                             shape.setScreenX(shape.x - 1)
                         }
@@ -67,7 +73,11 @@ class KeyActions(
                     "RIGHT" -> {
                         if (shape is RayCircle) {
                             val r = shape.ray
-                            r.setScreenX(shape.centerX + 1)
+                            val newRealLine =
+                                r.realLine.copy(start = r.realLine.start + Point2D(
+                                    1.0,
+                                    0.0))
+                            r.update(newRealLine)
                         } else if (shape is OpticalRectangle) {
                             shape.setScreenX(shape.x + 1)
                         }
@@ -75,7 +85,11 @@ class KeyActions(
                     "UP" -> {
                         if (shape is RayCircle) {
                             val r = shape.ray
-                            r.setScreenY(shape.centerY - 1)
+                            val newRealLine =
+                                r.realLine.copy(start = r.realLine.start + Point2D(
+                                    0.0,
+                                    -1.0))
+                            r.update(newRealLine)
                         } else if (shape is OpticalRectangle) {
                             shape.setScreenY(shape.y - 1)
                         }
@@ -83,25 +97,28 @@ class KeyActions(
                     "DOWN" -> {
                         if (shape is RayCircle) {
                             val r = shape.ray
-                            r.setScreenY(shape.centerY + 1)
+                            val newRealLine =
+                                r.realLine.copy(start = r.realLine.start + Point2D(
+                                    0.0,
+                                    1.0))
+                            r.update(newRealLine)
                         } else if (shape is OpticalRectangle) {
                             shape.setScreenY(shape.y + 1)
                         }
                     }
                     else -> return@EventHandler
                 }
-                onRotate(event)
+                Storage.reRenderAll()
                 return@EventHandler
             }
             if (event.isAltDown) {
                 //        Move object instead of rotating it
-                val optShape: OpticalRectangle
-                optShape = if (shape is OpticalRectangle) {
-                    shape
-                } else {
-                    onRotate(event)
-                    return@EventHandler
-                }
+                val optShape: OpticalRectangle =
+                    if (shape is OpticalRectangle) {
+                        shape
+                    } else {
+                        return@EventHandler
+                    }
                 when (eventCode) {
                     "LEFT" -> {
                         optShape.setWidthChecked(optShape.width - 1)
@@ -117,15 +134,34 @@ class KeyActions(
                     }
                     else -> return@EventHandler
                 }
-                onRotate(event)
+                Storage.reRenderAll()
+
                 return@EventHandler
             }
             val rotate = shape.rotate
             if (eventCode == "LEFT") {
+                val deltaAngle = if (event.isControlDown) 45 else 1
                 //        Rotate anticlockwise
+                if (shape is RayCircle) {
+                    val r = shape.ray
+                    val newRealLine =
+                        r.realLine.copyWithAngle(r.realLine.angle + deltaAngle.toDouble()
+                            .toRadians())
+                    r.update(newRealLine)
+                    return@EventHandler
+                }
                 shape.rotate =
-                    (rotate - if (event.isControlDown) 45 else 1) % 360
+                    (rotate - deltaAngle) % 360
             } else if (eventCode == "RIGHT") {
+                val deltaAngle = if (event.isControlDown) 45 else 1
+                if (shape is RayCircle) {
+                    val r = shape.ray
+                    val newRealLine =
+                        r.realLine.copyWithAngle(r.realLine.angle - deltaAngle.toDouble()
+                            .toRadians())
+                    r.update(newRealLine)
+                    return@EventHandler
+                }
                 //        Clockwise
                 shape.rotate =
                     (rotate + if (event.isControlDown) 45 else 1) % 360
@@ -136,7 +172,7 @@ class KeyActions(
             } else {
                 return@EventHandler
             }
-            onRotate(event)
+            Storage.reRenderAll()
         }
     }
 }

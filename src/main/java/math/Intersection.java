@@ -64,11 +64,11 @@ public class Intersection {
             .constructWithMagnitude(v.getAngle() - Math.PI / 2 - (isInObject ? Math.PI : 0), 2));
   }
 
-  private static double calculateAngleFromNormal(Ray r, Line intersectionLine, boolean isInObject) {
-    double intersectionAngle = Math.PI * 2 - r.getCurrentJavaFXLine().getPreciseAngle();
-    Vectors v = Vectors.lineToVector(intersectionLine);
-    return Math.PI - intersectionAngle - (v.getAngle() - Math.PI / 2 - (isInObject ? Math.PI : 0));
-  }
+  // private static double calculateAngleFromNormal(Ray r, Line intersectionLine, boolean isInObject) {
+  //   double intersectionAngle = Math.PI * 2 - r.getCurrentJavaFXLine().getPreciseAngle();
+  //   Vectors v = Vectors.lineToVector(intersectionLine);
+  //   return Math.PI - intersectionAngle - (v.getAngle() - Math.PI / 2 - (isInObject ? Math.PI : 0));
+  // }
 
   private static ArrayList<Line> generateLineFromPoints(ArrayList<Point2D> points) {
     ArrayList<Line> res = new ArrayList<>();

@@ -35,10 +35,7 @@ object Storage {
 
     @JvmField
     var isAnimating = false
-
-    @JvmField
-    var darkTheme = false
-
+    
     @JvmField
     var parent: Pane? = null
     private var isMaximumDepthExceeded = false
@@ -49,10 +46,9 @@ object Storage {
             }
             prevRender = System.currentTimeMillis()
             opticalRectangles.forEach(Consumer { obj: OpticalRectangle -> obj.reposition() })
-            rays.forEach(Consumer { ray: Ray ->
-                ray.reposition()
+            rays.forEach { ray: Ray ->
                 rerenderRay(ray)
-            })
+            }
             field = offset
         }
 
@@ -78,7 +74,7 @@ object Storage {
         val futures = ArrayList<CompletableFuture<ArrayList<Node>>>()
         val lines = ArrayList<Node>()
         for (r in rays) {
-            lines.addAll(r.lines)
+            lines.addAll(r.lines.map { it.screenLine })
             futures.add(r.renderRays(opticalRectangles.deepClone()))
         }
         //Remove old lines
@@ -94,8 +90,7 @@ object Storage {
     }
 
     private fun handleRender(future: CompletableFuture<ArrayList<Node>>): Boolean {
-        val result: ArrayList<Node>
-        result = try {
+        val result = try {
             future.get()
         } catch (e: InterruptedException) {
             e.printStackTrace()
@@ -104,7 +99,7 @@ object Storage {
             e.printStackTrace()
             return true
         }
-        if (result == null) {
+        if (result.isEmpty()) {
             //          Cancel extra alerts
             if (isMaximumDepthExceeded) return true
             isMaximumDepthExceeded = true

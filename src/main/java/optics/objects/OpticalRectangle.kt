@@ -51,12 +51,11 @@ abstract class OpticalRectangle(
     abstract fun transform(r: Ray, iPoint: Point2D): TransformData?
     abstract fun drawNormal(iData: IntersectionSideData, iPoint: Point2D): Line?
 
-
     fun serialize(id: Char): String {
         return "$id|$realX|$realY|$width|$height|$rotate"
     }
 
-    override fun deserialize(string: String) {
+    open fun deserialize(string: String) {
         val parts = string.split("\\|").toTypedArray()
         realX = parts[1].toDouble()
         realY = parts[2].toDouble()

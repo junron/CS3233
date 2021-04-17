@@ -21,47 +21,37 @@ class Wall(
     width: Double,
     height: Double,
     val parent: Pane,
-    rotation: Double
+    rotation: Double,
 ) : InteractiveOpticalRectangle(x, y, width, height) {
-    private val onStateChange = mutableListOf<(Event)->Unit>()
-    private var onDestroy: ((Event)->Unit)? = null
-    private fun triggerStateChange(e: Event) {
-        for (handler in onStateChange) {
-            handler(e)
-        }
-    }
+    private var onDestroy: (() -> Unit)? = null
 
-    private fun triggerDestroy(e: Event) {
-        onDestroy?.invoke(e)
+    private fun triggerDestroy() {
+        onDestroy?.invoke()
     }
 
     override fun transform(r: Ray, iPoint: Point2D): TransformData? {
-        val l = r.currentJavaFXLine
-        l.endX = iPoint.x
-        l.endY = iPoint.y
+//        val l = r.currentJavaFXLine
+//        l.endX = iPoint.x
+//        l.endY = iPoint.y
         return null
     }
 
     override fun getIntersectionSideData(
         iPoint: Point2D,
         origin: Point2D,
-        r: Ray
+        r: Ray,
     ): IntersectionSideData? {
         return null
     }
 
     override fun drawNormal(
         iData: IntersectionSideData,
-        iPoint: Point2D
+        iPoint: Point2D,
     ): Line? {
         return null
     }
 
-    override fun addOnStateChange(handler: (Event)->Unit) {
-        onStateChange.add(handler)
-    }
-
-    override fun setOnDestroy(onDestroy: (Event)->Unit) {
+    override fun setOnDestroy(onDestroy: () -> Unit) {
         this.onDestroy = onDestroy
     }
 
@@ -87,13 +77,11 @@ class Wall(
         fill = Color.rgb(180, 179, 176)
         stroke = Color.BLACK
         realParent = parent
-        Draggable(this,
-            { e: Event -> triggerStateChange(e) },
-            { e: Event -> triggerDestroy(e) },
-            parent)
-        KeyActions(this,
-            { e: KeyEvent -> triggerStateChange(e) },
-            { e: Event -> triggerDestroy(e) },
-            parent)
+        Draggable(this, parent) {
+            triggerDestroy()
+        }
+        KeyActions(this, parent) {
+            triggerDestroy()
+        }
     }
 }

@@ -17,7 +17,6 @@ interface Interactive<T : Interactive<T>> : Serializable {
         r: Ray
     ): IntersectionSideData?
 
-    fun addOnStateChange(handler: (Event) -> Unit)
-    fun setOnDestroy(onDestroy: (Event) -> Unit)
+    fun setOnDestroy(onDestroy: () -> Unit)
     fun cloneObject(): T
 }

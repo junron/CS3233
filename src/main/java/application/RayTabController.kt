@@ -7,15 +7,16 @@ import javafx.beans.value.ObservableValue
 import javafx.event.Event
 import javafx.event.EventHandler
 import javafx.fxml.FXML
+import javafx.geometry.Point2D
 import javafx.scene.control.Button
 import javafx.scene.control.ColorPicker
 import javafx.scene.control.TextField
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
-import optics.PreciseJavaFXLine
+import optics.RealLine
 import optics.light.Ray
-import java.util.function.Function
+import utils.toDegrees
 
 class RayTabController {
     @FXML
@@ -34,11 +35,9 @@ class RayTabController {
         newRay!!.onMouseClicked = EventHandler { e: MouseEvent? ->
             // Prevent changes when animating
             if (Storage.isAnimating) return@EventHandler
-            val l =
-                PreciseJavaFXLine(parent.width / 2, parent.height / 2, parent
-                    .width / 2 + 2500, parent.height / 2)
-            l.preciseAngle = 0.0
-            val r = Ray(l, parent)
+            val l = RealLine(Point2D(parent.width / 2, parent.height / 2),
+                Point2D(parent.width / 2 + 25000, parent.height / 2))
+            val r = Ray(l, Color.BLACK, parent)
             createRay(r)
         }
         rayRotation!!.textProperty()
@@ -46,10 +45,10 @@ class RayTabController {
                 // Prevent changes when animating
                 if (Storage.isAnimating) return@addListener
                 if (strVal == expectedText) return@addListener
+                val ray = focusedRay ?: return@addListener
                 if (strVal.isEmpty()) {
-                    if (focusedRay == null) return@addListener
-                    focusedRay!!.angle = 0.0
-                    rerenderRay(focusedRay!!)
+                    val newRealLine = ray.realLine.copyWithAngle(0.0)
+                    ray.update(newRealLine)
                     return@addListener
                 }
                 val value: Double = try {
@@ -57,55 +56,52 @@ class RayTabController {
                 } catch (e: NumberFormatException) {
                     return@addListener
                 }
-                if (focusedRay == null) return@addListener
-                focusedRay!!.angle = fixAngle(value).toDouble()
-                rerenderRay(focusedRay!!)
+                val newRealLine = ray.realLine.copyWithAngle(value)
+                ray.update(newRealLine)
             }
         rayColor!!.valueProperty()
-            .addListener { o: ObservableValue<out Color>?, ol: Color?, color: Color ->
+            .addListener { _: ObservableValue<out Color>?, _: Color?, color: Color ->
                 // Prevent changes when animating
                 if (Storage.isAnimating) return@addListener
-                if (focusedRay == null) return@addListener
+                val ray = focusedRay ?: return@addListener
                 if (color == expectedColor) return@addListener
-                focusedRay!!.color = color
-                changeFocus(focusedRay)
-                reRenderAll()
+                ray.update(newColor = color)
             }
     }
 
     fun createRay(r: Ray) {
         changeFocus(r)
         rays.add(r)
-        r.setOnDestroy { e: Event? ->
+        r.setOnDestroy {
             rays.remove(r)
         }
-        r.addOnStateChange { e: Event? ->
-            changeFocus(r)
-            rerenderRay(r)
+        r.addOnStateChange {
+            changeFocus(it)
+            rerenderRay(it)
         }
         r.setOnFocusStateChanged { state: Boolean ->
             if (state) changeFocus(r)
         }
-        rerenderRay(r)
-        expectedText = fixAngle(r.angle)
+        expectedText = fixAngle(r.realLine.angle.toDegrees())
         focusedRay = r
         expectedColor = Color.BLACK
         rayRotation!!.text = expectedText
         rayColor!!.valueProperty().value = Color.BLACK
+        rerenderRay(r)
         r.requestFocus()
     }
 
-    private fun changeFocus(r: Ray?) {
+    private fun changeFocus(r: Ray) {
         if (focusedRay != null) {
             focusedRay!!.circle.stroke = Color.BLACK
             focusedRay!!.circle.strokeWidth = 1.0
         }
         focusedRay = r
-        focusedRay!!.circle.stroke = Color.BLUE
-        focusedRay!!.circle.strokeWidth = 2.0
-        expectedText = fixAngle(r!!.angle)
-        expectedColor = focusedRay!!.color
-        rayColor!!.value = focusedRay!!.color
+        r.circle.stroke = Color.BLUE
+        r.circle.strokeWidth = 2.0
+        expectedText = fixAngle(r.realLine.angle.toDegrees())
+        expectedColor = r.color
+        rayColor!!.value = r.color
         rayRotation!!.text = expectedText
     }
 
