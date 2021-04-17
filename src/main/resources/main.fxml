@@ -12,9 +12,6 @@
         <Tab closable="false" text="Animation">
             <fx:include fx:id="animationTab" source="animation.fxml"/>
         </Tab>
-        <Tab closable="false" text="Collab">
-            <fx:include fx:id="collabTab" source="server.fxml"/>
-        </Tab>
         <Tab closable="false" text="Rays">
             <fx:include fx:id="rayTab" source="raytab.fxml"/>
         </Tab>

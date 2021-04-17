@@ -2,7 +2,7 @@ package serialize;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.light.Ray;
 import optics.objects.Mirror;
 import optics.objects.OpticalRectangle;
@@ -31,7 +31,7 @@ public class Deserialize {
         return re;
       }
       case 'r': {
-        Ray r = new Ray(new PreciseLine(new Line()), parent);
+        Ray r = new Ray(new PreciseJavaFXLine(new Line()), parent);
         r.deserialize(object);
         return r;
       }
@@ -43,9 +43,9 @@ public class Deserialize {
   public static void deserializeAndAdd(String object, Pane parent) {
     Serializable serializable = deserialize(object, parent);
     if (serializable instanceof Ray) {
-      rayTabController.createRay((Ray) serializable, false);
+      rayTabController.createRay((Ray) serializable);
     } else if (serializable instanceof OpticalRectangle) {
-      opticsTabController.addObject((OpticalRectangle) serializable, parent, false);
+      opticsTabController.addObject((OpticalRectangle) serializable, parent);
     }
   }
 }

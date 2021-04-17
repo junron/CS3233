@@ -3,7 +3,7 @@ package math;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.*;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.light.Ray;
 import utils.Geometry;
 
@@ -26,7 +26,7 @@ public class Intersection {
     return getIntersectionPoint(intersection, origin, true);
   }
 
-  public static double getObjectIntersectionAngle(IntersectionSideData iData, PreciseLine line) {
+  public static double getObjectIntersectionAngle(IntersectionSideData iData, PreciseJavaFXLine line) {
     //    Make angle in range [-180,180]
     double lineAngle = line.getPreciseAngle() - Math.PI;
     double normalAngle = iData.normalAngle;
@@ -65,7 +65,7 @@ public class Intersection {
   }
 
   private static double calculateAngleFromNormal(Ray r, Line intersectionLine, boolean isInObject) {
-    double intersectionAngle = Math.PI * 2 - r.getCurrentLine().getPreciseAngle();
+    double intersectionAngle = Math.PI * 2 - r.getCurrentJavaFXLine().getPreciseAngle();
     Vectors v = Vectors.lineToVector(intersectionLine);
     return Math.PI - intersectionAngle - (v.getAngle() - Math.PI / 2 - (isInObject ? Math.PI : 0));
   }

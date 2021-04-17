@@ -1,0 +1,4 @@
+package optics
+
+class RealLine {
+}

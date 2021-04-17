@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import networking.NetworkingClient;
 import optics.light.Ray;
 import optics.objects.OpticalRectangle;
 import utils.OpticsList;
@@ -54,16 +53,6 @@ public class Storage {
     //Remove old lines
     ray.removeAllLines();
     handleRender(future);
-  }
-
-  public static void updateRay(Ray r, int index) {
-    Ray old = rays.get(index);
-    r.clone(old);
-  }
-
-  public static void updateOpticalRectangle(OpticalRectangle rectangle, int index) {
-    OpticalRectangle outGoing = opticalRectangles.get(index);
-    rectangle.clone(outGoing);
   }
 
   public static void reRenderAll() {
@@ -126,37 +115,15 @@ public class Storage {
     return false;
   }
 
-  public static void removeOptical(int i) {
-    OpticalRectangle old = opticalRectangles.get(i);
-    parent.getChildren().remove(old);
-    opticalRectangles.remove(i);
-  }
-
-  public static void removeRay(int i) {
-    Ray old = rays.get(i);
-    old.destroy();
-    rays.remove(i);
-  }
-
-  static void clearAll(boolean sync) {
+  static void clearAll() {
     offset = new Point2D(0, 0);
     parent.getChildren().removeAll(opticalRectangles);
-    if (sync) {
-      for (int i = 0; i < opticalRectangles.size(); i++) {
-        NetworkingClient.removeObject("", 0);
-      }
-    }
     for (Ray r : rays) {
-      if (sync) NetworkingClient.removeObject("r", 0);
       r.destroy();
     }
     opticalRectangles.clear();
     rays.clear();
     reRenderAll();
-  }
-
-  static void clearAll() {
-    clearAll(true);
   }
 }
 

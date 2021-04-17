@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.light.Ray;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class AnimationTabController {
   static ArrayList<Point2D> convertLineToPoints(ArrayList<Node> lines) {
     ArrayList<Point2D> result = new ArrayList<>();
     for (Node line : lines) {
-      if (!(line instanceof PreciseLine)) continue;
+      if (!(line instanceof PreciseJavaFXLine)) continue;
       result.add(new Point2D(((Line) line).getStartX(), ((Line) line).getStartY()));
       result.add(new Point2D(((Line) line).getEndX(), ((Line) line).getEndY()));
     }

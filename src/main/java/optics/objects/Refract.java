@@ -12,7 +12,7 @@ import javafx.scene.shape.Line;
 import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
@@ -73,7 +73,7 @@ public class Refract extends OpticalRectangle {
 
   @Override
   public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseLine l = r.getCurrentLine();
+    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
     //    System.out.println(Math.toDegrees(l.getPreciseAngle()));
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
@@ -93,7 +93,7 @@ public class Refract extends OpticalRectangle {
       r.setInRefractiveMaterial(true);
     }
     Vectors vect = Vectors.constructWithMagnitude(refAngle + normalAngle - Math.PI, 250000);
-    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
+    PreciseJavaFXLine pLine = new PreciseJavaFXLine(Geometry.createLineFromPoints(iPoint, iPoint.add(vect)));
     pLine.setPreciseAngle(refAngle + normalAngle - Math.PI);
     double iAngle = Math.toDegrees(incidence) % 360;
     if (iAngle > 180) iAngle = 360 - iAngle;
@@ -108,8 +108,8 @@ public class Refract extends OpticalRectangle {
   //  object to the air. The ray is internally reflected within the object
   private TransformData totalInternalReflection(Point2D iPoint, Ray r, IntersectionSideData iData) {
     double normalAngle = iData.normalAngle;
-    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, r.getCurrentLine());
-    PreciseLine pLine = new PreciseLine(Geometry.createLineFromPoints(iPoint, iPoint
+    double intersectionAngle = Intersection.getObjectIntersectionAngle(iData, r.getCurrentJavaFXLine());
+    PreciseJavaFXLine pLine = new PreciseJavaFXLine(Geometry.createLineFromPoints(iPoint, iPoint
             .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 250000))));
     pLine.setPreciseAngle(normalAngle - intersectionAngle);
     r.setInRefractiveMaterial(true);

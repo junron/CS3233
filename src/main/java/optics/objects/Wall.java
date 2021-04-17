@@ -9,7 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import math.IntersectionSideData;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.TransformData;
 import optics.light.Ray;
 
@@ -42,7 +42,7 @@ public class Wall extends OpticalRectangle {
 
   @Override
   public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseLine l = r.getCurrentLine();
+    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     return null;

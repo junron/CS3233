@@ -26,7 +26,6 @@ public class MainController implements Initializable {
   @FXML
   private AnimationTabController animationTabController;
   @FXML
-  private ServerTabController collabTabController;
   private Point2D movementDelta;
 
   @Override
@@ -35,7 +34,6 @@ public class MainController implements Initializable {
     generalTabController.initialize(parent);
     opticsTabController.initialize(parent);
     animationTabController.initialize(parent);
-    collabTabController.initialize(parent);
     Storage.opticsTabController = opticsTabController;
     Storage.rayTabController = rayTabController;
     Storage.parent = parent;

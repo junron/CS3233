@@ -36,10 +36,6 @@ dependencies {
     testCompile "org.testfx:openjfx-monocle:jdk-11+26"
     testCompile 'org.testfx:testfx-junit:4.0+'
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "io.ktor:ktor-client-core:$ktorVersion"
-    implementation "io.ktor:ktor-client-cio:$ktorVersion"
-    implementation "io.ktor:ktor-client-websockets:$ktorVersion"
-    implementation 'com.google.code.gson:gson:2.8.5'
 }
 shadowJar {
     baseName = 'lightproj'

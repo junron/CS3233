@@ -13,7 +13,7 @@ import javafx.scene.shape.Shape;
 import math.Intersection;
 import math.IntersectionSideData;
 import math.Vectors;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.TransformData;
 import optics.light.Ray;
 import utils.Geometry;
@@ -63,14 +63,14 @@ public class Mirror extends OpticalRectangle {
 
   @Override
   public TransformData transform(Ray r, Point2D iPoint) {
-    PreciseLine l = r.getCurrentLine();
+    PreciseJavaFXLine l = r.getCurrentJavaFXLine();
     l.setEndX(iPoint.getX());
     l.setEndY(iPoint.getY());
     IntersectionSideData iData = getIntersectionSideData(iPoint, new Point2D(l.getStartX(), l.getStartY()), r);
     ArrayList<Double> failedAngles = new ArrayList<>();
     double normalAngle;
     double intersectionAngle = 0;
-    PreciseLine preciseLine = null;
+    PreciseJavaFXLine preciseJavaFXLine = null;
 
     for (int i = 0; i < 5; i++) {
       if (iData == null || iData.normalVector == null) {
@@ -81,12 +81,12 @@ public class Mirror extends OpticalRectangle {
       intersectionAngle = Intersection.getObjectIntersectionAngle(iData, l);
       Line newLine = Geometry.createLineFromPoints(iPoint, iPoint
               .add(Vectors.constructWithMagnitude(normalAngle - intersectionAngle, 250000)));
-      preciseLine = new PreciseLine(newLine);
-      preciseLine.setPreciseAngle(normalAngle - intersectionAngle);
+      preciseJavaFXLine = new PreciseJavaFXLine(newLine);
+      preciseJavaFXLine.setPreciseAngle(normalAngle - intersectionAngle);
 
       // Ray is going through the mirror
       // Something is wrong, abort
-      if (Intersection.hasExitPoint(Shape.intersect(preciseLine, this), iPoint)) {
+      if (Intersection.hasExitPoint(Shape.intersect(preciseJavaFXLine, this), iPoint)) {
         System.out.println("Null");
         return null;
         // failedAngles.add(iData.normalAngle);
@@ -104,7 +104,7 @@ public class Mirror extends OpticalRectangle {
     else if (angle < -180) angle += 360;
     AngleDisplay angleDisplay = new AngleDisplay("Incidence", String.format("%.1f", -angle), "Reflection", String
             .format("%.1f", angle));
-    return new TransformData(preciseLine, angleDisplay, iData);
+    return new TransformData(preciseJavaFXLine, angleDisplay, iData);
   }
 
   @Override

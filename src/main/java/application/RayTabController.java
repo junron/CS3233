@@ -6,8 +6,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import networking.NetworkingClient;
-import optics.PreciseLine;
+import optics.PreciseJavaFXLine;
 import optics.light.Ray;
 
 import static application.Storage.*;
@@ -29,7 +28,7 @@ public class RayTabController {
     newRay.setOnMouseClicked(e -> {
       // Prevent changes when animating
       if (Storage.isAnimating) return;
-      PreciseLine l = new PreciseLine(parent.getWidth() / 2, parent.getHeight() / 2, parent
+      PreciseJavaFXLine l = new PreciseJavaFXLine(parent.getWidth() / 2, parent.getHeight() / 2, parent
               .getWidth() / 2 + 2500, parent.getHeight() / 2);
       l.setPreciseAngle(0);
       Ray r = new Ray(l, parent);
@@ -53,7 +52,6 @@ public class RayTabController {
       }
       if (this.focusedRay == null) return;
       this.focusedRay.setAngle(Double.parseDouble(fixAngle(value)));
-      NetworkingClient.updateObject(this.focusedRay, rays.indexOf(this.focusedRay));
       rerenderRay(this.focusedRay);
     });
     rayColor.valueProperty().addListener((o, ol, color) -> {
@@ -62,22 +60,19 @@ public class RayTabController {
       if (this.focusedRay == null) return;
       if (color.equals(expectedColor)) return;
       this.focusedRay.setColor(color);
-      NetworkingClient.updateObject(this.focusedRay, rays.indexOf(this.focusedRay));
       changeFocus(this.focusedRay);
       reRenderAll();
     });
   }
 
-  public void createRay(Ray r, boolean syncToServer) {
+  public void createRay(Ray r) {
     changeFocus(r);
     rays.add(r);
     r.setOnDestroy(e -> {
-      NetworkingClient.removeObject("r", rays.indexOf(r));
       rays.remove(r);
       return null;
     });
     r.addOnStateChange(e -> {
-      NetworkingClient.updateObject(r, rays.indexOf(r));
       changeFocus(r);
       rerenderRay(r);
     });
@@ -85,7 +80,6 @@ public class RayTabController {
       if (state) changeFocus(r);
       return null;
     });
-    if (syncToServer) NetworkingClient.addObject(r);
     rerenderRay(r);
     this.expectedText = fixAngle(r.getAngle());
     this.focusedRay = r;
@@ -94,11 +88,7 @@ public class RayTabController {
     rayColor.valueProperty().setValue(Color.BLACK);
     r.requestFocus();
   }
-
-  private void createRay(Ray r) {
-    createRay(r, true);
-  }
-
+  
   private void changeFocus(Ray r) {
     if (this.focusedRay != null) {
       this.focusedRay.getCircle().setStroke(Color.BLACK);

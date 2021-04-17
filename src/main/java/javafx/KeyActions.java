@@ -30,10 +30,10 @@ public class KeyActions {
         if (eventCode.equals("D")) {
           if (shape instanceof OpticalRectangle) {
             OpticalRectangle newRectangle = ((OpticalRectangle) shape).clone(true);
-            Storage.opticsTabController.addObject(newRectangle, ((OpticalRectangle) shape).getRealParent(), true);
+            Storage.opticsTabController.addObject(newRectangle, ((OpticalRectangle) shape).getRealParent());
           } else if (shape instanceof RayCircle) {
             Ray newRay = ((RayCircle) shape).clone();
-            Storage.rayTabController.createRay(newRay, true);
+            Storage.rayTabController.createRay(newRay);
           }
         }
       }
