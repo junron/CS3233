@@ -54,7 +54,6 @@ class Draggable(
                     Point2D((shape as Circle).centerX - event.sceneX,
                         (shape as Circle)
                             .centerY - event.sceneY)
-                println("Set $movementDelta")
 
                 event.consume()
             }
@@ -74,7 +73,6 @@ class Draggable(
                 val newRealLine =
                     r.realLine.copy(start = r.realLine.start - movementDelta,
                         end = r.realLine.end - movementDelta)
-                println(movementDelta)
                 r.update(newRealLine)
                 movementDelta =
                     Point2D(shape.centerX - event.sceneX,

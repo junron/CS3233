@@ -8,6 +8,7 @@ import javafx.scene.shape.Shape
 import math.Intersection
 import math.Vectors
 import optics.InteractiveOpticalRectangle
+import optics.RealLine
 import optics.objects.OpticalRectangle
 import optics.objects.Refract
 import java.lang.Double.MAX_VALUE
@@ -24,40 +25,33 @@ object Geometry {
     }
 
     fun getNearestIntersection(
-        l: Line, interactiveObjects: OpticsList<InteractiveOpticalRectangle>,
-        currentObj: OpticalRectangle?
-    ): InteractiveOpticalRectangle? {
-        //    Intersection point must be at least 1 px away from origin
-        val hasObj = currentObj != null
-        val threshold = 4.0
-        val origin = Vectors(l.startX, l.startY)
-        var result: InteractiveOpticalRectangle? = null
-        var bestIntersectionDistance: Double = MAX_VALUE
-        for (i in interactiveObjects) {
-            val isCurrObj = hasObj && i == currentObj
-            if (isCurrObj && i !is Refract) continue
-            val intersection = Shape.intersect(l, i) as Path
-            if (Intersection.hasIntersectionPoint(intersection)) {
-                val iPoint = Intersection.getIntersectionPoint(intersection,
-                    origin,
-                    !isCurrObj)
-                val distance = Vectors.distanceSquared(iPoint, origin)
-                if (distance < threshold) {
-                    continue
-                }
-                if (distance < bestIntersectionDistance) {
-                    bestIntersectionDistance = distance
-                    result = i
+        l: RealLine,
+        interactiveObjects: OpticsList<InteractiveOpticalRectangle>,
+        currentObj: OpticalRectangle?,
+    ): Pair<InteractiveOpticalRectangle?, Point2D?> {
+        var minDist = Double.MAX_VALUE
+        var minDistObj: InteractiveOpticalRectangle? = null
+        var minDistIntersection: Point2D? = null
+        interactiveObjects.forEach {
+            val boundingLines = it.boundingLines()
+            boundingLines.forEach { line ->
+                val intersection =
+                    line.intersectionPoint(l.start, l.end) ?: return@forEach
+                val intersectionDistance = intersection.distance(l.start)
+                if (intersectionDistance < minDist) {
+                    minDist = intersectionDistance
+                    minDistObj = it
+                    minDistIntersection = intersection
                 }
             }
         }
-        return result
+        return minDistObj to minDistIntersection
     }
 
     fun getNearestIntersection(
-        l: Line,
-        interactiveObjects: OpticsList<InteractiveOpticalRectangle>
-    ): InteractiveOpticalRectangle? {
+        l: RealLine,
+        interactiveObjects: OpticsList<InteractiveOpticalRectangle>,
+    ): Pair<InteractiveOpticalRectangle?, Point2D?> {
         return getNearestIntersection(l, interactiveObjects, null)
     }
 

@@ -6,6 +6,7 @@ import javafx.SettableTextField
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.fxml.FXML
+import javafx.geometry.Point2D
 import javafx.scene.control.Button
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
@@ -15,6 +16,7 @@ import optics.objects.Mirror
 import optics.objects.OpticalRectangle
 import optics.objects.Refract
 import optics.objects.Wall
+import utils.FxDebug
 import utils.Geometry.fixAngle
 
 class OpticsTabController {

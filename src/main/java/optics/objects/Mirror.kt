@@ -14,9 +14,12 @@ import math.IntersectionSideData
 import math.Vectors
 import optics.InteractiveOpticalRectangle
 import optics.PreciseJavaFXLine
+import optics.RealLine
 import optics.TransformData
 import optics.light.Ray
 import utils.Geometry
+import utils.toDegrees
+import kotlin.math.abs
 
 class Mirror(
     x: Double,
@@ -25,7 +28,7 @@ class Mirror(
     height: Double,
     val parent: Pane,
     rotation: Double,
-) : InteractiveOpticalRectangle(x, y, width, height) {
+) : InteractiveOpticalRectangle(x, y, width, height, rotation) {
     private var onDestroy: (() -> Unit)? = null
 
     private fun triggerDestroy() {
@@ -41,12 +44,21 @@ class Mirror(
     }
 
     override fun transform(r: Ray, iPoint: Point2D): TransformData? {
-//        val l = r.realLine.getScreenLine()
-//        l.endX = iPoint.x
-//        l.endY = iPoint.y
-//        val iData =
-//            this.getIntersectionSideData(iPoint, Point2D(l.startX, l.startY), r)
-//                ?: return null
+        val l = r.realLine
+        val intersectLine = boundingLines().first { it.passesThrough(iPoint) }
+        val n1 = intersectLine.normal(iPoint)
+        val n2 = intersectLine.normal(iPoint, true)
+        val normal =
+            if (n1.end.distance(l.start) < n2.end.distance(l.start)) {
+                n1
+            } else n2
+        println(abs(normal.angle - l.angle).toDegrees())
+        val l1 = normal.copyWithAngle(normal.angle + abs(normal.angle - l.angle))
+        val l2 = normal.copyWithAngle(normal.angle - abs(normal.angle - l.angle))
+        val ray = if (l1.end.distance(l.start) < l2.end.distance(l.start)) {
+            l1
+        } else l2
+        return TransformData(ray)
 //        val failedAngles = ArrayList<Double>()
 //        val normalAngle: Double
 //        var intersectionAngle = 0.0
@@ -90,7 +102,6 @@ class Mirror(
 //            "Reflection",
 //            String.format("%.1f", angle))
 //        return TransformData(preciseJavaFXLine!!, angleDisplay, iData)
-        return null
     }
 
     override fun getIntersectionSideData(

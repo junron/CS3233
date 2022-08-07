@@ -22,7 +22,7 @@ class Wall(
     height: Double,
     val parent: Pane,
     rotation: Double,
-) : InteractiveOpticalRectangle(x, y, width, height) {
+) : InteractiveOpticalRectangle(x, y, width, height, rotation) {
     private var onDestroy: (() -> Unit)? = null
 
     private fun triggerDestroy() {
@@ -30,9 +30,6 @@ class Wall(
     }
 
     override fun transform(r: Ray, iPoint: Point2D): TransformData? {
-//        val l = r.currentJavaFXLine
-//        l.endX = iPoint.x
-//        l.endY = iPoint.y
         return null
     }
 

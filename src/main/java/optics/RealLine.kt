@@ -22,10 +22,15 @@ data class RealLine(val start: Point2D, val end: Point2D) {
     val screenLine =
         Line(screenStart.x, screenStart.y, screenEnd.x, screenEnd.y)
 
-    fun passesThrough(point: Point2D) = (point.x * m + c) == point.y
+    fun passesThrough(point: Point2D): Boolean {
+        if (m.isInfinite()) {
+            return point.x == start.x
+        }
+        return (point.x * m + c) == point.y
+    }
 
     // https://stackoverflow.com/a/9997374/11168593
-    fun intersects(lineStart: Point2D, lineEnd: Point2D) =
+    private fun intersects(lineStart: Point2D, lineEnd: Point2D) =
         ccw(start, lineStart, lineEnd) != ccw(end, lineStart, lineEnd) &&
             ccw(start, end, lineStart) != ccw(start, end, lineEnd)
 
@@ -35,6 +40,11 @@ data class RealLine(val start: Point2D, val end: Point2D) {
     fun intersectionPoint(lineStart: Point2D, lineEnd: Point2D): Point2D? {
         if (!intersects(lineStart, lineEnd)) return null
         val line2 = RealLine(lineStart, lineEnd)
+        if (line2.m.isInfinite()) {
+            return Point2D(line2.start.x, m * line2.start.x + c)
+        } else if (m.isInfinite()) {
+            return Point2D(start.x, line2.m * start.x + line2.c)
+        }
         val x = (line2.c - c) / (m - line2.m)
         return Point2D(x, m * x + c)
     }
@@ -43,6 +53,17 @@ data class RealLine(val start: Point2D, val end: Point2D) {
     fun copyWithAngle(angle: Double): RealLine {
         val newEnd = Point2D(cos(angle), sin(angle)) * magnitude + start
         return RealLine(start, newEnd)
+    }
+
+    fun normal(point: Point2D, flip: Boolean = false): RealLine {
+        val normalM = if (m.isInfinite()) 0.0 else (-1 / m)
+        if (normalM.isInfinite()) {
+            return RealLine(point,
+                point.add(0.0, 50.0 * (if (flip) -1.0 else 1.0)))
+        }
+        val add =
+            Point2D(1.0, normalM).normalize() * 50.0 * (if (flip) -1.0 else 1.0)
+        return RealLine(point, point + add)
     }
 }
 

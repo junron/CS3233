@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.shape.Shape
 import optics.InteractiveOpticalRectangle
 import optics.light.RayCircle
+import optics.objects.Mirror
 import optics.objects.OpticalRectangle
 import optics.objects.Refract
 import utils.plus
@@ -165,6 +166,8 @@ class KeyActions(
                 //        Clockwise
                 shape.rotate =
                     (rotate + if (event.isControlDown) 45 else 1) % 360
+                println((shape as Mirror).x)
+                println(shape.boundsInLocal)
             } else if (eventCode == "UP" && event.isControlDown) {
                 shape.rotate = (360 - rotate) % 360
             } else if (eventCode == "DOWN" && event.isControlDown) {

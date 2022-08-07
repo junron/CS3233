@@ -22,7 +22,7 @@ class Refract(
     val parent: Pane,
     rotation: Double,
     refractiveIndex: Double,
-) : InteractiveOpticalRectangle(x, y, width, height) {
+) : InteractiveOpticalRectangle(x, y, width, height, rotation) {
     private var onDestroy: (() -> Unit)? = null
     var refractiveIndex: Double = refractiveIndex
         set(value) {

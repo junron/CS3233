@@ -74,7 +74,7 @@ object Storage {
         val futures = ArrayList<CompletableFuture<ArrayList<Node>>>()
         val lines = ArrayList<Node>()
         for (r in rays) {
-            lines.addAll(r.lines.map { it.screenLine })
+            lines.addAll(r.lines)
             futures.add(r.renderRays(opticalRectangles.deepClone()))
         }
         //Remove old lines
