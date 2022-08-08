@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="949.0"
+            xmlns="http://javafx.com/javafx/10.0.1" fx:controller="application.DevicesTabController">
+    <Button fx:id="newHost" focusTraversable="false" layoutX="20.0" layoutY="70.0" mnemonicParsing="false"
+            text="Create mirror" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="20.0"/>
+    <Button fx:id="newRouter" focusTraversable="false" layoutX="20.0" layoutY="134.0" mnemonicParsing="false"
+            text="Create wall" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="20.0"/>
+    <Label layoutX="313.0" layoutY="89.0" text="Refractive index"
+           AnchorPane.bottomAnchor="87.0" AnchorPane.leftAnchor="313.0"/>
+</AnchorPane>

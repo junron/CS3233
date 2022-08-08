@@ -12,11 +12,8 @@
         <Tab closable="false" text="Animation">
             <fx:include fx:id="animationTab" source="animation.fxml"/>
         </Tab>
-        <Tab closable="false" text="Rays">
-            <fx:include fx:id="rayTab" source="raytab.fxml"/>
-        </Tab>
         <Tab closable="false" text="Optical objects">
-            <fx:include fx:id="opticsTab" source="opticstab.fxml"/>
+            <fx:include fx:id="devicesTab" source="devicestab.fxml"/>
         </Tab>
     </TabPane>
     <AnchorPane layoutY="645.0" prefHeight="159.0" prefWidth="1280.0"

@@ -3,15 +3,6 @@ package utils
 import javafx.geometry.Point2D
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
-import javafx.scene.shape.Path
-import javafx.scene.shape.Shape
-import math.Intersection
-import math.Vectors
-import optics.InteractiveOpticalRectangle
-import optics.RealLine
-import optics.objects.OpticalRectangle
-import optics.objects.Refract
-import java.lang.Double.MAX_VALUE
 
 object Geometry {
     @JvmStatic
@@ -22,37 +13,6 @@ object Geometry {
     @JvmStatic
     fun createCircleFromPoint(p1: Point2D, radius: Double): Circle {
         return Circle(p1.x, p1.y, radius)
-    }
-
-    fun getNearestIntersection(
-        l: RealLine,
-        interactiveObjects: OpticsList<InteractiveOpticalRectangle>,
-        currentObj: OpticalRectangle?,
-    ): Pair<InteractiveOpticalRectangle?, Point2D?> {
-        var minDist = Double.MAX_VALUE
-        var minDistObj: InteractiveOpticalRectangle? = null
-        var minDistIntersection: Point2D? = null
-        interactiveObjects.forEach {
-            val boundingLines = it.boundingLines()
-            boundingLines.forEach { line ->
-                val intersection =
-                    line.intersectionPoint(l.start, l.end) ?: return@forEach
-                val intersectionDistance = intersection.distance(l.start)
-                if (intersectionDistance < minDist) {
-                    minDist = intersectionDistance
-                    minDistObj = it
-                    minDistIntersection = intersection
-                }
-            }
-        }
-        return minDistObj to minDistIntersection
-    }
-
-    fun getNearestIntersection(
-        l: RealLine,
-        interactiveObjects: OpticsList<InteractiveOpticalRectangle>,
-    ): Pair<InteractiveOpticalRectangle?, Point2D?> {
-        return getNearestIntersection(l, interactiveObjects, null)
     }
 
     @JvmStatic

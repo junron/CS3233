@@ -2,13 +2,10 @@ package application
 
 import application.Storage.clearAll
 import application.Storage.maximumReflectionDepth
-import application.Storage.offset
-import application.Storage.opticalRectangles
-import application.Storage.rays
+import application.Storage.hosts
 import application.Storage.reRenderAll
 import javafx.event.EventHandler
 import javafx.fxml.FXML
-import javafx.geometry.Point2D
 import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
@@ -40,9 +37,7 @@ class GeneralTabController {
 
     fun initialize(parent: Pane) {
         save!!.onMouseClicked = EventHandler { event: MouseEvent? ->
-            val allObjects: MutableList<Serializable> =
-                opticalRectangles.toMutableList()
-            allObjects += rays
+            val allObjects: MutableList<Serializable> = hosts.toMutableList()
             try {
                 FileOps.save(allObjects, parent.scene.window as Stage)
             } catch (e: IOException) {
@@ -81,10 +76,5 @@ class GeneralTabController {
     private fun triggerShowAnglesChange() {
         Storage.showLabels = showAngles!!.isSelected
         reRenderAll()
-    }
-
-    @FXML
-    private fun resetOffset() {
-        offset = Point2D(0.0, 0.0)
     }
 }

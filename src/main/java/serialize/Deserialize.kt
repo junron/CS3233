@@ -1,49 +1,31 @@
 package serialize
 
-import application.Storage.opticsTabController
-import application.Storage.rayTabController
+import application.Storage.devicesTabController
+import devices.Host
+import devices.Router
 import javafx.scene.layout.Pane
-import javafx.scene.shape.Line
-import optics.InteractiveOpticalRectangle
-import optics.PreciseJavaFXLine
-import optics.light.Ray
-import optics.objects.Mirror
-import optics.objects.OpticalRectangle
-import optics.objects.Refract
-import optics.objects.Wall
 
 object Deserialize {
-    fun deserialize(obj: String, parent: Pane): Serializable? {
+    fun deserialize(obj: String, parent: Pane): Host {
         return when (obj[0]) {
-            'm' -> {
-                val m = Mirror(0.0, 0.0, 0.0, 0.0, parent, 0.0)
-                m.deserialize(obj)
-                m
+            'h' -> {
+                val h = Host(0, 0, 0, parent)
+                h.deserialize(obj)
+                h
             }
-            'w' -> {
-                val w = Wall(0.0, 0.0, 0.0, 0.0, parent, 0.0)
-                w.deserialize(obj)
-                w
-            }
-            'e' -> {
-                val re = Refract(0.0, 0.0, 0.0, 0.0, parent, 0.0, 1.0)
-                re.deserialize(obj)
-                re
-            }
+
             'r' -> {
-                return Ray.deserialize(obj, parent)
+                val router = Router(0, 0, 0, parent)
+                router.deserialize(obj)
+                router
             }
-            else -> null
+
+            else -> throw Exception("Device does not exist")
         }
     }
 
     fun deserializeAndAdd(obj: String, parent: Pane) {
         val serializable = deserialize(obj, parent)
-        if (serializable is Ray) {
-            rayTabController?.createRay(serializable)
-        } else if (serializable is InteractiveOpticalRectangle) {
-            opticsTabController?.addObject(serializable,
-                parent)
-        }
+        devicesTabController?.addObject(serializable, parent)
     }
 }
