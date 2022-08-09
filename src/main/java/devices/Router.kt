@@ -2,7 +2,7 @@ package devices
 
 import javafx.scene.layout.Pane
 
-class Router(id: Int, x: Int, y: Int, parent: Pane) : Host(id, x, y, parent){
+class Router(id: Int, x: Int, y: Int, parent: Pane) : Host(id, x, y, parent, "/router.png"){
     
     // Routers have connections to other hosts
 

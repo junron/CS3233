@@ -1,14 +1,14 @@
 package application
 
 import application.Storage.clearAll
-import application.Storage.maximumReflectionDepth
 import application.Storage.hosts
 import application.Storage.reRenderAll
+import devices.Host
+import devices.Router
+import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.Button
-import javafx.scene.control.CheckBox
-import javafx.scene.control.TextField
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
@@ -16,12 +16,17 @@ import serialize.Deserialize
 import serialize.FileOps
 import serialize.Serializable
 import java.io.IOException
+import kotlin.random.Random
 
 class GeneralTabController {
+    @FXML
+    private var newRouter: Button? = null
 
     @FXML
-    private var showAngles: CheckBox? = null
-
+    private var newHost: Button? = null
+    
+    private var focusedObject: Host? = null
+    
     @FXML
     private var save: Button? = null
 
@@ -30,10 +35,6 @@ class GeneralTabController {
 
     @FXML
     private var clearAll: Button? = null
-
-    @FXML
-    private var maxInteract: TextField? = null
-
 
     fun initialize(parent: Pane) {
         save!!.onMouseClicked = EventHandler { event: MouseEvent? ->
@@ -57,24 +58,44 @@ class GeneralTabController {
         }
         clearAll!!.onMouseClicked =
             EventHandler { event: MouseEvent? -> clearAll() }
-        val maxInteract = maxInteract ?: return
-        maxInteract.onKeyPressed = EventHandler {
-            val maxInts: Int
-            try {
-                maxInts = maxInteract.text.toInt()
-                if (maxInts < 10) throw NumberFormatException()
-            } catch (e: NumberFormatException) {
-                maxInteract.text = maximumReflectionDepth.toString()
-                return@EventHandler
-            }
-            maximumReflectionDepth = maxInts
-            reRenderAll()
+        newHost!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@EventHandler
+            val h = Host(
+                Random.nextInt(), Math.floorDiv(parent.width.toInt(), 2),
+                Math.floorDiv(parent.height.toInt(), 2),
+                parent
+            )
+            addObject(h, parent)
+        }
+        newRouter!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+            // Prevent changes when animating
+            if (Storage.isAnimating) return@EventHandler
+            val r = Router(
+                Random.nextInt(), Math.floorDiv(parent.width.toInt(), 2),
+                Math.floorDiv(parent.height.toInt(), 2),
+                parent
+            )
+            addObject(r, parent)
         }
     }
-
-    @FXML
-    private fun triggerShowAnglesChange() {
-        Storage.showLabels = showAngles!!.isSelected
+     fun addObject(obj: Host, parent: Pane) {
+        hosts.add(obj)
+        obj.onDestroy = {
+            if (focusedObject == obj) focusedObject = null
+            hosts.remove(obj)
+            reRenderAll()
+        }
+        obj.focusedProperty()
+            .addListener { o: ObservableValue<out Boolean>?, ol: Boolean?, state: Boolean ->
+                if (state) changeFocus(obj)
+            }
         reRenderAll()
+        parent.children.add(obj)
+        obj.requestFocus()
+        changeFocus(obj)
+    }
+    private fun changeFocus(device: Host) {
+        focusedObject = device
     }
 }

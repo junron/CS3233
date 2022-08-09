@@ -14,20 +14,15 @@ class MainController : Initializable {
     private var generalTabController: GeneralTabController? = null
 
     @FXML
-    private var devicesTabController: DevicesTabController? = null
-
-    @FXML
     private var animationTabController: AnimationTabController? = null
 
     override fun initialize(location: URL, resources: ResourceBundle?) {
         val parent = parent ?: return
         println(generalTabController)
-        println(devicesTabController)
         println(animationTabController)
         generalTabController!!.initialize(parent)
-        devicesTabController!!.initialize(parent)
         animationTabController!!.initialize(parent)
-        Storage.devicesTabController = devicesTabController
+        Storage.generalTabController = generalTabController
         Storage.parent = parent
     }
 }

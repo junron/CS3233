@@ -1,6 +1,6 @@
 package serialize
 
-import application.Storage.devicesTabController
+import application.Storage.generalTabController
 import devices.Host
 import devices.Router
 import javafx.scene.layout.Pane
@@ -26,6 +26,6 @@ object Deserialize {
 
     fun deserializeAndAdd(obj: String, parent: Pane) {
         val serializable = deserialize(obj, parent)
-        devicesTabController?.addObject(serializable, parent)
+        generalTabController?.addObject(serializable, parent)
     }
 }

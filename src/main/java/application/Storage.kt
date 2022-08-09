@@ -6,14 +6,8 @@ import javafx.scene.layout.Pane
 object Storage {
     @JvmField
     val hosts = mutableListOf<Host>()
-
-    @JvmField
-    var devicesTabController: DevicesTabController? = null
-    @JvmField
-    var maximumReflectionDepth = 1000
-
-    @JvmField
-    var showLabels = true
+    
+    var generalTabController: GeneralTabController? = null
 
     @JvmField
     var isAnimating = false
