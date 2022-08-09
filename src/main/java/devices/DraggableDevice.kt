@@ -10,23 +10,35 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import serialize.Serializable
 
-open class DraggableDevice(val id: Int, var x: Int, var y: Int, val parent: Pane, imagePath: String) : Serializable,
+open class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, imagePath: String) : Serializable,
     ImageView(
-        Image(Main::class.java.getResourceAsStream(imagePath), 100.0, 100.0, true, true)
+        Image(Main::class.java.getResourceAsStream(imagePath), 100.0, 100.0, false, true)
     ) {
     
     private var movementDelta: Point2D = Point2D.ZERO
-    private fun isInUIArea() = y + image.height >= parent.height - 165
+    private fun isInUIArea() = layoutY + image.height >= parent.height - 165
+    
+    val centerX : Double
+        get() = layoutX + this.image.width/2
+    
+    val centerY : Double
+        get() = layoutY + this.image.height/2
+    
+    
+        
+
+    var onDestroy: (() -> Unit)? = null
+    val onDrags = mutableListOf<(() -> Unit)>()
+    
+    
 
     init {
         this.layoutX = x.toDouble() - this.image.width / 2
         this.layoutY = y.toDouble() - this.image.height / 2
-        y = layoutY.toInt()
-        x = layoutX.toInt()
         
         setOnMousePressed { event: MouseEvent ->
             movementDelta = Point2D(
-                x - event.sceneX, y - event.sceneY
+                layoutX - event.sceneX, layoutY - event.sceneY
             )
             event.consume()
         }
@@ -34,18 +46,16 @@ open class DraggableDevice(val id: Int, var x: Int, var y: Int, val parent: Pane
             // Prevent changes when animating
             if (Storage.isAnimating) return@EventHandler
             // Prevent object from entering UI area
+            val prevY = layoutY
             layoutX = event.sceneX + movementDelta.x
             layoutY = event.sceneY + movementDelta.y
             if (isInUIArea() &&  //        Except when moving object to trash
                 event.sceneX <= parent.width - 82
             ) {
-                layoutY = y.toDouble()
-            }else{
-                y = layoutY.toInt()
-                x = layoutX.toInt()
+                layoutY = prevY
             }
             event.consume()
-            Storage.reRenderAll()
+            onDrags.forEach { it() }
         }
         onMouseReleased = EventHandler { e: MouseEvent ->
             if (e.sceneY > parent.height - 165 && e.sceneX > parent.width - 82) {
@@ -55,8 +65,7 @@ open class DraggableDevice(val id: Int, var x: Int, var y: Int, val parent: Pane
         }
     }
     
-
-    var onDestroy: (() -> Unit)? = null
+    
 
     open fun deserialize(obj: String): DraggableDevice {
         TODO()
@@ -64,6 +73,14 @@ open class DraggableDevice(val id: Int, var x: Int, var y: Int, val parent: Pane
 
     override fun serialize(): String {
         TODO()
+    }
+
+    override fun toString(): String {
+        return "DraggableDevice(id=$id, x=$x, y=$y)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is DraggableDevice && other.id == this.id
     }
 
 }

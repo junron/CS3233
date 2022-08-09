@@ -1,11 +1,13 @@
 package application
 
-import devices.Host
+import devices.DraggableDevice
 import javafx.scene.layout.Pane
+import routing.ConnectionLine
 
 object Storage {
-    @JvmField
-    val hosts = mutableListOf<Host>()
+    val devices = mutableListOf<DraggableDevice>()
+    
+    val connectionLines = mutableListOf<ConnectionLine>()
     
     var generalTabController: GeneralTabController? = null
 
@@ -17,9 +19,8 @@ object Storage {
 
     @JvmStatic
     fun clearAll() {
-        // TODO: make device extend shape or something
-        parent!!.children.removeAll(hosts.toSet())
-        hosts.clear()
+        parent!!.children.removeAll(devices.toSet())
+        devices.clear()
     }
     
     fun reRenderAll(){

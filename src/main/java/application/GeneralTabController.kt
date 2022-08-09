@@ -1,14 +1,15 @@
 package application
 
 import application.Storage.clearAll
-import application.Storage.hosts
+import application.Storage.devices
 import application.Storage.reRenderAll
+import devices.DraggableDevice
 import devices.Host
 import devices.Router
-import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
@@ -24,9 +25,9 @@ class GeneralTabController {
 
     @FXML
     private var newHost: Button? = null
-    
-    private var focusedObject: Host? = null
-    
+
+    private var focusedObject: DraggableDevice? = null
+
     @FXML
     private var save: Button? = null
 
@@ -36,9 +37,14 @@ class GeneralTabController {
     @FXML
     private var clearAll: Button? = null
 
+    @FXML
+    private var connectionMode: CheckBox? = null
+
+    private fun connectionModeEnabled(): Boolean = connectionMode?.isSelected ?: false
+
     fun initialize(parent: Pane) {
         save!!.onMouseClicked = EventHandler { event: MouseEvent? ->
-            val allObjects: MutableList<Serializable> = hosts.toMutableList()
+            val allObjects: MutableList<Serializable> = devices.toMutableList()
             try {
                 FileOps.save(allObjects, parent.scene.window as Stage)
             } catch (e: IOException) {
@@ -58,7 +64,14 @@ class GeneralTabController {
         }
         clearAll!!.onMouseClicked =
             EventHandler { event: MouseEvent? -> clearAll() }
-        newHost!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+
+
+        connectionMode!!.onMouseClicked = EventHandler {
+            focusedObject = null
+        }
+
+
+        newHost!!.onMouseClicked = EventHandler { _: MouseEvent? ->
             // Prevent changes when animating
             if (Storage.isAnimating) return@EventHandler
             val h = Host(
@@ -66,9 +79,21 @@ class GeneralTabController {
                 Math.floorDiv(parent.height.toInt(), 2),
                 parent
             )
+
+            h.onMouseClicked = EventHandler clickHandler@{ _: MouseEvent ->
+                // TODO: What to do when not in connection mode
+                if (!connectionModeEnabled()) return@clickHandler
+
+                val other = focusedObject
+                if (other is Router) {
+                    other.addConnection(h)
+                }
+                focusedObject = h
+            }
+
             addObject(h, parent)
         }
-        newRouter!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+        newRouter!!.onMouseClicked = EventHandler { _: MouseEvent? ->
             // Prevent changes when animating
             if (Storage.isAnimating) return@EventHandler
             val r = Router(
@@ -76,26 +101,35 @@ class GeneralTabController {
                 Math.floorDiv(parent.height.toInt(), 2),
                 parent
             )
+
+            r.onMouseClicked = EventHandler clickHandler@{ _: MouseEvent ->
+                // TODO: What to do when not in connection mode
+                if (!connectionModeEnabled()) return@clickHandler
+
+                val other = focusedObject
+
+                if (other != null && other != r) {
+                    r.addConnection(other)
+                }
+                focusedObject = r
+                println(r.connections)
+            }
+
+
             addObject(r, parent)
         }
     }
-     fun addObject(obj: Host, parent: Pane) {
-        hosts.add(obj)
+
+    fun addObject(obj: Host, parent: Pane) {
+        devices.add(obj)
         obj.onDestroy = {
             if (focusedObject == obj) focusedObject = null
-            hosts.remove(obj)
+            devices.remove(obj)
             reRenderAll()
         }
-        obj.focusedProperty()
-            .addListener { o: ObservableValue<out Boolean>?, ol: Boolean?, state: Boolean ->
-                if (state) changeFocus(obj)
-            }
         reRenderAll()
         parent.children.add(obj)
         obj.requestFocus()
-        changeFocus(obj)
     }
-    private fun changeFocus(device: Host) {
-        focusedObject = device
-    }
+
 }

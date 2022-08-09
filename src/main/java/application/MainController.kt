@@ -18,8 +18,6 @@ class MainController : Initializable {
 
     override fun initialize(location: URL, resources: ResourceBundle?) {
         val parent = parent ?: return
-        println(generalTabController)
-        println(animationTabController)
         generalTabController!!.initialize(parent)
         animationTabController!!.initialize(parent)
         Storage.generalTabController = generalTabController
