@@ -8,8 +8,6 @@ value class IPV4(val uintIp: UInt) {
 
     override fun toString() =
         "${(this.uintIp shr 24) % 256U}.${(this.uintIp shr 16) % 256U}.${(this.uintIp shr 8) % 256U}.${this.uintIp % 256U}"
-    
-
 }
 
 @JvmInline

@@ -88,6 +88,7 @@ class GeneralTabController {
                 ex.printStackTrace()
                 return@EventHandler
             } ?: return@EventHandler
+            clearAll()
             deserialize(data.map { it.trim() }, parent).forEach {
                 addObject(it, parent)
             }
@@ -179,7 +180,7 @@ class GeneralTabController {
         this.sendPacket.onMouseClicked = EventHandler {
             val ip = this.targetIp.text.toIPV4()
             focusedObject?.let { device ->
-                route.text = "Route: ${device.routeTo(ip, emptyList())}"
+                route.text = "Route: ${device.routeTo(ip, emptyList())?.map { it.ipAddress }}"
             }
         }
 

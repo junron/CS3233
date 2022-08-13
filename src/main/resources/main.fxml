@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
-    <TabPane focusTraversable="false" layoutY="645.0" prefHeight="159.0" prefWidth="1280.0"
-             tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-             AnchorPane.rightAnchor="82.0" >
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+    <TabPane focusTraversable="false" layoutY="645.0" prefHeight="159.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="82.0">
         <Tab closable="false" text="General">
-            <fx:include fx:id="generalTab" source="generaltab.fxml"/>
+            <fx:include fx:id="generalTab" source="generaltab.fxml" />
         </Tab>
         <Tab closable="false" text="Animation">
-            <fx:include fx:id="animationTab" source="animation.fxml"/>
+            <fx:include fx:id="animationTab" source="animation.fxml" />
         </Tab>
     </TabPane>
-    <AnchorPane layoutY="645.0" prefHeight="159.0" prefWidth="1280.0"
-             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-             AnchorPane.rightAnchor="82.0" viewOrder="20" style="-fx-background-color: white">
-    </AnchorPane>
     <Pane layoutX="840.0" layoutY="90.0" prefHeight="160" prefWidth="82.0" style="-fx-background-color: #dfdfdf;" styleClass="dark" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <Label layoutX="30.0" layoutY="70" text="Trash" />
     </Pane>

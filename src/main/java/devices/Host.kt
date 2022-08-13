@@ -27,7 +27,10 @@ open class Host(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent
         }
     }
 
-    override fun routeTo(target: IPV4, visited: List<Subnet>): List<Subnet>? {
+    override fun routeTo(target: IPV4, visited: List<Device>): List<Device>? {
+        if(target == ipAddress){
+            return listOf(this)
+        }
         return connectedRouters.mapNotNull { it.routeTo(target, visited) }.minByOrNull { it.size }
     }
 

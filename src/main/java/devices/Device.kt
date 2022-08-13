@@ -23,7 +23,7 @@ open class Device(id: Int, x: Int, y: Int, parent: Pane, imagePath: String = "/h
         println("This is $id, removed ${device.id}")
     }
 
-    open fun routeTo(target: IPV4, visited: List<Subnet>): List<Subnet>? {
+    open fun routeTo(target: IPV4, visited: List<Device>): List<Device>? {
         TODO()
     }
 

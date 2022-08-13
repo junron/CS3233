@@ -27,9 +27,9 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
                 text.text = "${ipAddress}/$value"
             }
         }
-    
+
     val subnet: Subnet
-        get() = ipAddress!!/cidrPrefix
+        get() = ipAddress!! / cidrPrefix
 
     init {
         this.onDestroys += {
@@ -134,18 +134,23 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         return super.toString().replace("Device", "Router")
     }
 
-    override fun routeTo(target: IPV4, visited: List<Subnet>): List<Subnet>? {
+    override fun routeTo(target: IPV4, visited: List<Device>): List<Device>? {
         // Some kind of loop exists
-        if (subnet in visited) {
+        if (this in visited) {
             return null
         }
         if (target in subnet) {
-            return visited + listOf(subnet)
+            if (target == ipAddress) {
+                return visited + this
+            } else {
+                val targetDevice = connections.find { it.device2.ipAddress == target } ?: return null
+                return visited + this + targetDevice.device2
+            }
         }
         // Stupid bruteforce but who cares!
         val possibleRouters = this.connections.mapNotNull { it.device2 as? Router }
         val possibleRoutes = possibleRouters.mapNotNull {
-            it.routeTo(target, visited + listOf(subnet))
+            it.routeTo(target, visited + this)
         }
 
         return possibleRoutes.minByOrNull { it.size }
