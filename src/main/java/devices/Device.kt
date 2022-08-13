@@ -14,6 +14,10 @@ open class Device(id: Int, x: Int, y: Int, parent: Pane, imagePath: String = "/h
             }
         }
 
+    override fun serialize(): String {
+        return "d|$id|${this.layoutX}|${this.layoutY}|$ipAddress"
+    }
+
     open fun deviceDeleted(device: Device) {
         println("This is $id, removed ${device.id}")
     }

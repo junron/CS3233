@@ -14,7 +14,7 @@ import javafx.scene.text.Text
 import serialize.Serializable
 
 
-open class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, imagePath: String) : Serializable,
+abstract class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, imagePath: String) : Serializable,
     StackPane() {
 
     val text: Text = Text("No IP")
@@ -86,15 +86,6 @@ open class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, imageP
 
     fun unfocus() {
         this.border = null
-    }
-
-
-    open fun deserialize(obj: String): DraggableDevice {
-        TODO()
-    }
-
-    override fun serialize(): String {
-        TODO()
     }
 
     override fun toString(): String {

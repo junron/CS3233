@@ -24,7 +24,9 @@ object Storage {
     @JvmStatic
     fun clearAll() {
         parent!!.children.removeAll(devices.toSet())
+        parent!!.children.removeAll(connectionLines.toSet())
         devices.clear()
+        connectionLines.clear()
     }
     
     fun reRenderAll(){

@@ -17,8 +17,8 @@ import java.util.Collection;
 public class FileOps {
   public static void save(Collection objects, Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Save Ray Simulation");
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
+    fileChooser.setTitle("Save Susco Simulation");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Susco Simulation files", "*.susco"));
     File file = fileChooser.showSaveDialog(stage);
     if (file == null) return;
     FileOutputStream out = new FileOutputStream(file);
@@ -31,8 +31,9 @@ public class FileOps {
 
   public static ArrayList<String> load(Stage stage) throws IOException {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Load Ray Simulation");
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ray Simulation files", "*.raysim"));
+    fileChooser.setTitle("Load Susco Simulation");
+    fileChooser.setInitialDirectory(new File(System.getProperty("user.home")+"/Desktop"));
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Susco Simulation files", "*.susco"));
     File file = fileChooser.showOpenDialog(stage);
     if (file == null) return null;
     return load(file);

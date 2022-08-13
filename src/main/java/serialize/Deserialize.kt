@@ -1,32 +1,35 @@
 package serialize
 
-import application.Storage.generalTabController
+import application.Storage
 import devices.Device
 import devices.Host
 import devices.Router
 import javafx.scene.layout.Pane
 
-object Deserialize {
-    fun deserialize(obj: String, parent: Pane): Device {
-        return when (obj[0]) {
-            'h' -> {
-                val h = Host(0, 0, 0, parent)
-                h.deserialize(obj)
-                h
-            }
-
-            'r' -> {
-                val router = Router(0, 0, 0, parent)
-                router.deserialize(obj)
-                router
-            }
-
-            else -> throw Exception("Device does not exist")
+fun deserialize(deviceStrings: List<String>, parent: Pane): List<Device> {
+    val savedDHCP = Storage.autoDHCP
+    Storage.autoDHCP = false
+    val devices = deviceStrings.map {
+        when (it[0]) {
+            'h' -> Host.deserialize(it, parent)
+            'r' -> Router.deserialize(it, parent)
+            else -> throw Error("Invalid device type")
         }
     }
 
-    fun deserializeAndAdd(obj: String, parent: Pane) {
-        val serializable = deserialize(obj, parent)
-        generalTabController?.addObject(serializable, parent)
+    deviceStrings.forEach { deviceString ->
+        if (deviceString[0] == 'r') {
+            val parts = deviceString.split("|")
+            val router = devices.find { it.id == parts[1].toInt() } as Router
+            val connectedIDs = parts.subList(6, parts.size)
+            connectedIDs.forEach { id ->
+                val device2 = devices.find { it.id == id.toInt() }!!
+                router.addConnection(device2)
+            }
+        }
     }
+    
+    Storage.autoDHCP = savedDHCP
+    
+    return devices
 }

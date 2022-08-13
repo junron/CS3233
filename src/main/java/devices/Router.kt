@@ -50,6 +50,8 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
 
     fun addConnection(other: Device) {
+
+        println("$this is connecting to $other")
         if (other.id in thisConnectionLineMappings) {
             return
         }
@@ -83,7 +85,9 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
         // Handle DHCP
         if (Storage.autoDHCP && otherIP == null) {
+            println(connections)
             val usedIPAddresses = connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress }
+            println(usedIPAddresses)
             // Find min address or use router address + 1
             var candidateAddress = (usedIPAddresses.minOrNull() ?: thisIP) + 1U
             while (candidateAddress in usedIPAddresses && candidateAddress in thisIP / cidrPrefix) {
@@ -124,13 +128,28 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
     }
 
     override fun serialize(): String {
-        // TODO
-        return super.serialize() + ""
+        val base = "r|" + super.serialize().substring(2)
+        return "$base|$cidrPrefix|" + connections.joinToString("|", transform = { it.device2.id.toString() })
     }
+
 
     override fun toString(): String {
         return super.toString().replace("Device", "Router")
     }
 
+    companion object {
+        fun deserialize(serialized: String, parent: Pane): Router {
+            val parts = serialized.split("|")
+            val id = parts[1].toInt()
+            val x = parts[2].toDouble().toInt()
+            val y = parts[3].toDouble().toInt()
+            val ip = parts[4].toUIntOrNull()
+            val cidr = parts[5].toInt()
+            val router = Router(id, x, y, parent)
+            router.ipAddress = ip
+            router.cidrPrefix = cidr
+            return router
+        }
+    }
 
 }

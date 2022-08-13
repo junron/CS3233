@@ -15,9 +15,9 @@ import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
-import serialize.Deserialize
 import serialize.FileOps
 import serialize.Serializable
+import serialize.deserialize
 import utils.asIP
 import utils.toIPV4OrNull
 import java.io.IOException
@@ -84,8 +84,8 @@ class GeneralTabController {
                 ex.printStackTrace()
                 return@EventHandler
             } ?: return@EventHandler
-            for (obj in data) {
-                Deserialize.deserializeAndAdd(obj, parent)
+            deserialize(data.map { it.trim() }, parent).forEach {
+                addObject(it, parent)
             }
         }
         clearAll!!.onMouseClicked = EventHandler { event: MouseEvent? -> clearAll() }
@@ -108,21 +108,6 @@ class GeneralTabController {
                 Math.floorDiv(parent.height.toInt(), 2),
                 parent
             )
-
-            h.onMouseClicked = EventHandler clickHandler@{ evt: MouseEvent ->
-                val other = focusedObject
-                focusedObject?.unfocus()
-                h.focus()
-                evt.consume()
-                focusedObject = h
-                if (!connectionModeEnabled()) {
-                    updateHostPane(h)
-                    return@clickHandler
-                }
-                if (other is Router) {
-                    other.addConnection(h)
-                }
-            }
 
             addObject(h, parent)
         }
@@ -206,7 +191,7 @@ class GeneralTabController {
         hostPane.isVisible = false
     }
 
-    fun addObject(obj: Device, parent: Pane) {
+    private fun addObject(obj: Device, parent: Pane) {
         devices.add(obj)
         obj.onDestroys += {
             if (focusedObject == obj) focusedObject = null
@@ -215,6 +200,29 @@ class GeneralTabController {
         }
         reRenderAll()
         parent.children.add(obj)
+        obj.onMouseClicked = EventHandler clickHandler@{ evt: MouseEvent ->
+            val other = focusedObject
+            focusedObject?.unfocus()
+            obj.focus()
+            evt.consume()
+            focusedObject = obj
+            if (!connectionModeEnabled()) {
+                updateHostPane(obj)
+                return@clickHandler
+            }
+            // Routers can connect to anything
+            if (obj is Router) {
+                if (other != null && other != obj) {
+                    obj.addConnection(other)
+                    if (other is Router) {
+                        other.addConnection(obj)
+                    }
+                }
+            } else if (other is Router) {
+                // Hosts can only connect to routers
+                other.addConnection(obj)
+            }
+        }
         obj.requestFocus()
     }
 
