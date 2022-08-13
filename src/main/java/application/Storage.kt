@@ -10,6 +10,8 @@ object Storage {
     val connectionLines = mutableListOf<ConnectionLine>()
     
     var generalTabController: GeneralTabController? = null
+    
+    var connectionMode: Boolean = false
 
     @JvmField
     var isAnimating = false

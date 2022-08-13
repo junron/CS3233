@@ -1,12 +1,13 @@
 package serialize
 
 import application.Storage.generalTabController
+import devices.Device
 import devices.Host
 import devices.Router
 import javafx.scene.layout.Pane
 
 object Deserialize {
-    fun deserialize(obj: String, parent: Pane): Host {
+    fun deserialize(obj: String, parent: Pane): Device {
         return when (obj[0]) {
             'h' -> {
                 val h = Host(0, 0, 0, parent)

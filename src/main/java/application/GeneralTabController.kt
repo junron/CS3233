@@ -3,6 +3,7 @@ package application
 import application.Storage.clearAll
 import application.Storage.devices
 import application.Storage.reRenderAll
+import devices.Device
 import devices.DraggableDevice
 import devices.Host
 import devices.Router
@@ -67,7 +68,8 @@ class GeneralTabController {
 
 
         connectionMode!!.onMouseClicked = EventHandler {
-            focusedObject = null
+            Storage.connectionMode = connectionModeEnabled()
+            unfocus()
         }
 
 
@@ -80,15 +82,17 @@ class GeneralTabController {
                 parent
             )
 
-            h.onMouseClicked = EventHandler clickHandler@{ _: MouseEvent ->
+            h.onMouseClicked = EventHandler clickHandler@{ evt: MouseEvent ->
+                val other = focusedObject
+                focusedObject?.unfocus()
+                h.focus()
+                evt.consume()
+                focusedObject = h
                 // TODO: What to do when not in connection mode
                 if (!connectionModeEnabled()) return@clickHandler
-
-                val other = focusedObject
                 if (other is Router) {
                     other.addConnection(h)
                 }
-                focusedObject = h
             }
 
             addObject(h, parent)
@@ -102,27 +106,38 @@ class GeneralTabController {
                 parent
             )
 
-            r.onMouseClicked = EventHandler clickHandler@{ _: MouseEvent ->
+            r.onMouseClicked = EventHandler clickHandler@{ evt: MouseEvent ->
+                val other = focusedObject
+                focusedObject?.unfocus()
+                focusedObject = r
+                r.focus()
+                evt.consume()
                 // TODO: What to do when not in connection mode
                 if (!connectionModeEnabled()) return@clickHandler
-
-                val other = focusedObject
-
                 if (other != null && other != r) {
                     r.addConnection(other)
+                    if (other is Router) {
+                        other.addConnection(r)
+                    }
                 }
-                focusedObject = r
                 println(r.connections)
             }
-
-
             addObject(r, parent)
+        }
+
+        parent.onMouseClicked = EventHandler {
+            unfocus()
         }
     }
 
-    fun addObject(obj: Host, parent: Pane) {
+    private fun unfocus() {
+        focusedObject?.unfocus()
+        focusedObject = null
+    }
+
+    fun addObject(obj: Device, parent: Pane) {
         devices.add(obj)
-        obj.onDestroy = {
+        obj.onDestroys += {
             if (focusedObject == obj) focusedObject = null
             devices.remove(obj)
             reRenderAll()
