@@ -7,18 +7,15 @@ import javafx.scene.layout.Pane
 import routing.Connection
 import routing.ConnectionLine
 import tornadofx.*
-import utils.asIP
-import utils.contains
-import utils.div
-import utils.isPrivateIP
+import utils.*
 
 class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "/router.png") {
 
-    override var ipAddress: UInt? = null
+    override var ipAddress: IPV4? = null
         set(value) {
             field = value
             if (value != null) {
-                text.text = "${value.asIP()}/$cidrPrefix"
+                text.text = "$value/$cidrPrefix"
             }
         }
     var cidrPrefix: Int = 32
@@ -27,13 +24,12 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
             if (ipAddress == null) {
                 text.text = "No IP"
             } else {
-                text.text = "${ipAddress?.asIP()}/$value"
+                text.text = "${ipAddress}/$value"
             }
         }
-
-//    private fun rejectChangeIfHasConnections(prop: String){
-//        FxAlerts.error("Cannot change $prop", "Remove ").show()
-//    }
+    
+    val subnet: Subnet
+        get() = ipAddress!!/cidrPrefix
 
     init {
         this.onDestroys += {
@@ -86,12 +82,13 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         // Handle DHCP
         if (Storage.autoDHCP && otherIP == null) {
             println(connections)
-            val usedIPAddresses = connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress }
+            val usedIPAddresses: List<UInt> =
+                connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress?.uintIp }
             println(usedIPAddresses)
             // Find min address or use router address + 1
-            var candidateAddress = (usedIPAddresses.minOrNull() ?: thisIP) + 1U
-            while (candidateAddress in usedIPAddresses && candidateAddress in thisIP / cidrPrefix) {
-                candidateAddress += 1U
+            var candidateAddress = IPV4((usedIPAddresses.minOrNull() ?: thisIP.uintIp) + 1U)
+            while (candidateAddress.uintIp in usedIPAddresses && candidateAddress in subnet) {
+                candidateAddress = IPV4(candidateAddress.uintIp + 1U)
             }
             if (candidateAddress !in thisIP / cidrPrefix) {
                 // Cannot allocate!
@@ -137,6 +134,23 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         return super.toString().replace("Device", "Router")
     }
 
+    override fun routeTo(target: IPV4, visited: List<Subnet>): List<Subnet>? {
+        // Some kind of loop exists
+        if (subnet in visited) {
+            return null
+        }
+        if (target in subnet) {
+            return visited + listOf(subnet)
+        }
+        // Stupid bruteforce but who cares!
+        val possibleRouters = this.connections.mapNotNull { it.device2 as? Router }
+        val possibleRoutes = possibleRouters.mapNotNull {
+            it.routeTo(target, visited + listOf(subnet))
+        }
+
+        return possibleRoutes.minByOrNull { it.size }
+    }
+
     companion object {
         fun deserialize(serialized: String, parent: Pane): Router {
             val parts = serialized.split("|")
@@ -146,7 +160,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
             val ip = parts[4].toUIntOrNull()
             val cidr = parts[5].toInt()
             val router = Router(id, x, y, parent)
-            router.ipAddress = ip
+            router.ipAddress = ip?.let { IPV4(it) }
             router.cidrPrefix = cidr
             return router
         }

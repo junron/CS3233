@@ -18,7 +18,7 @@ class Main : Application() {
             val mainScene = Scene(root, 600.0, 400.0)
             mainScene.stylesheets.add(javaClass.getResource("/css/application.css")
                 .toExternalForm())
-            primaryStage.title = "Ray Simulator"
+            primaryStage.title = "Susco Packet Tracer"
             primaryStage.scene = mainScene
             primaryStage.isMaximized = true
             primaryStage.show()

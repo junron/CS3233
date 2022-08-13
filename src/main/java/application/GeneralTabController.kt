@@ -14,11 +14,12 @@ import javafx.scene.control.TextField
 import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import javafx.scene.text.Text
 import javafx.stage.Stage
 import serialize.FileOps
 import serialize.Serializable
 import serialize.deserialize
-import utils.asIP
+import utils.toIPV4
 import utils.toIPV4OrNull
 import java.io.IOException
 import kotlin.random.Random
@@ -65,6 +66,9 @@ class GeneralTabController {
 
     @FXML
     private lateinit var sendPacket: Button
+
+    @FXML
+    private lateinit var route: Text
 
     private fun connectionModeEnabled(): Boolean = connectionMode?.isSelected ?: false
 
@@ -148,8 +152,15 @@ class GeneralTabController {
 
         // Handlers for host pane
         this.ipAddr.textProperty().addListener { _, _, newValue ->
+            val device = focusedObject
             val parsed = newValue.toIPV4OrNull()
             if (parsed != null) {
+                if (device is Host) {
+                    // Cannot change IP address to invalid one
+                    if (device.connectedRouters.any { parsed !in it.subnet }) {
+                        return@addListener
+                    }
+                }
                 focusedObject?.ipAddress = parsed
             }
         }
@@ -165,18 +176,34 @@ class GeneralTabController {
             this.sendPacket.isDisable = parsed == null || focusedObject?.ipAddress == null
         }
 
+        this.sendPacket.onMouseClicked = EventHandler {
+            val ip = this.targetIp.text.toIPV4()
+            focusedObject?.let { device ->
+                route.text = "Route: ${device.routeTo(ip, emptyList())}"
+            }
+        }
+
         hostPane.isVisible = false
     }
 
     private fun updateHostPane(device: Device) {
-        this.ipAddr.text = device.ipAddress?.asIP() ?: "No IP"
+        this.ipAddr.text = device.ipAddress?.toString() ?: "No IP"
         this.targetIp.text = ""
         sendPacket.isDisable = true
+        cidrPrefix.isDisable = false
+        ipAddr.isDisable = false
+        route.text = ""
 
         if (device is Router) {
             hostPane.text = "Router"
             routerPane.isVisible = true
             cidrPrefix.text = device.cidrPrefix.toString()
+
+            //Disable changing CIDR and IP if device has connections
+            if (device.connections.isNotEmpty()) {
+                cidrPrefix.isDisable = true
+                ipAddr.isDisable = true
+            }
         } else {
             hostPane.text = "Host"
             routerPane.isVisible = false

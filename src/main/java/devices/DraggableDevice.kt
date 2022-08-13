@@ -88,10 +88,6 @@ abstract class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, im
         this.border = null
     }
 
-    override fun toString(): String {
-        return "DraggableDevice(id=$id, x=${this.layoutX}, y=${this.layoutY})"
-    }
-
     override fun equals(other: Any?): Boolean {
         return other is DraggableDevice && other.id == this.id
     }

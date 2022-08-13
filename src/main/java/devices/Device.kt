@@ -1,28 +1,33 @@
 package devices
 
 import javafx.scene.layout.Pane
-import utils.asIP
+import utils.IPV4
+import utils.Subnet
 
 open class Device(id: Int, x: Int, y: Int, parent: Pane, imagePath: String = "/host.png") :
     DraggableDevice(id, x, y, parent, imagePath) {
 
-    open var ipAddress: UInt? = null
+    open var ipAddress: IPV4? = null
         set(value) {
             field = value
             if (value != null) {
-                text.text = value.asIP()
+                text.text = value.toString()
             }
         }
 
     override fun serialize(): String {
-        return "d|$id|${this.layoutX}|${this.layoutY}|$ipAddress"
+        return "h|$id|${this.layoutX}|${this.layoutY}|${ipAddress?.uintIp}"
     }
 
     open fun deviceDeleted(device: Device) {
         println("This is $id, removed ${device.id}")
     }
 
+    open fun routeTo(target: IPV4, visited: List<Subnet>): List<Subnet>? {
+        TODO()
+    }
+
     override fun toString(): String {
-        return super.toString().replace("DraggableDevice", "Device")
+        return "Device(id=$id, ip=$ipAddress)"
     }
 }
