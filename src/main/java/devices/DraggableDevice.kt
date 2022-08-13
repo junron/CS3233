@@ -87,10 +87,6 @@ open class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, imageP
     fun unfocus() {
         this.border = null
     }
-    
-    open fun deviceDeleted(device: DraggableDevice) {
-        println("This is $id, removed ${device.id}")
-    }
 
 
     open fun deserialize(obj: String): DraggableDevice {

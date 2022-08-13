@@ -12,6 +12,8 @@ object Storage {
     var generalTabController: GeneralTabController? = null
     
     var connectionMode: Boolean = false
+    
+    var autoDHCP: Boolean = false
 
     @JvmField
     var isAnimating = false

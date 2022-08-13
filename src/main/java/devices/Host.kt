@@ -14,7 +14,7 @@ open class Host(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent
             }
         }
     }
-    override fun deviceDeleted(device: DraggableDevice) {
+    override fun deviceDeleted(device: Device) {
         super.deviceDeleted(device)
         if(device !is Router){
             return
