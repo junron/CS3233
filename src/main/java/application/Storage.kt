@@ -4,11 +4,14 @@ import devices.DraggableDevice
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import routing.ConnectionLine
+import utils.Subnet
 
 object Storage {
     val devices = mutableListOf<DraggableDevice>()
 
     val connectionLines = mutableListOf<ConnectionLine>()
+    
+    val subnets = mutableSetOf<Subnet>()
 
     var generalTabController: GeneralTabController? = null
 

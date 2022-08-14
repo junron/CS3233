@@ -12,6 +12,10 @@ value class IPV4(val uintIp: UInt) {
 
 @JvmInline
 value class Subnet(private val x: Pair<IPV4, Int>) {
+
+    val ip: IPV4
+        get() = x.first
+
     override fun toString() =
         "${this.x.first}/${this.x.second}"
 

@@ -30,7 +30,7 @@
                <Text layoutX="14.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Send packet to: " />
                <TextField fx:id="targetIp" layoutX="14.0" layoutY="53.0" prefHeight="25.0" prefWidth="93.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="5.0" />
                <Button fx:id="sendPacket" focusTraversable="false" layoutX="123.0" layoutY="49.0" mnemonicParsing="false" text="Send" />
-               <Text fx:id="route" layoutX="172.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Route: " AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="172.0" />
+               <Button fx:id="showRoute" focusTraversable="false" layoutX="241.2" layoutY="31.80000000000001" mnemonicParsing="false" text="Show routing table" AnchorPane.bottomAnchor="-3.8000000000000114" AnchorPane.leftAnchor="241.2" />
             </children>
          </AnchorPane>
      </content>

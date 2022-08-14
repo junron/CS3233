@@ -13,29 +13,46 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
     override var ipAddress: IPV4? = null
         set(value) {
+            val oldSubnet = subnet
             field = value
             if (value != null) {
                 text.text = "$value/$cidrPrefix"
+                if (oldSubnet != null) {
+                    Storage.subnets -= oldSubnet
+                }
+                Storage.subnets += subnetNotNull
             }
         }
+
     var cidrPrefix: Int = 32
         set(value) {
+            val oldSubnet = ipAddress?.let { subnet }
             field = value
             if (ipAddress == null) {
                 text.text = "No IP"
             } else {
                 text.text = "${ipAddress}/$value"
+                if (oldSubnet != null) {
+                    Storage.subnets -= oldSubnet
+                }
+                Storage.subnets += subnetNotNull
             }
         }
 
-    val subnet: Subnet
-        get() = ipAddress!! / cidrPrefix
+    override val subnet: Subnet?
+        get() = ipAddress?.let { it / cidrPrefix }
+
+    val subnetNotNull: Subnet
+        get() = subnet!!
 
     init {
         this.onDestroys += {
             parent.children.removeAll(this.thisConnectionLineMappings.values)
             connections.forEach {
                 it.device2.deviceDeleted(this)
+            }
+            if (subnet != null) {
+                Storage.subnets -= subnet!!
             }
         }
     }
@@ -46,7 +63,6 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
 
     fun addConnection(other: Device) {
-
         println("$this is connecting to $other")
         if (other.id in thisConnectionLineMappings) {
             return
@@ -59,7 +75,6 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
             FxAlerts.error("Cannot create connection", "Router must have IP Address").show()
             return
         }
-
 
         // Hosts connecting must either have no IP or must belong in the subnet defined by the router
         if (other is Host) {
@@ -81,13 +96,11 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
         // Handle DHCP
         if (Storage.autoDHCP && otherIP == null) {
-            println(connections)
             val usedIPAddresses: List<UInt> =
                 connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress?.uintIp }
-            println(usedIPAddresses)
             // Find min address or use router address + 1
             var candidateAddress = IPV4((usedIPAddresses.minOrNull() ?: thisIP.uintIp) + 1U)
-            while (candidateAddress.uintIp in usedIPAddresses && candidateAddress in subnet) {
+            while (candidateAddress.uintIp in usedIPAddresses && candidateAddress in subnetNotNull) {
                 candidateAddress = IPV4(candidateAddress.uintIp + 1U)
             }
             if (candidateAddress !in thisIP / cidrPrefix) {
@@ -112,7 +125,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         }
 
     }
-    
+
     fun getConnectionLine(other: Device) = thisConnectionLineMappings[other.id]!!
 
     override fun deviceDeleted(device: Device) {
@@ -141,7 +154,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         if (this in visited) {
             return null
         }
-        if (target in subnet) {
+        if (target in subnetNotNull) {
             if (target == ipAddress) {
                 return visited + this
             } else {

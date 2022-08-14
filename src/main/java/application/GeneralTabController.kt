@@ -8,16 +8,20 @@ import devices.Host
 import devices.Router
 import javafx.event.EventHandler
 import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
+import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
-import javafx.scene.text.Text
+import javafx.stage.Modality
 import javafx.stage.Stage
 import routing.ConnectionLine
+import routing.RouteTableEntry
 import serialize.FileOps
 import serialize.Serializable
 import serialize.deserialize
@@ -25,6 +29,7 @@ import utils.toIPV4
 import utils.toIPV4OrNull
 import java.io.IOException
 import kotlin.random.Random
+
 
 class GeneralTabController {
 
@@ -69,8 +74,9 @@ class GeneralTabController {
     @FXML
     private lateinit var sendPacket: Button
 
+
     @FXML
-    private lateinit var route: Text
+    private lateinit var showRoute: Button
 
     private fun connectionModeEnabled(): Boolean = connectionMode?.isSelected ?: false
 
@@ -144,7 +150,6 @@ class GeneralTabController {
                         other.addConnection(r)
                     }
                 }
-                println(r.connections)
             }
             addObject(r, parent)
         }
@@ -160,7 +165,7 @@ class GeneralTabController {
             if (parsed != null) {
                 if (device is Host) {
                     // Cannot change IP address to invalid one
-                    if (device.connectedRouters.any { parsed !in it.subnet }) {
+                    if (device.connectedRouters.any { parsed !in it.subnetNotNull }) {
                         return@addListener
                     }
                 }
@@ -188,7 +193,6 @@ class GeneralTabController {
                     FxAlerts.error("No route to host!", "No route to host!").show()
                     return@EventHandler
                 }
-                println(route)
                 var currentDevice = device
                 val connectionLines = mutableListOf<ConnectionLine>()
                 for (hop in route) {
@@ -209,10 +213,38 @@ class GeneralTabController {
                     currentDevice = hop
                 }
                 connectionLines.forEach {
-                    println(it)
                     it.stroke = Color.GREEN
                 }
             }
+        }
+
+        this.showRoute.onMouseClicked = EventHandler {
+            val thisDevice = focusedObject ?: return@EventHandler
+            val ipAddress = thisDevice.ipAddress ?: return@EventHandler
+            val loader = FXMLLoader(Main::class.java.getResource("/routing.fxml"))
+            val controller = RoutingController()
+            loader.setController(controller)
+            val root = loader.load<AnchorPane>()
+            val dialog = Stage()
+            dialog.initModality(Modality.APPLICATION_MODAL)
+            dialog.scene = Scene(root)
+
+            val routingTable = Storage.subnets.sortedBy { it.ip.uintIp }.map { subnet ->
+                val r = thisDevice.routeTo(subnet.ip, emptyList())
+                val route = r?.filter {
+                    ipAddress != it.ipAddress
+                }
+                if (route == null) {
+                    RouteTableEntry(subnet, null, -1)
+                } else if (route.isEmpty()) {
+                    RouteTableEntry(subnet, null, 0)
+                } else {
+                    RouteTableEntry(subnet, route.first().ipAddress, route.size)
+                }
+            }
+            controller.initialize(ipAddress, routingTable)
+            dialog.showAndWait()
+
         }
 
         hostPane.isVisible = false
@@ -224,7 +256,6 @@ class GeneralTabController {
         sendPacket.isDisable = true
         cidrPrefix.isDisable = false
         ipAddr.isDisable = false
-        route.text = ""
 
         if (device is Router) {
             hostPane.text = "Router"
@@ -240,6 +271,8 @@ class GeneralTabController {
             hostPane.text = "Host"
             routerPane.isVisible = false
         }
+
+        showRoute.isDisable = device.ipAddress == null
         hostPane.isVisible = true
 
     }
