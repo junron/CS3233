@@ -16,6 +16,8 @@ import javafx.scene.control.TextField
 import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.stage.Modality
@@ -42,10 +44,10 @@ class GeneralTabController {
     private var newHost: Button? = null
 
     @FXML
-    private var save: Button? = null
+    private lateinit var save: Button
 
     @FXML
-    private var load: Button? = null
+    private lateinit var load: Button
 
     @FXML
     private var clearAll: Button? = null
@@ -74,14 +76,18 @@ class GeneralTabController {
     @FXML
     private lateinit var sendPacket: Button
 
-
     @FXML
     private lateinit var showRoute: Button
+
+    @FXML
+    private lateinit var pane: AnchorPane
 
     private fun connectionModeEnabled(): Boolean = connectionMode?.isSelected ?: false
 
     fun initialize(parent: Pane) {
-        save!!.onMouseClicked = EventHandler { event: MouseEvent? ->
+        pane.background = Background(BackgroundFill(Color.WHITE, null, null))
+
+        save.onMouseClicked = EventHandler { event: MouseEvent? ->
             val allObjects: MutableList<Serializable> = devices.toMutableList()
             try {
                 FileOps.save(allObjects, parent.scene.window as Stage)
@@ -89,7 +95,7 @@ class GeneralTabController {
                 e.printStackTrace()
             }
         }
-        load!!.onMouseClicked = EventHandler { e: MouseEvent? ->
+        load.onMouseClicked = EventHandler { e: MouseEvent? ->
             val data: ArrayList<String> = try {
                 FileOps.load(parent.scene.window as Stage)
             } catch (ex: IOException) {

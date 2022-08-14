@@ -35,6 +35,8 @@ abstract class DraggableDevice(val id: Int, x: Int, y: Int, val parent: Pane, im
 
 
     init {
+        this.background = Background(BackgroundFill(Color.WHITE, null, null))
+        
 
         this.children += text
         val imageview = ImageView(this.image)
