@@ -2,7 +2,7 @@ package application
 
 import application.Storage.clearAll
 import application.Storage.devices
-import application.Storage.reRenderAll
+import application.Storage.resetConnectionLines
 import devices.Device
 import devices.Host
 import devices.Router
@@ -14,8 +14,10 @@ import javafx.scene.control.TextField
 import javafx.scene.control.TitledPane
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import javafx.stage.Stage
+import routing.ConnectionLine
 import serialize.FileOps
 import serialize.Serializable
 import serialize.deserialize
@@ -178,9 +180,38 @@ class GeneralTabController {
         }
 
         this.sendPacket.onMouseClicked = EventHandler {
+            resetConnectionLines()
             val ip = this.targetIp.text.toIPV4()
             focusedObject?.let { device ->
-                route.text = "Route: ${device.routeTo(ip, emptyList())?.map { it.ipAddress }}"
+                val route = device.routeTo(ip, emptyList())?.filter { it.ipAddress != device.ipAddress }
+                if (route == null) {
+                    FxAlerts.error("No route to host!", "No route to host!").show()
+                    return@EventHandler
+                }
+                println(route)
+                var currentDevice = device
+                val connectionLines = mutableListOf<ConnectionLine>()
+                for (hop in route) {
+                    if (currentDevice is Host && hop is Router) {
+                        // Routers have connection lines back to host
+                        connectionLines.add(hop.getConnectionLine(currentDevice))
+                    } else if (currentDevice is Router && hop is Router) {
+                        // Two connection lines between routers
+                        connectionLines.add(hop.getConnectionLine(currentDevice))
+                        connectionLines.add(currentDevice.getConnectionLine(hop))
+                    } else if (currentDevice is Router) {
+                        // One connection line between router and final host
+                        connectionLines.add(currentDevice.getConnectionLine(hop))
+                    } else {
+                        // This case should not happen
+                        throw Error("Hosts should not be able to connect to hosts directly.")
+                    }
+                    currentDevice = hop
+                }
+                connectionLines.forEach {
+                    println(it)
+                    it.stroke = Color.GREEN
+                }
             }
         }
 
@@ -217,6 +248,7 @@ class GeneralTabController {
         focusedObject?.unfocus()
         focusedObject = null
         hostPane.isVisible = false
+        resetConnectionLines()
     }
 
     private fun addObject(obj: Device, parent: Pane) {
@@ -224,9 +256,7 @@ class GeneralTabController {
         obj.onDestroys += {
             if (focusedObject == obj) focusedObject = null
             devices.remove(obj)
-            reRenderAll()
         }
-        reRenderAll()
         parent.children.add(obj)
         obj.onMouseClicked = EventHandler clickHandler@{ evt: MouseEvent ->
             val other = focusedObject

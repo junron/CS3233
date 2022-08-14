@@ -112,6 +112,8 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         }
 
     }
+    
+    fun getConnectionLine(other: Device) = thisConnectionLineMappings[other.id]!!
 
     override fun deviceDeleted(device: Device) {
         super.deviceDeleted(device)

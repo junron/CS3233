@@ -2,22 +2,23 @@ package application
 
 import devices.DraggableDevice
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
 import routing.ConnectionLine
 
 object Storage {
     val devices = mutableListOf<DraggableDevice>()
-    
+
     val connectionLines = mutableListOf<ConnectionLine>()
-    
+
     var generalTabController: GeneralTabController? = null
-    
+
     var connectionMode: Boolean = false
-    
+
     var autoDHCP: Boolean = false
 
     @JvmField
     var isAnimating = false
-    
+
     @JvmField
     var parent: Pane? = null
 
@@ -28,8 +29,8 @@ object Storage {
         devices.clear()
         connectionLines.clear()
     }
-    
-    fun reRenderAll(){
-        
+
+    fun resetConnectionLines() {
+        connectionLines.forEach { it.stroke = Color.BLACK }
     }
 }
