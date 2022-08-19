@@ -1,5 +1,7 @@
 package routing
 
+import devices.Host
+import devices.Router
 import javafx.geometry.Point2D
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
@@ -19,7 +21,13 @@ class ConnectionLine(private val connection: Connection) : Pane() {
     private val t = StackPane()
 
     init {
-        t.children += Text(connection.router.ipAddress.toString())
+
+        val ifaceIP = when (connection.device2) {
+            is Host -> connection.router.ipAddress
+            is Router -> connection.router.ifaceIPMapping[connection.device2]
+        }.toString()
+
+        t.children += Text(ifaceIP)
         t.background = Background(BackgroundFill(Color.WHITE, null, null))
         this.children += l
         this.children += t
@@ -52,10 +60,12 @@ class ConnectionLine(private val connection: Connection) : Pane() {
 
     fun highlight() {
         l.stroke = Color.GREEN
+        l.strokeWidth = 10.0
     }
 
     fun unhighlight() {
         l.stroke = Color.BLACK
+        l.strokeWidth = 1.0
     }
 
     fun setLabelVisibility(show: Boolean) {

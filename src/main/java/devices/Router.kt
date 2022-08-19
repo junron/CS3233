@@ -42,7 +42,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
     override val subnet: Subnet?
         get() = ipAddress?.let { it / cidrPrefix }
 
-    val subnetNotNull: Subnet
+    private val subnetNotNull: Subnet
         get() = subnet!!
 
     init {
@@ -60,6 +60,8 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
     // Routers have connections to other hosts
     val connections = mutableListOf<Connection>()
     private val thisConnectionLineMappings = mutableMapOf<Int, ConnectionLine>()
+    val ifaceIPMapping = mutableMapOf<Router, IPV4>()
+    private val allocatedIPs = mutableSetOf<IPV4>()
 
 
     fun addConnection(other: Device) {
@@ -100,19 +102,31 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
         // Handle DHCP
         if (otherIP == null) {
-            val usedIPAddresses: List<UInt> =
-                connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress?.uintIp }
-            // Find min address or use router address + 1
-            var candidateAddress = IPV4((usedIPAddresses.minOrNull() ?: thisIP.uintIp) + 1U)
-            while (candidateAddress.uintIp in usedIPAddresses && candidateAddress in subnetNotNull) {
-                candidateAddress = IPV4(candidateAddress.uintIp + 1U)
-            }
-            if (candidateAddress !in thisIP / cidrPrefix) {
-                // Cannot allocate!
-                FxAlerts.error("Cannot create connection", "DHCP failed!").show()
-                return
-            }
+            val candidateAddress =
+                getIPAddress() ?: return FxAlerts.error("Cannot create connection", "DHCP failed!").show()
             other.ipAddress = candidateAddress
+        } else {
+            // Add it to allocated IP addresses
+            if (otherIP in subnetNotNull) {
+                allocatedIPs += otherIP
+            }
+        }
+
+        // If other is host, add this router to their list of routers
+        if (other is Host) {
+            other.connectedRouter = this
+        } else if (other is Router) {
+            // Never happens
+            if (otherIP == null) return
+            // Only one router in the connection needs to get a different iface IP
+            if (thisIP.uintIp < otherIP.uintIp) {
+                // Perform DHCP to get IP address in other subnet
+                val candidateAddress =
+                    other.getIPAddress() ?: return FxAlerts.error("Cannot create connection", "DHCP failed!").show()
+                ifaceIPMapping[other] = candidateAddress
+            } else {
+                ifaceIPMapping[other] = thisIP
+            }
         }
 
         val connection = Connection(this, other)
@@ -122,15 +136,24 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         connectionLines.add(connectionLine)
         thisConnectionLineMappings[other.id] = connectionLine
         connectionLine.toBack()
-
-        // If other is host, add this router to their list of routers
-        if (other is Host) {
-            other.connectedRouter = this
-        }
-
     }
 
     fun getConnectionLine(other: Device) = thisConnectionLineMappings[other.id]!!
+
+    private fun getIPAddress(): IPV4? {
+        val thisIP = this.ipAddress ?: return null
+        // Find min address or use router address + 1
+        var candidateAddress = IPV4((allocatedIPs.minOfOrNull { it.uintIp } ?: thisIP.uintIp) + 1U)
+        while (candidateAddress in allocatedIPs && candidateAddress in subnetNotNull) {
+            candidateAddress = IPV4(candidateAddress.uintIp + 1U)
+        }
+        if (candidateAddress !in subnetNotNull) {
+            // Cannot allocate!
+            return null
+        }
+        this.allocatedIPs += candidateAddress
+        return candidateAddress
+    }
 
     override fun deviceDeleted(device: Device) {
         super.deviceDeleted(device)
@@ -140,6 +163,9 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         if (device.id in thisConnectionLineMappings) {
             parent.children.remove(thisConnectionLineMappings[device.id])
             thisConnectionLineMappings.remove(device.id)
+        }
+        if (device in ifaceIPMapping) {
+            ifaceIPMapping.remove(device)
         }
     }
 
@@ -158,20 +184,29 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         if (this in visited) {
             return null
         }
-        if (target in subnetNotNull) {
-            if (target == ipAddress) {
-                return visited + this
-            } else {
-                val targetDevice = connections.find { it.device2.ipAddress == target } ?: return null
-                return visited + this + targetDevice.device2
-            }
+
+        if (target == ipAddress || target in ifaceIPMapping.values) {
+            // This device
+            return visited + this
+        } else if (target in subnetNotNull) {
+            // On this subnet
+            val targetDevice = connections.find {
+                if (it.device2.ipAddress == target) return@find true
+                if(it.device2 is Router){
+                    // Stupid hack, but it works
+                    if(target in it.device2.ifaceIPMapping.values){
+                        return@find true
+                    }
+                }
+                return@find false
+            } ?: return null
+            return visited + this + targetDevice.device2
         }
         // Stupid bruteforce but who cares!
         val possibleRouters = this.connections.mapNotNull { it.device2 as? Router }
         val possibleRoutes = possibleRouters.mapNotNull {
             it.routeTo(target, visited + this)
         }
-
         return possibleRoutes.minByOrNull { it.size }
     }
 

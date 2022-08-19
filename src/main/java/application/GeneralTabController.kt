@@ -236,19 +236,27 @@ class GeneralTabController {
             dialog.scene = Scene(root)
 
             val routingTable = Storage.subnets.sortedBy { it.ip.uintIp }.map { subnet ->
-                val r = thisDevice.routeTo(subnet.ip, emptyList())
-                val route = r?.filter {
+                val route = thisDevice.routeTo(subnet.ip, emptyList())?.filter {
                     ipAddress != it.ipAddress
                 }
+                val iface = when (thisDevice) {
+                    is Host -> null
+                    is Router -> if (route.isNullOrEmpty()) {
+                        null
+                    } else {
+                        // Get iface ip going to first router on route
+                        thisDevice.ifaceIPMapping[route.first()]
+                    }
+                }
                 if (route == null) {
-                    RouteTableEntry(subnet, null, -1)
+                    RouteTableEntry(subnet, null, -1, iface)
                 } else if (route.isEmpty()) {
-                    RouteTableEntry(subnet, null, 0)
+                    RouteTableEntry(subnet, null, 0, iface)
                 } else {
-                    RouteTableEntry(subnet, route.first().ipAddress, route.size)
+                    RouteTableEntry(subnet, route.first().ipAddress, route.size, iface)
                 }
             }
-            controller.initialize(ipAddress, routingTable)
+            controller.initialize(ipAddress, routingTable, thisDevice is Router)
             dialog.showAndWait()
 
         }

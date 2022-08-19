@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane
 import utils.IPV4
 import utils.Subnet
 
-abstract class Device(id: Int, x: Int, y: Int, parent: Pane, imagePath: String = "/host.png") :
+sealed class Device(id: Int, x: Int, y: Int, parent: Pane, imagePath: String = "/host.png") :
     DraggableDevice(id, x, y, parent, imagePath) {
 
     open var ipAddress: IPV4? = null
