@@ -171,7 +171,7 @@ class GeneralTabController {
             if (parsed != null) {
                 if (device is Host) {
                     // Cannot change IP address to invalid one
-                    if (device.connectedRouters.any { parsed !in it.subnetNotNull }) {
+                    if (device.connectedRouter?.subnet?.let { parsed !in it } == true) {
                         return@addListener
                     }
                 }

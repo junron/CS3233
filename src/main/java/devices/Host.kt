@@ -6,14 +6,12 @@ import utils.Subnet
 
 class Host(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent) {
 
-    val connectedRouters = mutableListOf<Router>()
+    var connectedRouter: Router? = null
 
     init {
         this.onDestroys += {
             // Inform connected routers that I'm dead
-            connectedRouters.forEach {
-                it.deviceDeleted(this)
-            }
+            connectedRouter?.deviceDeleted(this)
         }
     }
 
@@ -22,20 +20,18 @@ class Host(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent) {
         if (device !is Router) {
             return
         }
-        if (device in connectedRouters) {
-            connectedRouters.remove(device)
-        }
+        connectedRouter = null
     }
 
     override fun routeTo(target: IPV4, visited: List<Device>): List<Device>? {
         if (target == ipAddress) {
             return listOf(this)
         }
-        return connectedRouters.mapNotNull { it.routeTo(target, visited) }.minByOrNull { it.size }
+        return connectedRouter?.routeTo(target, visited)
     }
 
     override val subnet: Subnet?
-        get() = connectedRouters.getOrNull(0)?.subnet
+        get() = connectedRouter?.subnet
 
 
     companion object {

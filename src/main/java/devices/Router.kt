@@ -82,6 +82,10 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
                 FxAlerts.error("Cannot create connection", "Host does not belong in this subnet").show()
                 return
             }
+            if (other.connectedRouter != null) {
+                FxAlerts.error("Cannot create connection", "Host is already connected to a router").show()
+                return
+            }
         } else if (other is Router) {
             if (otherIP == null || thisIP.isPrivateIP()) {
                 // Other will handle error
@@ -121,7 +125,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
 
         // If other is host, add this router to their list of routers
         if (other is Host) {
-            other.connectedRouters += this
+            other.connectedRouter = this
         }
 
     }
