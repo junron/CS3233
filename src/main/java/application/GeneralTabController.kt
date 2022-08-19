@@ -27,8 +27,7 @@ import routing.RouteTableEntry
 import serialize.FileOps
 import serialize.Serializable
 import serialize.deserialize
-import utils.toIPV4
-import utils.toIPV4OrNull
+import utils.*
 import java.io.IOException
 import kotlin.random.Random
 
@@ -169,6 +168,11 @@ class GeneralTabController {
             val device = focusedObject
             val parsed = newValue.toIPV4OrNull()
             if (parsed != null) {
+                // Don't allow loopback, broadcast or link local
+                if (parsed in loopback || parsed in broadcast || parsed in linkLocal) {
+                    return@addListener
+                }
+
                 if (device is Host) {
                     // Cannot change IP address to invalid one
                     if (device.connectedRouter?.subnet?.let { parsed !in it } == true) {
@@ -194,29 +198,17 @@ class GeneralTabController {
             resetConnectionLines()
             val ip = this.targetIp.text.toIPV4()
             focusedObject?.let { device ->
-                val route = device.routeTo(ip, emptyList())?.filter { it.ipAddress != device.ipAddress }
-                if (route == null) {
+                val connectionLines = if (ip in broadcast) {
+                    // Undirected broadcast
+                    device.subnet?.let { routeToSubnet(it, device) }
+                } else {
+                    device.routeTo(ip, emptyList())?.filter { it.ipAddress != device.ipAddress }?.let { route ->
+                        processRoute(device, route)
+                    }
+                }
+                if (connectionLines == null) {
                     FxAlerts.error("No route to host!", "No route to host!").show()
                     return@EventHandler
-                }
-                var currentDevice = device
-                val connectionLines = mutableListOf<ConnectionLine>()
-                for (hop in route) {
-                    if (currentDevice is Host && hop is Router) {
-                        // Routers have connection lines back to host
-                        connectionLines.add(hop.getConnectionLine(currentDevice))
-                    } else if (currentDevice is Router && hop is Router) {
-                        // Two connection lines between routers
-                        connectionLines.add(hop.getConnectionLine(currentDevice))
-                        connectionLines.add(currentDevice.getConnectionLine(hop))
-                    } else if (currentDevice is Router) {
-                        // One connection line between router and final host
-                        connectionLines.add(currentDevice.getConnectionLine(hop))
-                    } else {
-                        // This case should not happen
-                        throw Error("Hosts should not be able to connect to hosts directly.")
-                    }
-                    currentDevice = hop
                 }
                 connectionLines.forEach {
                     it.highlight()
@@ -262,6 +254,57 @@ class GeneralTabController {
         }
 
         hostPane.isVisible = false
+    }
+
+    private fun routeToSubnet(subnet: Subnet, device: Device): List<ConnectionLine>? {
+        val route = device.routeTo(subnet.ip, emptyList()) ?: return null
+        if (route.isEmpty()) return emptyList()
+        val finalRouter = (route.last() as? Router) ?: return processRoute(device, route)
+        val connectionLines = if (finalRouter == device) {
+            mutableListOf()
+        } else {
+            processRoute(device, route).toMutableSet()
+
+        }
+        finalRouter.connections.forEach {
+            val deviceIp = it.device2.ipAddress ?: return@forEach
+            if (deviceIp == device.ipAddress) {
+                return@forEach
+            }
+            if (deviceIp in subnet) {
+                val routeToDevice = finalRouter.routeTo(deviceIp, emptyList())?.filter { 
+                    it.ipAddress != finalRouter.ipAddress
+                } ?: return@forEach
+                connectionLines += processRoute(finalRouter, routeToDevice)
+            }
+        }
+        return connectionLines.toList()
+    }
+
+    private fun processRoute(
+        device: Device,
+        route: List<Device>,
+    ): MutableList<ConnectionLine> {
+        var currentDevice = device
+        val connectionLines = mutableListOf<ConnectionLine>()
+        for (hop in route) {
+            if (currentDevice is Host && hop is Router) {
+                // Routers have connection lines back to host
+                connectionLines.add(hop.getConnectionLine(currentDevice))
+            } else if (currentDevice is Router && hop is Router) {
+                // Two connection lines between routers
+                connectionLines.add(hop.getConnectionLine(currentDevice))
+                connectionLines.add(currentDevice.getConnectionLine(hop))
+            } else if (currentDevice is Router) {
+                // One connection line between router and final host
+                connectionLines.add(currentDevice.getConnectionLine(hop))
+            } else {
+                // This case should not happen
+                throw Error("Hosts should not be able to connect to hosts directly.")
+            }
+            currentDevice = hop
+        }
+        return connectionLines
     }
 
     private fun updateHostPane(device: Device) {

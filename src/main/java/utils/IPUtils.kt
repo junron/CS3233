@@ -29,7 +29,8 @@ private val privateSubnets = listOf(
     "10.0.0.0".toIPV4() / 8,
 )
 
-val loopback = "127.0.0.0".toIPV4() / (8U.toInt())
-val linkLocal = "169.254.0.0".toIPV4() / (8U.toInt())
+val loopback = "127.0.0.0".toIPV4() / 8
+val linkLocal = "169.254.0.0".toIPV4() / 16
+val broadcast = "255.255.255.255".toIPV4() / 32
 
 

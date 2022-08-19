@@ -36,6 +36,7 @@ object Storage {
         parent!!.children.removeAll(connectionLines.toSet())
         devices.clear()
         connectionLines.clear()
+        subnets.clear()
     }
 
     fun resetConnectionLines() {
