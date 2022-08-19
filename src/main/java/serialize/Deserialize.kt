@@ -7,8 +7,6 @@ import devices.Router
 import javafx.scene.layout.Pane
 
 fun deserialize(deviceStrings: List<String>, parent: Pane): List<Device> {
-    val savedDHCP = Storage.autoDHCP
-    Storage.autoDHCP = false
     val devices = deviceStrings.map {
         when (it[0]) {
             'h' -> Host.deserialize(it, parent)
@@ -28,8 +26,6 @@ fun deserialize(deviceStrings: List<String>, parent: Pane): List<Device> {
             }
         }
     }
-    
-    Storage.autoDHCP = savedDHCP
     
     return devices
 }

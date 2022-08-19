@@ -56,7 +56,7 @@ class GeneralTabController {
     private var connectionMode: CheckBox? = null
 
     @FXML
-    private lateinit var autoDHCP: CheckBox
+    private lateinit var showIfaceIP: CheckBox
 
     @FXML
     private lateinit var hostPane: TitledPane
@@ -115,7 +115,7 @@ class GeneralTabController {
             unfocus()
         }
 
-        autoDHCP.selectedProperty().addListener { _, _, newValue -> Storage.autoDHCP = newValue }
+        showIfaceIP.selectedProperty().addListener { _, _, newValue -> Storage.showIfaceIP = newValue }
 
 
         newHost!!.onMouseClicked = EventHandler { _: MouseEvent? ->
@@ -219,7 +219,7 @@ class GeneralTabController {
                     currentDevice = hop
                 }
                 connectionLines.forEach {
-                    it.stroke = Color.GREEN
+                    it.highlight()
                 }
             }
         }

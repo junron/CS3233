@@ -2,7 +2,6 @@ package application
 
 import devices.DraggableDevice
 import javafx.scene.layout.Pane
-import javafx.scene.paint.Color
 import routing.ConnectionLine
 import utils.Subnet
 
@@ -10,14 +9,20 @@ object Storage {
     val devices = mutableListOf<DraggableDevice>()
 
     val connectionLines = mutableListOf<ConnectionLine>()
-    
+
     val subnets = mutableSetOf<Subnet>()
 
     var generalTabController: GeneralTabController? = null
 
     var connectionMode: Boolean = false
-
-    var autoDHCP: Boolean = false
+    
+    var showIfaceIP: Boolean = false
+        set(value) {
+            field = value
+            connectionLines.forEach {
+                it.setLabelVisibility(value)
+            }
+        }
 
     @JvmField
     var isAnimating = false
@@ -34,6 +39,6 @@ object Storage {
     }
 
     fun resetConnectionLines() {
-        connectionLines.forEach { it.stroke = Color.BLACK }
+        connectionLines.forEach { it.unhighlight() }
     }
 }

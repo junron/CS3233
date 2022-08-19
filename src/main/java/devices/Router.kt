@@ -99,7 +99,7 @@ class Router(id: Int, x: Int, y: Int, parent: Pane) : Device(id, x, y, parent, "
         }
 
         // Handle DHCP
-        if (Storage.autoDHCP && otherIP == null) {
+        if (otherIP == null) {
             val usedIPAddresses: List<UInt> =
                 connections.filter { it.device2 is Host }.mapNotNull { it.device2.ipAddress?.uintIp }
             // Find min address or use router address + 1
